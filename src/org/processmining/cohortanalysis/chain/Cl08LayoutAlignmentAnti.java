@@ -1,6 +1,6 @@
-package org.processmining.lousycohortanalysis.chain;
+package org.processmining.cohortanalysis.chain;
 
-import org.processmining.lousycohortanalysis.visualisation.LousyCohortsState;
+import org.processmining.cohortanalysis.visualisation.LousyCohortsState;
 import org.processmining.plugins.InductiveMiner.Quadruple;
 import org.processmining.plugins.InductiveMiner.Triple;
 import org.processmining.plugins.graphviz.dot.Dot;

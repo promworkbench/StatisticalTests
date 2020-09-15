@@ -1,4 +1,4 @@
-package org.processmining.lousycohortanalysis.chain;
+package org.processmining.cohortanalysis.chain;
 
 import java.lang.ref.SoftReference;
 import java.util.concurrent.ConcurrentHashMap;
@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.deckfour.xes.info.XLogInfo;
 import org.deckfour.xes.info.XLogInfoFactory;
 import org.deckfour.xes.model.XLog;
-import org.processmining.lousycohortanalysis.visualisation.LousyCohortsState;
+import org.processmining.cohortanalysis.visualisation.LousyCohortsState;
 import org.processmining.plugins.InductiveMiner.Pair;
 import org.processmining.plugins.InductiveMiner.Triple;
 import org.processmining.plugins.inductiveVisualMiner.alignment.AlignmentComputerImpl;

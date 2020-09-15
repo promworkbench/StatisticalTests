@@ -1,6 +1,6 @@
-package org.processmining.lousycohortanalysis.chain;
+package org.processmining.cohortanalysis.chain;
 
-import org.processmining.lousycohortanalysis.visualisation.LousyCohortsState;
+import org.processmining.cohortanalysis.visualisation.LousyCohortsState;
 import org.processmining.plugins.inductiveVisualMiner.chain.IvMCanceller;
 
 public class Cl19Done extends LousyCohortsChainLink<Object, Object> {

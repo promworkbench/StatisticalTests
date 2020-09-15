@@ -1,7 +1,7 @@
-package org.processmining.lousycohortanalysis.chain;
+package org.processmining.cohortanalysis.chain;
 
 import org.deckfour.xes.classification.XEventClass;
-import org.processmining.lousycohortanalysis.visualisation.LousyCohortsState;
+import org.processmining.cohortanalysis.visualisation.LousyCohortsState;
 import org.processmining.plugins.InductiveMiner.MultiSet;
 import org.processmining.plugins.InductiveMiner.Pair;
 import org.processmining.plugins.InductiveMiner.Quadruple;

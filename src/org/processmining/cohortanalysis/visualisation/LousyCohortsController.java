@@ -1,21 +1,21 @@
-package org.processmining.lousycohortanalysis.visualisation;
+package org.processmining.cohortanalysis.visualisation;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.deckfour.xes.model.XLog;
+import org.processmining.cohortanalysis.chain.Cl01GatherAttributes;
+import org.processmining.cohortanalysis.chain.Cl05Mine;
+import org.processmining.cohortanalysis.chain.Cl07Align;
+import org.processmining.cohortanalysis.chain.Cl08LayoutAlignment;
+import org.processmining.cohortanalysis.chain.Cl08LayoutAlignmentAnti;
+import org.processmining.cohortanalysis.chain.Cl17DataAnalysisCohort;
+import org.processmining.cohortanalysis.chain.Cl18ApplyCohort;
+import org.processmining.cohortanalysis.chain.Cl19Done;
+import org.processmining.cohortanalysis.chain.Cl19ProcessDifferences;
 import org.processmining.cohortanalysis.feature.Features2String;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.framework.plugin.ProMCanceller;
-import org.processmining.lousycohortanalysis.chain.Cl01GatherAttributes;
-import org.processmining.lousycohortanalysis.chain.Cl05Mine;
-import org.processmining.lousycohortanalysis.chain.Cl07Align;
-import org.processmining.lousycohortanalysis.chain.Cl08LayoutAlignment;
-import org.processmining.lousycohortanalysis.chain.Cl08LayoutAlignmentAnti;
-import org.processmining.lousycohortanalysis.chain.Cl17DataAnalysisCohort;
-import org.processmining.lousycohortanalysis.chain.Cl18ApplyCohort;
-import org.processmining.lousycohortanalysis.chain.Cl19Done;
-import org.processmining.lousycohortanalysis.chain.Cl19ProcessDifferences;
 import org.processmining.plugins.graphviz.dot.Dot.GraphDirection;
 import org.processmining.plugins.inductiveVisualMiner.InductiveVisualMinerSelectionColourer;
 import org.processmining.plugins.inductiveVisualMiner.alignedLogVisualisation.data.AlignedLogVisualisationData;
@@ -167,8 +167,8 @@ public class LousyCohortsController {
 					//update selection
 					state.setSelectedCohort(state.getCohorts()
 							.get(panel.getCohortsList().getSelectionModel().getAnchorSelectionIndex()));
-					panel.getCohortLabel().setText(
-							"<html>Cohort (" + Features2String.toString(state.getSelectedCohort().getFeatures()) + ")</html>");
+					panel.getCohortLabel().setText("<html>Cohort ("
+							+ Features2String.toString(state.getSelectedCohort().getFeatures()) + ")</html>");
 					chain.execute(Cl18ApplyCohort.class);
 					panel.repaint();
 				}

@@ -1,7 +1,7 @@
-package org.processmining.lousycohortanalysis.chain;
+package org.processmining.cohortanalysis.chain;
 
 import org.deckfour.xes.model.XLog;
-import org.processmining.lousycohortanalysis.visualisation.LousyCohortsState;
+import org.processmining.cohortanalysis.visualisation.LousyCohortsState;
 import org.processmining.plugins.InductiveMiner.Triple;
 import org.processmining.plugins.InductiveMiner.efficienttree.UnknownTreeNodeException;
 import org.processmining.plugins.InductiveMiner.mining.IMLogInfo;

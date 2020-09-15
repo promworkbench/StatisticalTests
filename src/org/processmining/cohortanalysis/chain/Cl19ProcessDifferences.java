@@ -1,7 +1,7 @@
-package org.processmining.lousycohortanalysis.chain;
+package org.processmining.cohortanalysis.chain;
 
-import org.processmining.lousycohortanalysis.visualisation.LousyCohortsState;
-import org.processmining.lousycohortanalysis.visualisation.ProcessDifferencesImpl;
+import org.processmining.cohortanalysis.visualisation.LousyCohortsState;
+import org.processmining.cohortanalysis.visualisation.ProcessDifferencesImpl;
 import org.processmining.plugins.InductiveMiner.Triple;
 import org.processmining.plugins.inductiveVisualMiner.chain.IvMCanceller;
 import org.processmining.plugins.inductiveVisualMiner.helperClasses.IvMModel;

@@ -1,4 +1,4 @@
-package org.processmining.lousycohortanalysis.visualisation;
+package org.processmining.cohortanalysis.visualisation;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

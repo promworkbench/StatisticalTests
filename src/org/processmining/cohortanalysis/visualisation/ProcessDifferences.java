@@ -1,4 +1,4 @@
-package org.processmining.lousycohortanalysis.visualisation;
+package org.processmining.cohortanalysis.visualisation;
 
 import org.processmining.plugins.inductiveVisualMiner.dataanalysis.DisplayType;
 

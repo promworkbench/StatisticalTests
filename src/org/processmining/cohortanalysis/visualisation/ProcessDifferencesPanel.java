@@ -1,4 +1,4 @@
-package org.processmining.lousycohortanalysis.visualisation;
+package org.processmining.cohortanalysis.visualisation;
 
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
