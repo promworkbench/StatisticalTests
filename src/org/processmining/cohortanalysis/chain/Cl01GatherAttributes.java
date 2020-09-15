@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.deckfour.xes.model.XLog;
-import org.processmining.cohortanalysis.visualisation.LousyCohortsState;
+import org.processmining.cohortanalysis.visualisation.CohortsState;
 import org.processmining.plugins.InductiveMiner.AttributeClassifiers;
 import org.processmining.plugins.InductiveMiner.AttributeClassifiers.AttributeClassifier;
 import org.processmining.plugins.InductiveMiner.Pair;
@@ -15,9 +15,9 @@ import org.processmining.plugins.inductiveminer2.attributes.AttributesInfo;
 import org.processmining.plugins.inductiveminer2.attributes.AttributesInfoImpl;
 
 public class Cl01GatherAttributes
-		extends LousyCohortsChainLink<XLog, Triple<AttributesInfo, AttributeClassifier, AttributeClassifier[]>> {
+		extends CohortsChainLink<XLog, Triple<AttributesInfo, AttributeClassifier, AttributeClassifier[]>> {
 
-	protected XLog generateInput(LousyCohortsState state) {
+	protected XLog generateInput(CohortsState state) {
 		return state.getLog();
 	}
 
@@ -40,12 +40,12 @@ public class Cl01GatherAttributes
 	}
 
 	protected void processResult(Triple<AttributesInfo, AttributeClassifier, AttributeClassifier[]> result,
-			LousyCohortsState state) {
+			CohortsState state) {
 		state.setAttributesInfo(result.getA(), result.getB(), result.getC());
 		state.setClassifier(AttributeClassifiers.constructClassifier(result.getB()));
 	}
 
-	protected void invalidateResult(LousyCohortsState state) {
+	protected void invalidateResult(CohortsState state) {
 		state.setAttributesInfo(null, null, null);
 		state.setClassifier(null);
 	}

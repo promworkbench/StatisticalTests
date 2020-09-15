@@ -1,7 +1,7 @@
 package org.processmining.cohortanalysis.chain;
 
 import org.processmining.cohortanalysis.cohort.Cohort;
-import org.processmining.cohortanalysis.visualisation.LousyCohortsState;
+import org.processmining.cohortanalysis.visualisation.CohortsState;
 import org.processmining.plugins.InductiveMiner.Quadruple;
 import org.processmining.plugins.InductiveMiner.Triple;
 import org.processmining.plugins.inductiveVisualMiner.chain.IvMCanceller;
@@ -14,9 +14,9 @@ import org.processmining.plugins.inductiveVisualMiner.ivmlog.IvMLogNotFiltered;
 import org.processmining.plugins.inductiveVisualMiner.ivmlog.IvMTrace;
 
 public class Cl18ApplyCohort extends
-		LousyCohortsChainLink<Triple<IvMLogNotFiltered, Cohort, IvMModel>, Quadruple<IvMLogFilteredImpl, IvMLogInfo, IvMLogFilteredImpl, IvMLogInfo>> {
+		CohortsChainLink<Triple<IvMLogNotFiltered, Cohort, IvMModel>, Quadruple<IvMLogFilteredImpl, IvMLogInfo, IvMLogFilteredImpl, IvMLogInfo>> {
 
-	protected Triple<IvMLogNotFiltered, Cohort, IvMModel> generateInput(LousyCohortsState state) {
+	protected Triple<IvMLogNotFiltered, Cohort, IvMModel> generateInput(CohortsState state) {
 		return Triple.of(state.getIvMLog(), state.getSelectedCohort(), state.getModel());
 	}
 
@@ -47,11 +47,11 @@ public class Cl18ApplyCohort extends
 	}
 
 	protected void processResult(Quadruple<IvMLogFilteredImpl, IvMLogInfo, IvMLogFilteredImpl, IvMLogInfo> result,
-			LousyCohortsState state) {
+			CohortsState state) {
 		state.setCohortLogs(result.getA(), result.getB(), result.getC(), result.getD());
 	}
 
-	protected void invalidateResult(LousyCohortsState state) {
+	protected void invalidateResult(CohortsState state) {
 		state.setCohortLogs(null, null, null, null);
 	}
 

@@ -1,6 +1,6 @@
 package org.processmining.cohortanalysis.chain;
 
-import org.processmining.cohortanalysis.visualisation.LousyCohortsState;
+import org.processmining.cohortanalysis.visualisation.CohortsState;
 import org.processmining.cohortanalysis.visualisation.ProcessDifferencesImpl;
 import org.processmining.plugins.InductiveMiner.Triple;
 import org.processmining.plugins.inductiveVisualMiner.chain.IvMCanceller;
@@ -8,9 +8,9 @@ import org.processmining.plugins.inductiveVisualMiner.helperClasses.IvMModel;
 import org.processmining.plugins.inductiveVisualMiner.ivmlog.IvMLogInfo;
 
 public class Cl19ProcessDifferences
-		extends LousyCohortsChainLink<Triple<IvMModel, IvMLogInfo, IvMLogInfo>, ProcessDifferencesImpl> {
+		extends CohortsChainLink<Triple<IvMModel, IvMLogInfo, IvMLogInfo>, ProcessDifferencesImpl> {
 
-	protected Triple<IvMModel, IvMLogInfo, IvMLogInfo> generateInput(LousyCohortsState state) {
+	protected Triple<IvMModel, IvMLogInfo, IvMLogInfo> generateInput(CohortsState state) {
 		return Triple.of(state.getModel(), state.getCohortLogInfo(), state.getAntiCohortLogInfo());
 	}
 
@@ -19,11 +19,11 @@ public class Cl19ProcessDifferences
 		return new ProcessDifferencesImpl(input.getA(), input.getB(), input.getC());
 	}
 
-	protected void processResult(ProcessDifferencesImpl result, LousyCohortsState state) {
+	protected void processResult(ProcessDifferencesImpl result, CohortsState state) {
 		state.setProcessDifferences(result);
 	}
 
-	protected void invalidateResult(LousyCohortsState state) {
+	protected void invalidateResult(CohortsState state) {
 		state.setProcessDifferences(null);
 	}
 

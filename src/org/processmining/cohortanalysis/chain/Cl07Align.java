@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.deckfour.xes.info.XLogInfo;
 import org.deckfour.xes.info.XLogInfoFactory;
 import org.deckfour.xes.model.XLog;
-import org.processmining.cohortanalysis.visualisation.LousyCohortsState;
+import org.processmining.cohortanalysis.visualisation.CohortsState;
 import org.processmining.plugins.InductiveMiner.Pair;
 import org.processmining.plugins.InductiveMiner.Triple;
 import org.processmining.plugins.inductiveVisualMiner.alignment.AlignmentComputerImpl;
@@ -18,11 +18,11 @@ import org.processmining.plugins.inductiveVisualMiner.ivmlog.IvMLogNotFiltered;
 import org.processmining.plugins.inductiveVisualMiner.performance.XEventPerformanceClassifier;
 
 public class Cl07Align extends
-		LousyCohortsChainLink<Triple<IvMModel, XEventPerformanceClassifier, XLog>, Pair<IvMLogNotFiltered, IvMLogInfo>> {
+		CohortsChainLink<Triple<IvMModel, XEventPerformanceClassifier, XLog>, Pair<IvMLogNotFiltered, IvMLogInfo>> {
 
 	private static ConcurrentHashMap<Triple<IvMModel, XEventPerformanceClassifier, XLog>, SoftReference<IvMLogNotFiltered>> cache = new ConcurrentHashMap<>();
 
-	protected Triple<IvMModel, XEventPerformanceClassifier, XLog> generateInput(LousyCohortsState state) {
+	protected Triple<IvMModel, XEventPerformanceClassifier, XLog> generateInput(CohortsState state) {
 		return Triple.of(state.getModel(), state.getPerformanceClassifier(), state.getLog());
 	}
 
@@ -63,11 +63,11 @@ public class Cl07Align extends
 		return Pair.of(aLog, logInfo);
 	}
 
-	protected void processResult(Pair<IvMLogNotFiltered, IvMLogInfo> result, LousyCohortsState state) {
+	protected void processResult(Pair<IvMLogNotFiltered, IvMLogInfo> result, CohortsState state) {
 		state.setIvMLog(result.getA(), result.getB());
 	}
 
-	protected void invalidateResult(LousyCohortsState state) {
+	protected void invalidateResult(CohortsState state) {
 		state.setIvMLog(null, null);
 	}
 

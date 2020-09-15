@@ -3,8 +3,8 @@ package org.processmining.cohortanalysis.plugins;
 import javax.swing.JComponent;
 
 import org.deckfour.xes.model.XLog;
-import org.processmining.cohortanalysis.visualisation.LousyCohortsController;
-import org.processmining.cohortanalysis.visualisation.LousyCohortsLauncher;
+import org.processmining.cohortanalysis.visualisation.CohortsController;
+import org.processmining.cohortanalysis.visualisation.CohortsLauncher;
 import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
 import org.processmining.contexts.uitopia.annotations.Visualizer;
 import org.processmining.framework.plugin.PluginContext;
@@ -18,13 +18,13 @@ import org.processmining.plugins.InductiveMiner.plugins.dialogs.IMMiningDialog;
 public class LousyCohortsPlugin {
 
 	@Plugin(name = "Lousy cohorts", level = PluginLevel.PeerReviewed, returnLabels = {
-			"Lousy cohorts launcher" }, returnTypes = { LousyCohortsLauncher.class }, parameterLabels = {
+			"Lousy cohorts launcher" }, returnTypes = { CohortsLauncher.class }, parameterLabels = {
 					"Event log" }, userAccessible = true, categories = { PluginCategory.Discovery,
 							PluginCategory.Analytics, PluginCategory.ConformanceChecking }, help = ".")
 	@UITopiaVariant(affiliation = IMMiningDialog.affiliation, author = IMMiningDialog.author, email = IMMiningDialog.email)
 	@PluginVariant(variantLabel = "Mine, dialog", requiredParameterLabels = { 0 })
-	public LousyCohortsLauncher mineGuiProcessTree(PluginContext context, XLog log) {
-		return LousyCohortsLauncher.fromLog(log);
+	public CohortsLauncher mineGuiProcessTree(PluginContext context, XLog log) {
+		return CohortsLauncher.fromLog(log);
 	}
 
 	@Plugin(name = "Lousy cohorts visualisation", returnLabels = { "Visualisation" }, returnTypes = {
@@ -33,7 +33,7 @@ public class LousyCohortsPlugin {
 	@Visualizer
 	@UITopiaVariant(affiliation = IMMiningDialog.affiliation, author = IMMiningDialog.author, email = IMMiningDialog.email)
 	@PluginVariant(variantLabel = "Lousy cohorts visualisation", requiredParameterLabels = { 0, 1 })
-	public JComponent fancy(PluginContext context, LousyCohortsLauncher launcher, ProMCanceller canceller) {
-		return LousyCohortsController.controller(context, launcher.getLog(), canceller);
+	public JComponent fancy(PluginContext context, CohortsLauncher launcher, ProMCanceller canceller) {
+		return CohortsController.controller(context, launcher.getLog(), canceller);
 	}
 }

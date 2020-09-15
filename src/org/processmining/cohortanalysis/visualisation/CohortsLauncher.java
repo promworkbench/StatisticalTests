@@ -2,15 +2,15 @@ package org.processmining.cohortanalysis.visualisation;
 
 import org.deckfour.xes.model.XLog;
 
-public class LousyCohortsLauncher {
+public class CohortsLauncher {
 	private XLog log;
 
-	private LousyCohortsLauncher() {
+	private CohortsLauncher() {
 
 	}
 
-	public static LousyCohortsLauncher fromLog(XLog log) {
-		LousyCohortsLauncher result = new LousyCohortsLauncher();
+	public static CohortsLauncher fromLog(XLog log) {
+		CohortsLauncher result = new CohortsLauncher();
 		result.log = log;
 		return result;
 	}

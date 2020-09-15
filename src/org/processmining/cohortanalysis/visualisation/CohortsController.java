@@ -29,18 +29,18 @@ import org.processmining.plugins.inductiveVisualMiner.visualisation.ProcessTreeV
  * @author sander
  *
  */
-public class LousyCohortsController {
+public class CohortsController {
 
-	public static LousyCohortsPanel controller(PluginContext context, XLog log, ProMCanceller globalCanceller) {
+	public static CohortsPanel controller(PluginContext context, XLog log, ProMCanceller globalCanceller) {
 
-		LousyCohortsState state = new LousyCohortsState(log);
-		LousyCohortsPanel panel = new LousyCohortsPanel();
+		CohortsState state = new CohortsState(log);
+		CohortsPanel panel = new CohortsPanel();
 
 		state.setGraphUserSettings(panel.getCohortGraph().getUserSettings());
 		state.getGraphUserSettings().setDirection(GraphDirection.leftRight);
 
 		//chain
-		Chain<LousyCohortsState> chain = new Chain<>(state, globalCanceller, context.getExecutor());
+		Chain<CohortsState> chain = new Chain<>(state, globalCanceller, context.getExecutor());
 		{
 
 			chain.setOnChange(new Runnable() {

@@ -21,7 +21,7 @@ import org.processmining.plugins.graphviz.visualisation.listeners.ImageTransform
 import org.processmining.plugins.inductiveVisualMiner.dataanalysis.OnOffPanel;
 import org.processmining.plugins.inductiveVisualMiner.helperClasses.decoration.IvMDecorator;
 
-public class LousyCohortsPanel extends JPanel {
+public class CohortsPanel extends JPanel {
 	/**
 	 * 
 	 */
@@ -35,7 +35,7 @@ public class LousyCohortsPanel extends JPanel {
 	private OnOffPanel<JScrollPane> processDifferencesPanelOnOff;
 	private JLabel cohortLabel;
 
-	public LousyCohortsPanel() {
+	public CohortsPanel() {
 		setLayout(new BorderLayout());
 
 		JPanel modelsPanel = new JPanel();
@@ -48,7 +48,7 @@ public class LousyCohortsPanel extends JPanel {
 				@Override
 				public Dimension getMaximumSize() {
 					Dimension d = super.getMaximumSize();
-					return new Dimension(LousyCohortsPanel.this.getWidth(), d.height);
+					return new Dimension(CohortsPanel.this.getWidth(), d.height);
 				}
 			};
 			IvMDecorator.decorate(cohortLabel);
@@ -68,7 +68,7 @@ public class LousyCohortsPanel extends JPanel {
 				@Override
 				public Dimension getMaximumSize() {
 					Dimension d = super.getMaximumSize();
-					return new Dimension(LousyCohortsPanel.this.getWidth(), d.height);
+					return new Dimension(CohortsPanel.this.getWidth(), d.height);
 				}
 			};
 			IvMDecorator.decorate(antiCohortLabel);

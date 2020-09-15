@@ -1,7 +1,7 @@
 package org.processmining.cohortanalysis.chain;
 
 import org.deckfour.xes.classification.XEventClass;
-import org.processmining.cohortanalysis.visualisation.LousyCohortsState;
+import org.processmining.cohortanalysis.visualisation.CohortsState;
 import org.processmining.plugins.InductiveMiner.MultiSet;
 import org.processmining.plugins.InductiveMiner.Pair;
 import org.processmining.plugins.InductiveMiner.Quadruple;
@@ -26,10 +26,10 @@ import org.processmining.plugins.inductiveVisualMiner.visualisation.ProcessTreeV
 import com.kitfox.svg.SVGDiagram;
 
 public class Cl08LayoutAlignment extends
-		LousyCohortsChainLink<Quadruple<IvMModel, IvMLogInfo, ProcessTreeVisualisationParameters, DotPanelUserSettings>, Triple<Dot, SVGDiagram, ProcessTreeVisualisationInfo>> {
+		CohortsChainLink<Quadruple<IvMModel, IvMLogInfo, ProcessTreeVisualisationParameters, DotPanelUserSettings>, Triple<Dot, SVGDiagram, ProcessTreeVisualisationInfo>> {
 
 	protected Quadruple<IvMModel, IvMLogInfo, ProcessTreeVisualisationParameters, DotPanelUserSettings> generateInput(
-			LousyCohortsState state) {
+			CohortsState state) {
 		ProcessTreeVisualisationParameters visualisationParameters = new ModeRelativePaths()
 				.getFinalVisualisationParameters(null);
 		return Quadruple.of(state.getModel(), state.getCohortLogInfo(), visualisationParameters,
@@ -62,11 +62,11 @@ public class Cl08LayoutAlignment extends
 	}
 
 	protected void processResult(Triple<Dot, SVGDiagram, ProcessTreeVisualisationInfo> result,
-			LousyCohortsState state) {
+			CohortsState state) {
 		state.setLayoutCohort(result.getA(), result.getB(), result.getC());
 	}
 
-	protected void invalidateResult(LousyCohortsState state) {
+	protected void invalidateResult(CohortsState state) {
 		state.setLayoutCohort(null, null, null);
 	}
 

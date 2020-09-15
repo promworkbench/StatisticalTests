@@ -18,11 +18,11 @@ import org.processmining.plugins.inductiveminer2.attributes.AttributesInfo;
 
 import com.kitfox.svg.SVGDiagram;
 
-public class LousyCohortsState {
+public class CohortsState {
 
 	private final XLog log;
 
-	public LousyCohortsState(XLog log) {
+	public CohortsState(XLog log) {
 		this.log = log;
 	}
 

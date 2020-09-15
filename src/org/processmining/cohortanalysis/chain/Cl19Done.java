@@ -1,11 +1,11 @@
 package org.processmining.cohortanalysis.chain;
 
-import org.processmining.cohortanalysis.visualisation.LousyCohortsState;
+import org.processmining.cohortanalysis.visualisation.CohortsState;
 import org.processmining.plugins.inductiveVisualMiner.chain.IvMCanceller;
 
-public class Cl19Done extends LousyCohortsChainLink<Object, Object> {
+public class Cl19Done extends CohortsChainLink<Object, Object> {
 
-	protected Object generateInput(LousyCohortsState state) {
+	protected Object generateInput(CohortsState state) {
 		return null;
 	}
 
@@ -14,11 +14,11 @@ public class Cl19Done extends LousyCohortsChainLink<Object, Object> {
 		return null;
 	}
 
-	protected void processResult(Object result, LousyCohortsState state) {
+	protected void processResult(Object result, CohortsState state) {
 
 	}
 
-	protected void invalidateResult(LousyCohortsState state) {
+	protected void invalidateResult(CohortsState state) {
 
 	}
 

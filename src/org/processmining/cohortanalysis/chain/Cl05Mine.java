@@ -1,7 +1,7 @@
 package org.processmining.cohortanalysis.chain;
 
 import org.deckfour.xes.model.XLog;
-import org.processmining.cohortanalysis.visualisation.LousyCohortsState;
+import org.processmining.cohortanalysis.visualisation.CohortsState;
 import org.processmining.plugins.InductiveMiner.Triple;
 import org.processmining.plugins.InductiveMiner.efficienttree.UnknownTreeNodeException;
 import org.processmining.plugins.InductiveMiner.mining.IMLogInfo;
@@ -15,9 +15,9 @@ import org.processmining.plugins.inductiveVisualMiner.visualMinerWrapper.VisualM
 import org.processmining.plugins.inductiveVisualMiner.visualMinerWrapper.miners.DfgMiner;
 
 public class Cl05Mine
-		extends LousyCohortsChainLink<Triple<XLog, XEventPerformanceClassifier, VisualMinerParameters>, IvMModel> {
+		extends CohortsChainLink<Triple<XLog, XEventPerformanceClassifier, VisualMinerParameters>, IvMModel> {
 
-	protected Triple<XLog, XEventPerformanceClassifier, VisualMinerParameters> generateInput(LousyCohortsState state) {
+	protected Triple<XLog, XEventPerformanceClassifier, VisualMinerParameters> generateInput(CohortsState state) {
 		VisualMinerParameters minerParameters = new VisualMinerParameters(state.getPaths());
 		return Triple.of(state.getLog(), state.getPerformanceClassifier(), minerParameters);
 	}
@@ -33,7 +33,7 @@ public class Cl05Mine
 		IMLog iLog = new IMLogImpl(xLog, classifier.getActivityClassifier(), miner.getLifeCycleClassifier());
 		IMLogInfo iLogInfo = miner.getLog2logInfo().createLogInfo(iLog);
 		IvMModel model = miner.mine(iLog, iLogInfo, parameters, canceller);
-		
+
 		if (model != null) {
 			return model;
 		} else {
@@ -42,11 +42,11 @@ public class Cl05Mine
 		}
 	}
 
-	protected void processResult(IvMModel result, LousyCohortsState state) {
+	protected void processResult(IvMModel result, CohortsState state) {
 		state.setModel(result);
 	}
 
-	protected void invalidateResult(LousyCohortsState state) {
+	protected void invalidateResult(CohortsState state) {
 		state.setModel(null);
 	}
 

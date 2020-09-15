@@ -2,7 +2,7 @@ package org.processmining.cohortanalysis.chain;
 
 import org.deckfour.xes.model.XLog;
 import org.processmining.cohortanalysis.cohort.Cohorts;
-import org.processmining.cohortanalysis.visualisation.LousyCohortsState;
+import org.processmining.cohortanalysis.visualisation.CohortsState;
 import org.processmining.plugins.InductiveMiner.Triple;
 import org.processmining.plugins.inductiveVisualMiner.chain.IvMCanceller;
 import org.processmining.plugins.inductiveVisualMiner.dataanalysis.cohorts.CohortAnalysis;
@@ -10,13 +10,13 @@ import org.processmining.plugins.inductiveVisualMiner.performance.XEventPerforma
 import org.processmining.plugins.inductiveminer2.attributes.AttributesInfo;
 
 public class Cl17DataAnalysisCohort
-		extends LousyCohortsChainLink<Triple<AttributesInfo, XLog, XEventPerformanceClassifier>, Cohorts> {
+		extends CohortsChainLink<Triple<AttributesInfo, XLog, XEventPerformanceClassifier>, Cohorts> {
 
 	public String getName() {
 		return "cohort analysis";
 	}
 
-	protected Triple<AttributesInfo, XLog, XEventPerformanceClassifier> generateInput(LousyCohortsState state) {
+	protected Triple<AttributesInfo, XLog, XEventPerformanceClassifier> generateInput(CohortsState state) {
 		return Triple.of(state.getAttributesInfo(), state.getLog(), state.getPerformanceClassifier());
 	}
 
@@ -25,11 +25,11 @@ public class Cl17DataAnalysisCohort
 		return CohortAnalysis.compute(input.getA(), input.getB(), input.getC(), canceller);
 	}
 
-	protected void processResult(Cohorts result, LousyCohortsState state) {
+	protected void processResult(Cohorts result, CohortsState state) {
 		state.setCohorts(result);
 	}
 
-	protected void invalidateResult(LousyCohortsState state) {
+	protected void invalidateResult(CohortsState state) {
 		state.setCohorts(null);
 	}
 
