@@ -1,8 +1,10 @@
-package org.processmining.lousycohortanalysis.visualisation;
+package org.processmining.cohortanalysis.plugins;
 
 import javax.swing.JComponent;
 
 import org.deckfour.xes.model.XLog;
+import org.processmining.cohortanalysis.visualisation.LousyCohortsController;
+import org.processmining.cohortanalysis.visualisation.LousyCohortsLauncher;
 import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
 import org.processmining.contexts.uitopia.annotations.Visualizer;
 import org.processmining.framework.plugin.PluginContext;
