@@ -15,10 +15,10 @@ import org.processmining.framework.plugin.annotations.PluginLevel;
 import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.plugins.InductiveMiner.plugins.dialogs.IMMiningDialog;
 
-public class LousyCohortsPlugin {
+public class CohortsPlugin {
 
-	@Plugin(name = "Lousy cohorts", level = PluginLevel.PeerReviewed, returnLabels = {
-			"Lousy cohorts launcher" }, returnTypes = { CohortsLauncher.class }, parameterLabels = {
+	@Plugin(name = "Cohort analysis", level = PluginLevel.PeerReviewed, returnLabels = {
+			"Cohort analysis launcher" }, returnTypes = { CohortsLauncher.class }, parameterLabels = {
 					"Event log" }, userAccessible = true, categories = { PluginCategory.Discovery,
 							PluginCategory.Analytics, PluginCategory.ConformanceChecking }, help = ".")
 	@UITopiaVariant(affiliation = IMMiningDialog.affiliation, author = IMMiningDialog.author, email = IMMiningDialog.email)
@@ -27,12 +27,12 @@ public class LousyCohortsPlugin {
 		return CohortsLauncher.fromLog(log);
 	}
 
-	@Plugin(name = "Lousy cohorts visualisation", returnLabels = { "Visualisation" }, returnTypes = {
-			JComponent.class }, parameterLabels = { "Lousy cohort launcher",
+	@Plugin(name = "Cohort analysis visualisation", returnLabels = { "Visualisation" }, returnTypes = {
+			JComponent.class }, parameterLabels = { "Cohort analysis launcher",
 					"canceller" }, userAccessible = true, level = PluginLevel.Regular)
 	@Visualizer
 	@UITopiaVariant(affiliation = IMMiningDialog.affiliation, author = IMMiningDialog.author, email = IMMiningDialog.email)
-	@PluginVariant(variantLabel = "Lousy cohorts visualisation", requiredParameterLabels = { 0, 1 })
+	@PluginVariant(variantLabel = "Cohort analysis visualisation", requiredParameterLabels = { 0, 1 })
 	public JComponent fancy(PluginContext context, CohortsLauncher launcher, ProMCanceller canceller) {
 		return CohortsController.controller(context, launcher.getLog(), canceller);
 	}
