@@ -25,6 +25,8 @@ import org.processmining.plugins.graphviz.visualisation.DotPanel;
 import org.processmining.plugins.graphviz.visualisation.listeners.ImageTransformationChangedListener;
 import org.processmining.plugins.inductiveVisualMiner.dataanalysis.OnOffPanel;
 import org.processmining.plugins.inductiveVisualMiner.helperClasses.decoration.IvMDecorator;
+import org.processmining.plugins.inductiveVisualMiner.helperClasses.decoration.IvMDecoratorDefault;
+import org.processmining.plugins.inductiveVisualMiner.helperClasses.decoration.IvMDecoratorI;
 
 public class CohortsPanel extends JPanel {
 	/**
@@ -40,6 +42,8 @@ public class CohortsPanel extends JPanel {
 	private ProcessDifferencesParetoPanel processDifferencesParetoPanel;
 	private OnOffPanel<ResizableSplitPane> processDifferencesPanelOnOff;
 	private JLabel cohortLabel;
+
+	private final static IvMDecoratorI decorator = new IvMDecoratorDefault();
 
 	public CohortsPanel() {
 		setLayout(new BorderLayout());
@@ -110,7 +114,7 @@ public class CohortsPanel extends JPanel {
 					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			scrollPane.getViewport().setOpaque(false);
 			scrollPane.setOpaque(false);
-			cohortsListOnOff = new OnOffPanel<>(scrollPane);
+			cohortsListOnOff = new OnOffPanel<>(decorator, scrollPane);
 			cohortsListOnOff.setOffMessage("Computing cohorts..");
 			cohortsListOnOff.off();
 		}
@@ -135,7 +139,7 @@ public class CohortsPanel extends JPanel {
 			differencesSplitPane.setOpaque(false);
 			flattenJSplitPane(differencesSplitPane);
 
-			processDifferencesPanelOnOff = new OnOffPanel<>(differencesSplitPane);
+			processDifferencesPanelOnOff = new OnOffPanel<>(decorator, differencesSplitPane);
 			processDifferencesPanelOnOff.setOffMessage("Computing differences..");
 			processDifferencesPanelOnOff.off();
 		}
