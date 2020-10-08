@@ -139,13 +139,13 @@ public class CohortsController {
 				differences.setOnComplete(new Runnable() {
 					public void run() {
 						panel.setProcessDifferences(state.getProcessDifferences());
-						panel.getProcessDifferences().repaint();
+						panel.getProcessDifferencesPareto().repaint();
 					}
 				});
 				differences.setOnInvalidate(new Runnable() {
 					public void run() {
 						panel.setProcessDifferences(null);
-						panel.getProcessDifferences().repaint();
+						panel.getProcessDifferencesPareto().repaint();
 					}
 				});
 				chain.addConnection(applyCohort, differences);

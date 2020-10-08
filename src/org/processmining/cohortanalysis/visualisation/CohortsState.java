@@ -6,6 +6,7 @@ import org.deckfour.xes.model.XLog;
 import org.processmining.cohortanalysis.cohort.Cohort;
 import org.processmining.cohortanalysis.cohort.Cohorts;
 import org.processmining.plugins.InductiveMiner.AttributeClassifiers.AttributeClassifier;
+import org.processmining.plugins.InductiveMiner.Pair;
 import org.processmining.plugins.graphviz.dot.Dot;
 import org.processmining.plugins.graphviz.visualisation.DotPanelUserSettings;
 import org.processmining.plugins.inductiveVisualMiner.helperClasses.IvMModel;
@@ -215,13 +216,13 @@ public class CohortsState {
 	}
 
 	//==differences==
-	private ProcessDifferencesPareto processDifferences;
+	private Pair<ProcessDifferences, ProcessDifferencesPareto> processDifferences;
 
-	public ProcessDifferencesPareto getProcessDifferences() {
+	public Pair<ProcessDifferences, ProcessDifferencesPareto> getProcessDifferences() {
 		return processDifferences;
 	}
 
-	public void setProcessDifferences(ProcessDifferencesPareto processDifferences) {
+	public void setProcessDifferences(Pair<ProcessDifferences, ProcessDifferencesPareto> processDifferences) {
 		this.processDifferences = processDifferences;
 	}
 }

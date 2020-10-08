@@ -72,7 +72,7 @@ public class ProcessDifferencesPanel extends JTable {
 
 		//set selections: none
 		setColumnSelectionAllowed(false);
-		setRowSelectionAllowed(false);
+		setRowSelectionAllowed(true);
 
 		setModel(model);
 	}

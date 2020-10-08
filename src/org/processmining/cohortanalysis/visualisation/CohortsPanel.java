@@ -8,13 +8,18 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.AffineTransform;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.border.Border;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import org.processmining.cohortanalysis.cohort.Cohorts;
+import org.processmining.plugins.InductiveMiner.Pair;
 import org.processmining.plugins.graphviz.dot.Dot;
 import org.processmining.plugins.graphviz.visualisation.DotPanel;
 import org.processmining.plugins.graphviz.visualisation.listeners.ImageTransformationChangedListener;
@@ -31,8 +36,9 @@ public class CohortsPanel extends JPanel {
 	private DotPanel antiCohortGraph;
 	private CohortsListPanel cohortsListPanel;
 	private OnOffPanel<JScrollPane> cohortsListOnOff;
-	private ProcessDifferencesParetoPanel processDifferencesPanel;
-	private OnOffPanel<JScrollPane> processDifferencesPanelOnOff;
+	private ProcessDifferencesPanel processDifferencesPanel;
+	private ProcessDifferencesParetoPanel processDifferencesParetoPanel;
+	private OnOffPanel<ResizableSplitPane> processDifferencesPanelOnOff;
 	private JLabel cohortLabel;
 
 	public CohortsPanel() {
@@ -102,7 +108,8 @@ public class CohortsPanel extends JPanel {
 			cohortsListPanel = new CohortsListPanel();
 			JScrollPane scrollPane = new JScrollPane(cohortsListPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-			scrollPane.getViewport().setBackground(IvMDecorator.backGroundColour1);
+			scrollPane.getViewport().setOpaque(false);
+			scrollPane.setOpaque(false);
 			cohortsListOnOff = new OnOffPanel<>(scrollPane);
 			cohortsListOnOff.setOffMessage("Computing cohorts..");
 			cohortsListOnOff.off();
@@ -110,11 +117,25 @@ public class CohortsPanel extends JPanel {
 
 		//differences panel
 		{
-			processDifferencesPanel = new ProcessDifferencesParetoPanel();
-			JScrollPane scrollPane = new JScrollPane(processDifferencesPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-			scrollPane.getViewport().setBackground(IvMDecorator.backGroundColour1);
-			processDifferencesPanelOnOff = new OnOffPanel<>(scrollPane);
+			{
+				processDifferencesParetoPanel = new ProcessDifferencesParetoPanel();
+			}
+
+			JScrollPane processDifferencesPanelScrollPane;
+			{
+				processDifferencesPanel = new ProcessDifferencesPanel();
+				processDifferencesPanelScrollPane = new JScrollPane(processDifferencesPanel,
+						JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+				processDifferencesPanelScrollPane.setOpaque(false);
+				processDifferencesPanelScrollPane.getViewport().setOpaque(false);
+			}
+
+			ResizableSplitPane differencesSplitPane = new ResizableSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+					processDifferencesPanelScrollPane, processDifferencesParetoPanel, this, 0.5);
+			differencesSplitPane.setOpaque(false);
+			flattenJSplitPane(differencesSplitPane);
+
+			processDifferencesPanelOnOff = new OnOffPanel<>(differencesSplitPane);
 			processDifferencesPanelOnOff.setOffMessage("Computing differences..");
 			processDifferencesPanelOnOff.off();
 		}
@@ -122,9 +143,11 @@ public class CohortsPanel extends JPanel {
 		//split pane between cohorts panel and graphs
 		{
 			ResizableSplitPane splitPane1 = new ResizableSplitPane(JSplitPane.HORIZONTAL_SPLIT, cohortsListOnOff,
-					processDifferencesPanelOnOff, this, 0.5);
+					processDifferencesPanelOnOff, this, 0.33);
+			flattenJSplitPane(splitPane1);
 			ResizableSplitPane splitPane2 = new ResizableSplitPane(JSplitPane.VERTICAL_SPLIT, splitPane1, modelsPanel,
 					this, 0.3);
+			flattenJSplitPane(splitPane2);
 			add(splitPane2, BorderLayout.CENTER);
 		}
 	}
@@ -138,13 +161,16 @@ public class CohortsPanel extends JPanel {
 		cohortsListOnOff.set(cohorts != null);
 	}
 
-	public void setProcessDifferences(ProcessDifferencesPareto processDifferencesPareto) {
-		processDifferencesPanel.setData(processDifferencesPareto);
-		processDifferencesPanelOnOff.set(processDifferencesPareto != null);
+	public void setProcessDifferences(Pair<ProcessDifferences, ProcessDifferencesPareto> pair) {
+		if (pair != null) {
+			processDifferencesPanel.setData(pair.getA());
+			processDifferencesParetoPanel.setData(pair.getB());
+		}
+		processDifferencesPanelOnOff.set(pair != null);
 	}
 
-	public Component getProcessDifferences() {
-		return processDifferencesPanel;
+	public Component getProcessDifferencesPareto() {
+		return processDifferencesParetoPanel;
 	}
 
 	public DotPanel getCohortGraph() {
@@ -263,5 +289,30 @@ public class CohortsPanel extends JPanel {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Makes a split pane invisible. Only contained components are shown.
+	 * Source:
+	 * https://stackoverflow.com/questions/12799640/why-does-jsplitpane-add-a-border-to-my-components-and-how-do-i-stop-it
+	 *
+	 * @param splitPane
+	 */
+	public static void flattenJSplitPane(JSplitPane splitPane) {
+		splitPane.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+		BasicSplitPaneUI flatDividerSplitPaneUI = new BasicSplitPaneUI() {
+			@Override
+			public BasicSplitPaneDivider createDefaultDivider() {
+				return new BasicSplitPaneDivider(this) {
+					private static final long serialVersionUID = 3677107739793289059L;
+
+					@Override
+					public void setBorder(Border b) {
+					}
+				};
+			}
+		};
+		splitPane.setUI(flatDividerSplitPaneUI);
+		splitPane.setBorder(null);
 	}
 }
