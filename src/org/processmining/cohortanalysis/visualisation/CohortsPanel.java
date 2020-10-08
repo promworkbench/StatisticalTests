@@ -31,7 +31,7 @@ public class CohortsPanel extends JPanel {
 	private DotPanel antiCohortGraph;
 	private CohortsListPanel cohortsListPanel;
 	private OnOffPanel<JScrollPane> cohortsListOnOff;
-	private ProcessDifferencesPanel processDifferencesPanel;
+	private ProcessDifferencesParetoPanel processDifferencesPanel;
 	private OnOffPanel<JScrollPane> processDifferencesPanelOnOff;
 	private JLabel cohortLabel;
 
@@ -110,7 +110,7 @@ public class CohortsPanel extends JPanel {
 
 		//differences panel
 		{
-			processDifferencesPanel = new ProcessDifferencesPanel();
+			processDifferencesPanel = new ProcessDifferencesParetoPanel();
 			JScrollPane scrollPane = new JScrollPane(processDifferencesPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			scrollPane.getViewport().setBackground(IvMDecorator.backGroundColour1);
@@ -138,9 +138,9 @@ public class CohortsPanel extends JPanel {
 		cohortsListOnOff.set(cohorts != null);
 	}
 
-	public void setProcessDifferences(ProcessDifferences processDifferences) {
-		processDifferencesPanel.setData(processDifferences);
-		processDifferencesPanelOnOff.set(processDifferences != null);
+	public void setProcessDifferences(ProcessDifferencesPareto processDifferencesPareto) {
+		processDifferencesPanel.setData(processDifferencesPareto);
+		processDifferencesPanelOnOff.set(processDifferencesPareto != null);
 	}
 
 	public Component getProcessDifferences() {

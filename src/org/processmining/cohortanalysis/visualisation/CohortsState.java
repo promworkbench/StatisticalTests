@@ -215,13 +215,13 @@ public class CohortsState {
 	}
 
 	//==differences==
-	private ProcessDifferences processDifferences;
+	private ProcessDifferencesPareto processDifferences;
 
-	public ProcessDifferences getProcessDifferences() {
+	public ProcessDifferencesPareto getProcessDifferences() {
 		return processDifferences;
 	}
 
-	public void setProcessDifferences(ProcessDifferences processDifferences) {
+	public void setProcessDifferences(ProcessDifferencesPareto processDifferences) {
 		this.processDifferences = processDifferences;
 	}
 }

@@ -5,7 +5,7 @@ import org.deckfour.xes.classification.XEventClassifier;
 public interface Parameters {
 	public int getSampleSize();
 
-	public int getNumberOfSamples();
+	public int getNumberOfReSamples();
 
 	public long getSeed();
 

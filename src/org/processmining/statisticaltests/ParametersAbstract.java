@@ -5,7 +5,7 @@ import org.deckfour.xes.classification.XEventClassifier;
 public abstract class ParametersAbstract implements Parameters {
 
 	private int sampleSize;
-	private int numberOfSamples;
+	private int numberOfReSamples;
 	private long seed;
 	private XEventClassifier classifierA;
 	private XEventClassifier classifierB;
@@ -13,7 +13,7 @@ public abstract class ParametersAbstract implements Parameters {
 	public ParametersAbstract(int sampleSize, int numberOfSamples, long seed, XEventClassifier classifierA,
 			XEventClassifier classifierB) {
 		this.sampleSize = sampleSize;
-		this.numberOfSamples = numberOfSamples;
+		this.numberOfReSamples = numberOfSamples;
 		this.seed = seed;
 		this.classifierA = classifierA;
 		this.classifierB = classifierB;
@@ -27,12 +27,12 @@ public abstract class ParametersAbstract implements Parameters {
 		this.sampleSize = sampleSize;
 	}
 
-	public int getNumberOfSamples() {
-		return numberOfSamples;
+	public int getNumberOfReSamples() {
+		return numberOfReSamples;
 	}
 
-	public void setNumberOfSamples(int numberOfSamples) {
-		this.numberOfSamples = numberOfSamples;
+	public void setNumberOfReSamples(int numberOfSamples) {
+		this.numberOfReSamples = numberOfSamples;
 	}
 
 	public long getSeed() {

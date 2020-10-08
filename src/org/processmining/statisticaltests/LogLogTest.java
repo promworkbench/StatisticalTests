@@ -37,8 +37,8 @@ public class LogLogTest {
 	public HTMLToString test(final PluginContext context, XLog logA, XLog logB) throws Exception {
 		final ParametersAbstract parameters = new ParametersDefault(logA.size() + logB.size());
 
-		parameters.setNumberOfSamples(200);
-		parameters.setSampleSize(Math.max(10, (logA.size() + logB.size()) / 20));
+		parameters.setNumberOfReSamples(10000);
+		parameters.setSampleSize(Math.max(logA.size(), logB.size()) / 20);
 
 		ProMCanceller canceller = new ProMCanceller() {
 			public boolean isCancelled() {
@@ -50,7 +50,7 @@ public class LogLogTest {
 		final StringBuilder result = new StringBuilder();
 		result.append("<table>");
 		result.append("<tr><td>Sample size</td><td>" + parameters.getSampleSize() + "</td></tr>");
-		result.append("<tr><td>Number of samples</td><td>" + parameters.getNumberOfSamples() + "</td></tr>");
+		result.append("<tr><td>Number of samples</td><td>" + parameters.getNumberOfReSamples() + "</td></tr>");
 		result.append("<tr><td> </td><td></td></tr>");
 		result.append("<tr><td>p value</td><td>" + p + "</td></tr>");
 		result.append(
@@ -102,7 +102,7 @@ public class LogLogTest {
 		int winsA = 0;
 		int winsB = 0;
 
-		for (int sample = 0; sample < parameters.getNumberOfSamples(); sample++) {
+		for (int sample = 0; sample < parameters.getNumberOfReSamples(); sample++) {
 			double[] sampleA = sample(massKeyA, parameters.getSampleSize(), random);
 			double[] sampleB = sample(massKeyB, parameters.getSampleSize(), random);
 
