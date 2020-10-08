@@ -17,7 +17,7 @@ import org.processmining.plugins.InductiveMiner.plugins.dialogs.IMMiningDialog;
 
 public class CohortsPlugin {
 
-	@Plugin(name = "Cohort analysis", level = PluginLevel.PeerReviewed, returnLabels = {
+	@Plugin(name = "Interactive cohort analysis", level = PluginLevel.PeerReviewed, returnLabels = {
 			"Cohort analysis launcher" }, returnTypes = { CohortsLauncher.class }, parameterLabels = {
 					"Event log" }, userAccessible = true, categories = { PluginCategory.Discovery,
 							PluginCategory.Analytics, PluginCategory.ConformanceChecking }, help = ".")

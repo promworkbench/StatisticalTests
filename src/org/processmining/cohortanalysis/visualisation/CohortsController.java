@@ -175,6 +175,18 @@ public class CohortsController {
 			}
 		});
 
+		//respond to difference selection
+		panel.getProcessDifferences().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				if (!e.getValueIsAdjusting()) {
+					int internalIndex = panel.getProcessDifferences().getSelectionModel().getAnchorSelectionIndex();
+					int selectedIndex = state.getProcessDifferences().getA().row2index(internalIndex);
+					panel.getProcessDifferencesPareto().setSelectedIndex(selectedIndex);
+					panel.repaint();
+				}
+			}
+		});
+
 		return panel;
 	}
 }

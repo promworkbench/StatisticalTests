@@ -169,7 +169,11 @@ public class CohortsPanel extends JPanel {
 		processDifferencesPanelOnOff.set(pair != null);
 	}
 
-	public Component getProcessDifferencesPareto() {
+	public ProcessDifferencesPanel getProcessDifferences() {
+		return processDifferencesPanel;
+	}
+
+	public ProcessDifferencesParetoPanel getProcessDifferencesPareto() {
 		return processDifferencesParetoPanel;
 	}
 

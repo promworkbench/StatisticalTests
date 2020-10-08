@@ -21,6 +21,8 @@ public class ProcessDifferencesParetoPanel extends JPanel {
 
 	private ProcessDifferencesPareto processDifferences;
 
+	private int selectedIndex = -1;
+
 	public ProcessDifferencesParetoPanel() {
 		setOpaque(false);
 
@@ -41,9 +43,15 @@ public class ProcessDifferencesParetoPanel extends JPanel {
 		for (int index = 0; index < processDifferences.size(); index++) {
 			int x = getX(minx, maxx, index);
 			int y = getY(miny, maxy, index);
-			//g.fillRect(x - blockSize / 2, y - blockSize / 2, blockSize, blockSize);
 			g.drawLine(x - blockSize / 2, y, x + blockSize / 2, y);
 			g.drawLine(x, y - 5, x, y + 5);
+
+			if (index == selectedIndex) {
+				g.fillRect(x - blockSize / 2, y - blockSize / 2, blockSize, blockSize);
+
+				g.drawLine(x, margin, x, getHeight() - margin);
+				g.drawLine(margin, y, getWidth() - margin, y);
+			}
 		}
 
 		Graphics2D g2 = (Graphics2D) g;
@@ -103,6 +111,11 @@ public class ProcessDifferencesParetoPanel extends JPanel {
 
 	public void setData(ProcessDifferencesPareto processDifferences) {
 		this.processDifferences = processDifferences;
+		repaint();
+	}
+
+	public void setSelectedIndex(int selectedIndex) {
+		this.selectedIndex = selectedIndex;
 		repaint();
 	}
 }

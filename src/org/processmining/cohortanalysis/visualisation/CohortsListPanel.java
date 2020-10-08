@@ -24,8 +24,6 @@ public class CohortsListPanel extends JTable {
 		setRowHeight(DataAnalysisTable.rowHeight);
 		getColumnModel().setColumnMargin(DataAnalysisTable.columnMargin);
 		setDefaultRenderer(Object.class, new DataAnalysisTableCellRenderer());
-		setColumnSelectionAllowed(false);
-		setRowSelectionAllowed(false);
 
 		model = new AbstractTableModel() {
 

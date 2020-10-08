@@ -6,12 +6,14 @@ public interface ProcessDifferences {
 
 	int size();
 
-	DisplayType getFrom(int row);
+	public DisplayType getFrom(int row);
 
-	DisplayType getTo(int row);
+	public DisplayType getTo(int row);
 
-	DisplayType getCohort(int row);
+	public DisplayType getCohort(int row);
 
-	DisplayType getAntiCohort(int row);
+	public 	DisplayType getAntiCohort(int row);
+	
+	public int row2index(int row);
 
 }
