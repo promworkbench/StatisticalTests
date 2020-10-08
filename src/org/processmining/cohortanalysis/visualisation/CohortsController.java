@@ -180,8 +180,10 @@ public class CohortsController {
 			public void valueChanged(ListSelectionEvent e) {
 				if (!e.getValueIsAdjusting()) {
 					int internalIndex = panel.getProcessDifferences().getSelectionModel().getAnchorSelectionIndex();
-					int selectedIndex = state.getProcessDifferences().getA().row2index(internalIndex);
-					panel.getProcessDifferencesPareto().setSelectedIndex(selectedIndex);
+					if (internalIndex >= 0) {
+						int selectedIndex = state.getProcessDifferences().getA().row2index(internalIndex);
+						panel.getProcessDifferencesPareto().setSelectedIndex(selectedIndex);
+					}
 					panel.repaint();
 				}
 			}
