@@ -53,8 +53,7 @@ public class LogLogTest {
 		result.append("<tr><td>Number of samples</td><td>" + parameters.getNumberOfReSamples() + "</td></tr>");
 		result.append("<tr><td> </td><td></td></tr>");
 		result.append("<tr><td>p value</td><td>" + p + "</td></tr>");
-		result.append(
-				"<tr><td colspan=2>Probability that the logs were derived from a different process/model/system</td></tr>");
+		result.append("<tr><td colspan=2>0.5 => equal, 0 or 1 => unequal</td></tr>");
 		result.append("</table>");
 
 		return new HTMLToString() {
@@ -79,8 +78,13 @@ public class LogLogTest {
 		//set up objects for Earth Movers' conformance
 		StochasticLanguageLog languageA = XLog2StochasticLanguage.convert(logA, parameters.getClassifierA(),
 				activityKey, canceller);
+		//System.out.println("language A");
+		//System.out.println(StochasticLanguageLog2String.toString(languageA, false));
 		StochasticLanguageLog languageB = XLog2StochasticLanguage.convert(logB, parameters.getClassifierB(),
 				activityKey, canceller);
+		//System.out.println("");
+		//System.out.println("language B");
+		//System.out.println(StochasticLanguageLog2String.toString(languageB, false));
 		EMSCParametersLogLogAbstract emscParameters = new EMSCParametersLogLogDefault();
 		emscParameters.setComputeStochasticTraceAlignments(false);
 		DistanceMatrix distanceMatrixAA = EMSCParametersDefault.defaultDistanceMatrix.clone();
@@ -95,6 +99,10 @@ public class LogLogTest {
 		double[] massKeyA = getMassKey(languageA);
 		double[] massKeyB = getMassKey(languageB);
 
+		//create sampler methods
+		AliasMethod aliasMethodA = new AliasMethod(massKeyA, random);
+		AliasMethod aliasMethodB = new AliasMethod(massKeyB, random);
+
 		if (canceller.isCancelled()) {
 			return -Double.MAX_VALUE;
 		}
@@ -103,13 +111,16 @@ public class LogLogTest {
 		int winsB = 0;
 
 		for (int sample = 0; sample < parameters.getNumberOfReSamples(); sample++) {
-			double[] sampleA = sample(massKeyA, parameters.getSampleSize(), random);
-			double[] sampleB = sample(massKeyB, parameters.getSampleSize(), random);
+			//			double[] sampleA = sample(massKeyA, parameters.getSampleSize(), random);
+			//			double[] sampleB = sample(massKeyB, parameters.getSampleSize(), random);
+			double[] sampleA = sample(aliasMethodA, parameters.getSampleSize());
+			double[] sampleB = sample(aliasMethodB, parameters.getSampleSize());
 
 			double distanceA = getDistance(languageA, applySample(languageA, sampleA), distanceMatrixAA, emscParameters,
 					canceller);
 			double distanceB = getDistance(languageA, applySample(languageB, sampleB), distanceMatrixAB, emscParameters,
 					canceller);
+			//			System.out.println("distanceAa " + distanceA + ", distanbeAb " + distanceB);
 			if (distanceA < distanceB) {
 				winsA++;
 			} else if (distanceA > distanceB) {
@@ -125,7 +136,7 @@ public class LogLogTest {
 		}
 
 		double p = winsA / (winsA + winsB * 1.0);
-		return 2 * Math.abs(0.5 - p);
+		return p;
 	}
 
 	private static double[] getMassKey(StochasticLanguageLog language) {
@@ -149,6 +160,14 @@ public class LogLogTest {
 
 	public static StochasticLanguage applySample(StochasticLanguage language, double[] sample) {
 		return new StochasticLanguageWrapper(language, sample);
+	}
+
+	public static double[] sample(AliasMethod aliasMethod, int sampleSize) {
+		int[] result = new int[aliasMethod.getProbabilitiesSize()];
+		for (int i = 0; i < sampleSize; i++) {
+			result[aliasMethod.next()]++;
+		}
+		return normalise(result, sampleSize);
 	}
 
 	public static double[] sample(double[] massKey, int sampleSize, Random random) {

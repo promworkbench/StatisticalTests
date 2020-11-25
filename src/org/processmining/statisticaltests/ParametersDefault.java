@@ -13,12 +13,12 @@ import org.processmining.plugins.InductiveMiner.mining.MiningParameters;
  */
 public class ParametersDefault extends ParametersAbstract {
 
-	public final static int defaultSampleSize = 100;
+	public final static int defaultNumberOfSamples = 10000;
 	public final static XEventClassifier defaultClassifier = MiningParameters.getDefaultClassifier();
 
 	public ParametersDefault(int numberOfTracesInLogsCombined) {
-		super(defaultSampleSize, Math.max(10, (numberOfTracesInLogsCombined) / 20), System.currentTimeMillis(),
-				defaultClassifier, defaultClassifier);
+		super(numberOfTracesInLogsCombined, defaultNumberOfSamples, System.currentTimeMillis(), defaultClassifier,
+				defaultClassifier);
 	}
 
 }
