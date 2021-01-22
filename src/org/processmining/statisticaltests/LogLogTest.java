@@ -116,10 +116,10 @@ public class LogLogTest {
 			double[] sampleA = sample(aliasMethodA, parameters.getSampleSize());
 			double[] sampleB = sample(aliasMethodB, parameters.getSampleSize());
 
-			double distanceA = getDistance(languageA, applySample(languageA, sampleA), distanceMatrixAA, emscParameters,
-					canceller);
-			double distanceB = getDistance(languageA, applySample(languageB, sampleB), distanceMatrixAB, emscParameters,
-					canceller);
+			double distanceA = getSimilarity(languageA, applySample(languageA, sampleA), distanceMatrixAA,
+					emscParameters, canceller);
+			double distanceB = getSimilarity(languageA, applySample(languageB, sampleB), distanceMatrixAB,
+					emscParameters, canceller);
 			//			System.out.println("distanceAa " + distanceA + ", distanbeAb " + distanceB);
 			if (distanceA < distanceB) {
 				winsA++;
@@ -151,7 +151,7 @@ public class LogLogTest {
 		return result;
 	}
 
-	private static double getDistance(StochasticLanguage languageA, StochasticLanguage languageB,
+	public static double getSimilarity(StochasticLanguage languageA, StochasticLanguage languageB,
 			DistanceMatrix distanceMatrix, EMSCParameters parameters, ProMCanceller canceller) {
 		Pair<ReallocationMatrix, Double> p = ComputeReallocationMatrix2.computeWithDistanceMatrixInitialised(languageA,
 				languageB, distanceMatrix, parameters, canceller);
