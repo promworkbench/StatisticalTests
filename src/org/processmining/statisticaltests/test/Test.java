@@ -18,7 +18,142 @@ public class Test {
 	static File folder = new File("/home/sander/Documents/svn/41 - stochastic statistics/experiments/logs");
 
 	public static void main(String... args) throws Exception {
-		incBpic11Bpic11moto();
+		Bpic155Bpic155();
+	}
+	
+	public static void Bpic151Bpic152() throws IOException, InterruptedException, Exception {
+		File inputLog1 = new File(folder, "BPIC15_1.xes");
+		File inputLog2 = new File(folder, "BPIC15_2.xes");
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-1-BPIC15-2.csv");
+
+		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
+	}
+	
+	public static void Bpic152Bpic152() throws IOException, InterruptedException, Exception {
+		File inputLog1 = new File(folder, "BPIC15_2.xes");
+		File inputLog2 = new File(folder, "BPIC15_2.xes");
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-2-BPIC15-2.csv");
+
+		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
+	}
+	
+	public static void Bpic152Bpic154() throws IOException, InterruptedException, Exception {
+		File inputLog1 = new File(folder, "BPIC15_2.xes");
+		File inputLog2 = new File(folder, "BPIC15_4.xes");
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-2-BPIC15-4.csv");
+
+		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
+	}
+	
+	public static void Bpic154Bpic154() throws IOException, InterruptedException, Exception {
+		File inputLog1 = new File(folder, "BPIC15_4.xes");
+		File inputLog2 = new File(folder, "BPIC15_4.xes");
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-4-BPIC15-4.csv");
+
+		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
+	}
+	
+	public static void Bpic154Bpic155() throws IOException, InterruptedException, Exception {
+		File inputLog1 = new File(folder, "BPIC15_4.xes");
+		File inputLog2 = new File(folder, "BPIC15_5.xes");
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-4-BPIC15-5.csv");
+
+		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
+	}
+	
+	public static void Bpic155Bpic155() throws IOException, InterruptedException, Exception {
+		File inputLog1 = new File(folder, "BPIC15_5.xes");
+		File inputLog2 = new File(folder, "BPIC15_5.xes");
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-5-BPIC15-5.csv");
+
+		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
+	}
+	
+	public static void Bpic152Bpic155() throws IOException, InterruptedException, Exception {
+		File inputLog1 = new File(folder, "BPIC15_2.xes");
+		File inputLog2 = new File(folder, "BPIC15_5.xes");
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-2-BPIC15-5.csv");
+
+		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
+	}
+	
+	public static void Bpic152Bpic153() throws IOException, InterruptedException, Exception {
+		File inputLog1 = new File(folder, "BPIC15_2.xes");
+		File inputLog2 = new File(folder, "BPIC15_3.xes");
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-2-BPIC15-3.csv");
+
+		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
+	}
+	
+	public static void Bpic153Bpic153() throws IOException, InterruptedException, Exception {
+		File inputLog1 = new File(folder, "BPIC15_3.xes");
+		File inputLog2 = new File(folder, "BPIC15_3.xes");
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-3-BPIC15-3.csv");
+
+		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
+	}
+	
+	public static void Bpic153Bpic154() throws IOException, InterruptedException, Exception {
+		File inputLog1 = new File(folder, "BPIC15_3.xes");
+		File inputLog2 = new File(folder, "BPIC15_4.xes");
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-3-BPIC15-4.csv");
+
+		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
+	}
+	
+	public static void Bpic153Bpic155() throws IOException, InterruptedException, Exception {
+		File inputLog1 = new File(folder, "BPIC15_3.xes");
+		File inputLog2 = new File(folder, "BPIC15_5.xes");
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-3-BPIC15-5.csv");
+
+		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
+	}
+	
+	public static void Bpic151Bpic153() throws IOException, InterruptedException, Exception {
+		File inputLog1 = new File(folder, "BPIC15_1.xes");
+		File inputLog2 = new File(folder, "BPIC15_3.xes");
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-1-BPIC15-3.csv");
+
+		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
+	}
+	
+	public static void Bpic151Bpic154() throws IOException, InterruptedException, Exception {
+		File inputLog1 = new File(folder, "BPIC15_1.xes");
+		File inputLog2 = new File(folder, "BPIC15_4.xes");
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-1-BPIC15-4.csv");
+
+		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
+	}
+	
+	public static void Bpic151Bpic155() throws IOException, InterruptedException, Exception {
+		File inputLog1 = new File(folder, "BPIC15_1.xes");
+		File inputLog2 = new File(folder, "BPIC15_5.xes");
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-1-BPIC15-5.csv");
+
+		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
+	}
+	
+	public static void Bpic151Bpic151() throws IOException, InterruptedException, Exception {
+		File inputLog1 = new File(folder, "BPIC15_1.xes");
+		File inputLog2 = new File(folder, "BPIC15_1.xes");
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-1-BPIC15-1.csv");
+
+		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
 	}
 
 	public static void incRfRf() throws IOException, InterruptedException, Exception {
@@ -83,7 +218,7 @@ public class Test {
 
 		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
 	}
-	
+
 	public static void incBpic11Bpic11moto() throws IOException, InterruptedException, Exception {
 		File inputLog1 = new File(folder, "bpic11.xes.gz");
 		File inputLog2 = new File(folder, "bpic11-moto.xes.gz");

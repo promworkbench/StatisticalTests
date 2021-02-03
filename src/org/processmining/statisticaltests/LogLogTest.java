@@ -139,7 +139,7 @@ public class LogLogTest {
 		return p;
 	}
 
-	private static double[] getMassKey(StochasticLanguageLog language) {
+	public static double[] getMassKey(StochasticLanguageLog language) {
 		double[] result = new double[language.size()];
 		BigDecimal cumulative = BigDecimal.ZERO;
 		StochasticTraceIterator it = language.iterator();
