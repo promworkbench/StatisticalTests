@@ -32,15 +32,12 @@ import gnu.trove.strategy.HashingStrategy;
 
 public class CorrelationProcessNumerical {
 
-	private static int numberOfSamples = 500;
-	private static int sampleSize = 200;
-
-	public static double[][] compute(XLog log, final XEventClassifier classifier, final Attribute attribute,
-			ProMCanceller canceller) throws InterruptedException {
+	public static double[][] compute(CorrelationParameters parameters, XLog log, ProMCanceller canceller)
+			throws InterruptedException {
 		//select traces that have the attribute
 		List<XTrace> traces = new ArrayList<>();
 		for (XTrace trace : log) {
-			double value = AttributeUtils.valueDouble(attribute, trace);
+			double value = AttributeUtils.valueDouble(parameters.getAttribute(), trace);
 			if (value != -Double.MAX_VALUE) {
 				traces.add(trace);
 			}
@@ -48,20 +45,21 @@ public class CorrelationProcessNumerical {
 
 		//construct the full stochastic language
 		Activity2IndexKey activityKey = new Activity2IndexKey();
-		activityKey.feed(log, classifier);
-		StochasticLanguageLog languageFull = XLog2StochasticLanguage.convert(log, classifier, activityKey, canceller);
+		activityKey.feed(log, parameters.getClassifier());
+		StochasticLanguageLog languageFull = XLog2StochasticLanguage.convert(log, parameters.getClassifier(),
+				activityKey, canceller);
 
 		//sort the traces on the attribute value
 		Collections.sort(traces, new Comparator<XTrace>() {
 			public int compare(XTrace t1, XTrace t2) {
-				return Double.compare(AttributeUtils.valueDouble(attribute, t1),
-						AttributeUtils.valueDouble(attribute, t2));
+				return Double.compare(AttributeUtils.valueDouble(parameters.getAttribute(), t1),
+						AttributeUtils.valueDouble(parameters.getAttribute(), t2));
 			}
 		});
 
 		//create a map traces => stochastic language trace index
-		int[] traceIndex2stochasticLanguageTraceIndex = traceIndex2stochasticLanguageTraceIndex(classifier, traces,
-				languageFull);
+		int[] traceIndex2stochasticLanguageTraceIndex = traceIndex2stochasticLanguageTraceIndex(
+				parameters.getClassifier(), traces, languageFull);
 
 		//set up stochastic language comparison
 		EMSCParametersLogLogAbstract emscParameters = new EMSCParametersLogLogDefault();
@@ -74,31 +72,31 @@ public class CorrelationProcessNumerical {
 		}
 
 		//perform the sampling
-		double[][] result = new double[numberOfSamples][2];
-		Random random = new Random();
+		double[][] result = new double[2][parameters.getNumberOfSamples()];
+		Random random = parameters.getRandom();
 
-		for (int sampleNumber = 0; sampleNumber < numberOfSamples; sampleNumber++) {
-			System.out.println("start sample " + sampleNumber);
+		for (int sampleNumber = 0; sampleNumber < parameters.getNumberOfSamples(); sampleNumber++) {
 
-			int a = random.nextInt(traces.size() - sampleSize);
-			int b = random.nextInt(traces.size() - sampleSize);
+			int a = random.nextInt(traces.size() - parameters.getSampleSize());
+			int b = random.nextInt(traces.size() - parameters.getSampleSize());
 
 			if (a == b) {
 				//optimisation: if a == b, then their distance is 0
-				result[sampleNumber][0] = 0;
-				result[sampleNumber][1] = 0;
+				result[0][sampleNumber] = 0;
+				result[1][sampleNumber] = 0;
 			} else {
 				//distance in numeric attribute
-				List<XTrace> tracesA = traces.subList(a, a + sampleSize);
-				List<XTrace> tracesB = traces.subList(b, b + sampleSize);
-				result[sampleNumber][0] = Math.abs(average(tracesA, attribute) - average(tracesB, attribute));
+				List<XTrace> tracesA = traces.subList(a, a + parameters.getSampleSize());
+				List<XTrace> tracesB = traces.subList(b, b + parameters.getSampleSize());
+				result[0][sampleNumber] = Math
+						.abs(average(tracesA, parameters.getAttribute()) - average(tracesB, parameters.getAttribute()));
 
 				//distance in process
-				double[] sampleA = sample(traces, a, sampleSize, languageFull.size(),
+				double[] sampleA = sample(traces, a, parameters.getSampleSize(), languageFull.size(),
 						traceIndex2stochasticLanguageTraceIndex);
-				double[] sampleB = sample(traces, b, sampleSize, languageFull.size(),
+				double[] sampleB = sample(traces, b, parameters.getSampleSize(), languageFull.size(),
 						traceIndex2stochasticLanguageTraceIndex);
-				result[sampleNumber][1] = 1 - LogLogTest.getSimilarity(LogLogTest.applySample(languageFull, sampleA),
+				result[1][sampleNumber] = 1 - LogLogTest.getSimilarity(LogLogTest.applySample(languageFull, sampleA),
 						LogLogTest.applySample(languageFull, sampleB), distanceMatrix, emscParameters, canceller);
 			}
 

@@ -1,159 +1,44 @@
 package org.processmining.statisticaltests.test;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DecimalFormat;
 
 import org.deckfour.xes.model.XLog;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.framework.plugin.ProMCanceller;
+import org.processmining.plugins.InductiveMiner.mining.MiningParameters;
 import org.processmining.statisticaltests.LogLogTest;
+import org.processmining.statisticaltests.LogLogUnknownProcessTest;
 import org.processmining.statisticaltests.ParametersAbstract;
 import org.processmining.statisticaltests.ParametersDefault;
 import org.processmining.xeslite.plugin.OpenLogFileLiteImplPlugin;
 
 public class Test {
 	static File folder = new File("/home/sander/Documents/svn/41 - stochastic statistics/experiments/logs");
+	static File outputFolder = new File(
+			"/home/sander/Documents/svn/41 - stochastic statistics/experiments/06 - log log test");
+
+	static int maxSampleSize = 100;
+	static int numberOfSamples = 1000;
 
 	public static void main(String... args) throws Exception {
-		Bpic155Bpic155();
+		Bpic15();
 	}
-	
-	public static void Bpic151Bpic152() throws IOException, InterruptedException, Exception {
-		File inputLog1 = new File(folder, "BPIC15_1.xes");
-		File inputLog2 = new File(folder, "BPIC15_2.xes");
-		File outputCsv = new File(
-				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-1-BPIC15-2.csv");
 
-		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
-	}
-	
-	public static void Bpic152Bpic152() throws IOException, InterruptedException, Exception {
-		File inputLog1 = new File(folder, "BPIC15_2.xes");
-		File inputLog2 = new File(folder, "BPIC15_2.xes");
-		File outputCsv = new File(
-				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-2-BPIC15-2.csv");
+	public static void Bpic15() throws IOException, InterruptedException, Exception {
+		for (int i = 1; i <= 5; i++) {
+			for (int j = i; j <= 5; j++) {
+				File inputLog1 = new File(folder, "BPIC15_" + i + ".xes");
+				File inputLog2 = new File(folder, "BPIC15_" + j + ".xes");
+				File outputCsv = new File(outputFolder, "BPIC15-" + i + "-BPIC15-" + j + ".csv");
 
-		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
-	}
-	
-	public static void Bpic152Bpic154() throws IOException, InterruptedException, Exception {
-		File inputLog1 = new File(folder, "BPIC15_2.xes");
-		File inputLog2 = new File(folder, "BPIC15_4.xes");
-		File outputCsv = new File(
-				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-2-BPIC15-4.csv");
-
-		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
-	}
-	
-	public static void Bpic154Bpic154() throws IOException, InterruptedException, Exception {
-		File inputLog1 = new File(folder, "BPIC15_4.xes");
-		File inputLog2 = new File(folder, "BPIC15_4.xes");
-		File outputCsv = new File(
-				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-4-BPIC15-4.csv");
-
-		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
-	}
-	
-	public static void Bpic154Bpic155() throws IOException, InterruptedException, Exception {
-		File inputLog1 = new File(folder, "BPIC15_4.xes");
-		File inputLog2 = new File(folder, "BPIC15_5.xes");
-		File outputCsv = new File(
-				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-4-BPIC15-5.csv");
-
-		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
-	}
-	
-	public static void Bpic155Bpic155() throws IOException, InterruptedException, Exception {
-		File inputLog1 = new File(folder, "BPIC15_5.xes");
-		File inputLog2 = new File(folder, "BPIC15_5.xes");
-		File outputCsv = new File(
-				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-5-BPIC15-5.csv");
-
-		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
-	}
-	
-	public static void Bpic152Bpic155() throws IOException, InterruptedException, Exception {
-		File inputLog1 = new File(folder, "BPIC15_2.xes");
-		File inputLog2 = new File(folder, "BPIC15_5.xes");
-		File outputCsv = new File(
-				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-2-BPIC15-5.csv");
-
-		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
-	}
-	
-	public static void Bpic152Bpic153() throws IOException, InterruptedException, Exception {
-		File inputLog1 = new File(folder, "BPIC15_2.xes");
-		File inputLog2 = new File(folder, "BPIC15_3.xes");
-		File outputCsv = new File(
-				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-2-BPIC15-3.csv");
-
-		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
-	}
-	
-	public static void Bpic153Bpic153() throws IOException, InterruptedException, Exception {
-		File inputLog1 = new File(folder, "BPIC15_3.xes");
-		File inputLog2 = new File(folder, "BPIC15_3.xes");
-		File outputCsv = new File(
-				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-3-BPIC15-3.csv");
-
-		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
-	}
-	
-	public static void Bpic153Bpic154() throws IOException, InterruptedException, Exception {
-		File inputLog1 = new File(folder, "BPIC15_3.xes");
-		File inputLog2 = new File(folder, "BPIC15_4.xes");
-		File outputCsv = new File(
-				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-3-BPIC15-4.csv");
-
-		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
-	}
-	
-	public static void Bpic153Bpic155() throws IOException, InterruptedException, Exception {
-		File inputLog1 = new File(folder, "BPIC15_3.xes");
-		File inputLog2 = new File(folder, "BPIC15_5.xes");
-		File outputCsv = new File(
-				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-3-BPIC15-5.csv");
-
-		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
-	}
-	
-	public static void Bpic151Bpic153() throws IOException, InterruptedException, Exception {
-		File inputLog1 = new File(folder, "BPIC15_1.xes");
-		File inputLog2 = new File(folder, "BPIC15_3.xes");
-		File outputCsv = new File(
-				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-1-BPIC15-3.csv");
-
-		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
-	}
-	
-	public static void Bpic151Bpic154() throws IOException, InterruptedException, Exception {
-		File inputLog1 = new File(folder, "BPIC15_1.xes");
-		File inputLog2 = new File(folder, "BPIC15_4.xes");
-		File outputCsv = new File(
-				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-1-BPIC15-4.csv");
-
-		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
-	}
-	
-	public static void Bpic151Bpic155() throws IOException, InterruptedException, Exception {
-		File inputLog1 = new File(folder, "BPIC15_1.xes");
-		File inputLog2 = new File(folder, "BPIC15_5.xes");
-		File outputCsv = new File(
-				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-1-BPIC15-5.csv");
-
-		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
-	}
-	
-	public static void Bpic151Bpic151() throws IOException, InterruptedException, Exception {
-		File inputLog1 = new File(folder, "BPIC15_1.xes");
-		File inputLog2 = new File(folder, "BPIC15_1.xes");
-		File outputCsv = new File(
-				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/03 - loglog increasing sample size/BPIC15-1-BPIC15-1.csv");
-
-		loglogIncreasingSampleSize(inputLog1, inputLog2, outputCsv);
+				loglog2IncreasingSampleSize(inputLog1, inputLog2, outputCsv, 10);
+			}
+		}
 	}
 
 	public static void incRfRf() throws IOException, InterruptedException, Exception {
@@ -339,17 +224,63 @@ public class Test {
 		output.close();
 	}
 
-	public static void loglog(int repetitions, File inputLog1, File inputLog2, File outputCsv)
+	//	public static void loglog(int repetitions, File inputLog1, File inputLog2, File outputCsv)
+	//			throws IOException, Exception, InterruptedException {
+	//		outputCsv.getParentFile().mkdirs();
+	//		if (!outputCsv.exists()) {
+	//			outputCsv.createNewFile();
+	//		}
+	//		FileWriter fw = new FileWriter(outputCsv, true);
+	//		BufferedWriter output = new BufferedWriter(fw);
+	//		PluginContext context = new FakeContext();
+	//		XLog log1 = (XLog) new OpenLogFileLiteImplPlugin().importFile(context, inputLog1);
+	//		XLog log2 = (XLog) new OpenLogFileLiteImplPlugin().importFile(context, inputLog2);
+	//
+	//		ProMCanceller canceller = new ProMCanceller() {
+	//			public boolean isCancelled() {
+	//				return false;
+	//			}
+	//		};
+	//
+	//		for (int i = 0; i < repetitions; i++) {
+	//			ParametersAbstract parameters = new ParametersDefault(Math.max(log1.size(), log2.size()));
+	//			double p = LogLogTest.p(log1, log2, parameters, canceller);
+	//			output.write(p + "\n");
+	//			output.flush();
+	//			System.out.println(i + " " + p);
+	//		}
+	//
+	//		output.close();
+	//	}
+
+	public static void loglog2IncreasingSampleSize(File inputLogA, File inputLogB, File outputCsv, int step)
 			throws IOException, Exception, InterruptedException {
 		outputCsv.getParentFile().mkdirs();
+		int startSampleSize;
+		BufferedWriter output;
 		if (!outputCsv.exists()) {
 			outputCsv.createNewFile();
+			startSampleSize = step;
+			output = new BufferedWriter(new FileWriter(outputCsv, false));
+			output.write("sampleSize,p,time\n");
+			output.flush();
+		} else {
+
+			//count the number of lines in the file
+			BufferedReader reader = new BufferedReader(new FileReader(outputCsv));
+			reader.readLine(); //read the header
+			startSampleSize = step;
+			while (reader.readLine() != null) {
+				startSampleSize += step;
+			}
+			reader.close();
+
+			output = new BufferedWriter(new FileWriter(outputCsv, true));
 		}
-		FileWriter fw = new FileWriter(outputCsv, true);
-		BufferedWriter output = new BufferedWriter(fw);
+
 		PluginContext context = new FakeContext();
-		XLog log1 = (XLog) new OpenLogFileLiteImplPlugin().importFile(context, inputLog1);
-		XLog log2 = (XLog) new OpenLogFileLiteImplPlugin().importFile(context, inputLog2);
+		XLog logA = (XLog) new OpenLogFileLiteImplPlugin().importFile(context, inputLogA);
+		XLog logB = (XLog) new OpenLogFileLiteImplPlugin().importFile(context, inputLogB);
 
 		ProMCanceller canceller = new ProMCanceller() {
 			public boolean isCancelled() {
@@ -357,49 +288,57 @@ public class Test {
 			}
 		};
 
-		for (int i = 0; i < repetitions; i++) {
-			ParametersAbstract parameters = new ParametersDefault(Math.max(log1.size(), log2.size()));
-			double p = LogLogTest.p(log1, log2, parameters, canceller);
-			output.write(p + "\n");
-			output.flush();
-			System.out.println(i + " " + p);
-		}
+		for (int sampleSize = startSampleSize; sampleSize <= maxSampleSize; sampleSize += step) {
+			System.out.println("sample size " + sampleSize);
 
+			ParametersAbstract parameters = new ParametersAbstract(sampleSize, numberOfSamples, sampleSize,
+					MiningParameters.getDefaultClassifier(), MiningParameters.getDefaultClassifier()) {
+			};
+
+			parameters.setSampleSize(sampleSize);
+
+			long startTime = System.currentTimeMillis();
+			double p = LogLogUnknownProcessTest.p(logA, logB, parameters, canceller);
+			long time = System.currentTimeMillis() - startTime;
+
+			output.write(sampleSize + "," + p + "," + time + "\n");
+			output.flush();
+		}
 		output.close();
 	}
 
-	public static void loglogIncreasingSampleSize(File inputLog1, File inputLog2, File outputCsv)
-			throws IOException, Exception, InterruptedException {
-		outputCsv.getParentFile().mkdirs();
-		if (!outputCsv.exists()) {
-			outputCsv.createNewFile();
-		}
-		FileWriter fw = new FileWriter(outputCsv, false);
-		BufferedWriter output = new BufferedWriter(fw);
-		PluginContext context = new FakeContext();
-		XLog log1 = (XLog) new OpenLogFileLiteImplPlugin().importFile(context, inputLog1);
-		XLog log2 = (XLog) new OpenLogFileLiteImplPlugin().importFile(context, inputLog2);
-
-		ProMCanceller canceller = new ProMCanceller() {
-			public boolean isCancelled() {
-				return false;
-			}
-		};
-
-		output.write("sampleSize,p,computationTime\n");
-		for (int i = 10; i < Math.max(log1.size(), log2.size()); i += 10) {
-			ParametersAbstract parameters = new ParametersDefault(i);
-			long start = System.currentTimeMillis();
-			double p = LogLogTest.p(log1, log2, parameters, canceller);
-			long end = System.currentTimeMillis();
-
-			DecimalFormat df = new DecimalFormat("#");
-			df.setMaximumFractionDigits(4);
-			output.write(i + "," + df.format(p) + "," + (end - start) + "\n");
-			output.flush();
-			System.out.println(i + "," + p);
-		}
-
-		output.close();
-	}
+	//	public static void loglogIncreasingSampleSize(File inputLog1, File inputLog2, File outputCsv)
+	//			throws IOException, Exception, InterruptedException {
+	//		outputCsv.getParentFile().mkdirs();
+	//		if (!outputCsv.exists()) {
+	//			outputCsv.createNewFile();
+	//		}
+	//		FileWriter fw = new FileWriter(outputCsv, false);
+	//		BufferedWriter output = new BufferedWriter(fw);
+	//		PluginContext context = new FakeContext();
+	//		XLog log1 = (XLog) new OpenLogFileLiteImplPlugin().importFile(context, inputLog1);
+	//		XLog log2 = (XLog) new OpenLogFileLiteImplPlugin().importFile(context, inputLog2);
+	//
+	//		ProMCanceller canceller = new ProMCanceller() {
+	//			public boolean isCancelled() {
+	//				return false;
+	//			}
+	//		};
+	//
+	//		output.write("sampleSize,p,computationTime\n");
+	//		for (int i = 10; i < Math.max(log1.size(), log2.size()); i += 10) {
+	//			ParametersAbstract parameters = new ParametersDefault(i);
+	//			long start = System.currentTimeMillis();
+	//			double p = LogLogTest.p(log1, log2, parameters, canceller);
+	//			long end = System.currentTimeMillis();
+	//
+	//			DecimalFormat df = new DecimalFormat("#");
+	//			df.setMaximumFractionDigits(4);
+	//			output.write(i + "," + df.format(p) + "," + (end - start) + "\n");
+	//			output.flush();
+	//			System.out.println(i + "," + p);
+	//		}
+	//
+	//		output.close();
+	//	}
 }

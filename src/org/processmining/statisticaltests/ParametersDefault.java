@@ -16,8 +16,8 @@ public class ParametersDefault extends ParametersAbstract {
 	public final static int defaultNumberOfSamples = 10000;
 	public final static XEventClassifier defaultClassifier = MiningParameters.getDefaultClassifier();
 
-	public ParametersDefault(int numberOfTracesInLogsCombined) {
-		super(numberOfTracesInLogsCombined, defaultNumberOfSamples, System.currentTimeMillis(), defaultClassifier,
+	public ParametersDefault(int sampleSize) {
+		super(sampleSize, defaultNumberOfSamples, System.currentTimeMillis(), defaultClassifier,
 				defaultClassifier);
 	}
 
