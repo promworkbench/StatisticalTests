@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -49,14 +47,6 @@ public class CorrelationProcessNumerical {
 		StochasticLanguageLog languageFull = XLog2StochasticLanguage.convert(log, parameters.getClassifier(),
 				activityKey, canceller);
 
-		//sort the traces on the attribute value
-		Collections.sort(traces, new Comparator<XTrace>() {
-			public int compare(XTrace t1, XTrace t2) {
-				return Double.compare(AttributeUtils.valueDouble(parameters.getAttribute(), t1),
-						AttributeUtils.valueDouble(parameters.getAttribute(), t2));
-			}
-		});
-
 		//create a map traces => stochastic language trace index
 		int[] traceIndex2stochasticLanguageTraceIndex = traceIndex2stochasticLanguageTraceIndex(
 				parameters.getClassifier(), traces, languageFull);
@@ -76,29 +66,20 @@ public class CorrelationProcessNumerical {
 		Random random = parameters.getRandom();
 
 		for (int sampleNumber = 0; sampleNumber < parameters.getNumberOfSamples(); sampleNumber++) {
+			int[] sampleA = sample(traces, parameters.getSampleSize());
+			int[] sampleB = sample(traces, parameters.getSampleSize());
 
-			int a = random.nextInt(traces.size() - parameters.getSampleSize());
-			int b = random.nextInt(traces.size() - parameters.getSampleSize());
+			//distance in numeric attribute
+			result[0][sampleNumber] = Math.abs(average(traces, sampleA, parameters.getAttribute())
+					- average(traces, sampleB, parameters.getAttribute()));
 
-			if (a == b) {
-				//optimisation: if a == b, then their distance is 0
-				result[0][sampleNumber] = 0;
-				result[1][sampleNumber] = 0;
-			} else {
-				//distance in numeric attribute
-				List<XTrace> tracesA = traces.subList(a, a + parameters.getSampleSize());
-				List<XTrace> tracesB = traces.subList(b, b + parameters.getSampleSize());
-				result[0][sampleNumber] = Math
-						.abs(average(tracesA, parameters.getAttribute()) - average(tracesB, parameters.getAttribute()));
-
-				//distance in process
-				double[] sampleA = sample(traces, a, parameters.getSampleSize(), languageFull.size(),
-						traceIndex2stochasticLanguageTraceIndex);
-				double[] sampleB = sample(traces, b, parameters.getSampleSize(), languageFull.size(),
-						traceIndex2stochasticLanguageTraceIndex);
-				result[1][sampleNumber] = 1 - LogLogTest.getSimilarity(LogLogTest.applySample(languageFull, sampleA),
-						LogLogTest.applySample(languageFull, sampleB), distanceMatrix, emscParameters, canceller);
-			}
+			//distance in process
+			double[] sampleA = sample2stochasticLanguage(tracesA, parameters.getSampleSize(), languageFull.size(),
+					traceIndex2stochasticLanguageTraceIndex);
+			double[] sampleB = sample2stochasticLanguage(tracesB, parameters.getSampleSize(), languageFull.size(),
+					traceIndex2stochasticLanguageTraceIndex);
+			result[1][sampleNumber] = 1 - LogLogTest.getSimilarity(LogLogTest.applySample(languageFull, sampleA),
+					LogLogTest.applySample(languageFull, sampleB), distanceMatrix, emscParameters, canceller);
 
 			if (canceller.isCancelled()) {
 				return null;
@@ -153,13 +134,15 @@ public class CorrelationProcessNumerical {
 		return traceIndex2stochasticLanguageTraceIndex;
 	}
 
-	public static double[] sample(List<XTrace> traces, int startIndex, int numberOfTraces, int massKeySize,
+	public static double[] sample2stochasticLanguage(int[] sample, int numberOfTraces, int massKeySize,
 			int[] traceIndex2stochasticLanguageTraceIndex) {
 		int[] result = new int[massKeySize];
 		Arrays.fill(result, 0);
-		for (int traceIndex = startIndex; traceIndex < startIndex + numberOfTraces; traceIndex++) {
-			int stochasticLanguageTraceIndex = traceIndex2stochasticLanguageTraceIndex[traceIndex];
-			result[stochasticLanguageTraceIndex]++;
+		for (int traceIndex = 0; traceIndex < sample.length; traceIndex++) {
+			if (sample[traceIndex] > 0) {
+				int stochasticLanguageTraceIndex = traceIndex2stochasticLanguageTraceIndex[traceIndex];
+				result[stochasticLanguageTraceIndex] += sample[traceIndex];
+			}
 		}
 
 		return LogLogTest.normalise(result, numberOfTraces);
