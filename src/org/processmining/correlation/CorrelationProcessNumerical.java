@@ -35,18 +35,22 @@ public class CorrelationProcessNumerical {
 			throws InterruptedException {
 		//select traces that have the attribute
 		List<XTrace> traces = new ArrayList<>();
-		for (XTrace trace : log) {
-			double value = AttributeUtils.valueDouble(parameters.getAttribute(), trace);
-			if (value != -Double.MAX_VALUE) {
-				traces.add(trace);
+		{
+			for (XTrace trace : log) {
+				double value = AttributeUtils.valueDouble(parameters.getAttribute(), trace);
+				if (value != -Double.MAX_VALUE) {
+					traces.add(trace);
+				}
 			}
 		}
 
 		//construct the full stochastic language
-		Activity2IndexKey activityKey = new Activity2IndexKey();
-		activityKey.feed(log, parameters.getClassifier());
-		StochasticLanguageLog languageFull = XLog2StochasticLanguage.convert(log, parameters.getClassifier(),
-				activityKey, canceller);
+		StochasticLanguageLog languageFull;
+		{
+			Activity2IndexKey activityKey = new Activity2IndexKey();
+			activityKey.feed(log, parameters.getClassifier());
+			languageFull = XLog2StochasticLanguage.convert(log, parameters.getClassifier(), activityKey, canceller);
+		}
 
 		//create a map traces => stochastic language trace index
 		int[] traceIndex2stochasticLanguageTraceIndex = traceIndex2stochasticLanguageTraceIndex(
@@ -54,9 +58,11 @@ public class CorrelationProcessNumerical {
 
 		//set up stochastic language comparison
 		EMSCParametersLogLogAbstract emscParameters = new EMSCParametersLogLogDefault();
-		emscParameters.setComputeStochasticTraceAlignments(false);
 		DistanceMatrix distanceMatrix = EMSCParametersDefault.defaultDistanceMatrix.clone();
-		distanceMatrix.init(languageFull, languageFull, canceller);
+		{
+			emscParameters.setComputeStochasticTraceAlignments(false);
+			distanceMatrix.init(languageFull, languageFull, canceller);
+		}
 
 		if (canceller.isCancelled()) {
 			return null;
