@@ -1,7 +1,5 @@
 package org.processmining.correlation;
 
-import java.util.Random;
-
 import org.deckfour.xes.classification.XEventClassifier;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 
@@ -11,15 +9,15 @@ public abstract class CorrelationParametersAbstract implements CorrelationParame
 	private int sampleSize;
 	private XEventClassifier classifier;
 	private Attribute attribute;
-	private Random random;
+	private long seed;
 
 	public CorrelationParametersAbstract(int numberOfSamples, int sampleSize, XEventClassifier classifier,
-			Attribute attribute, Random random) {
+			Attribute attribute, long seed) {
 		this.numberOfSamples = numberOfSamples;
 		this.sampleSize = sampleSize;
 		this.classifier = classifier;
 		this.attribute = attribute;
-		this.random = random;
+		this.seed = seed;
 	}
 
 	public int getNumberOfSamples() {
@@ -54,12 +52,12 @@ public abstract class CorrelationParametersAbstract implements CorrelationParame
 		this.attribute = attribute;
 	}
 
-	public Random getRandom() {
-		return random;
+	public long getSeed() {
+		return seed;
 	}
 
-	public void setRandom(Random random) {
-		this.random = random;
+	public void setSeed(long seed) {
+		this.seed = seed;
 	}
 
 }

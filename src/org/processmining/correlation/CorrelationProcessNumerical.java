@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.model.XEvent;
@@ -63,29 +64,67 @@ public class CorrelationProcessNumerical {
 
 		//perform the sampling
 		double[][] result = new double[2][parameters.getNumberOfSamples()];
-		Random random = parameters.getRandom();
 
-		for (int sampleNumber = 0; sampleNumber < parameters.getNumberOfSamples(); sampleNumber++) {
-			int[] sampleA = sample(traces, parameters.getSampleSize());
-			int[] sampleB = sample(traces, parameters.getSampleSize());
+		AtomicInteger nextSampleNumber = new AtomicInteger(0);
 
-			//distance in numeric attribute
-			result[0][sampleNumber] = Math.abs(average(traces, sampleA, parameters.getAttribute())
-					- average(traces, sampleB, parameters.getAttribute()));
+		Thread[] threads = new Thread[7];
 
-			//distance in process
-			double[] sampleA = sample2stochasticLanguage(tracesA, parameters.getSampleSize(), languageFull.size(),
-					traceIndex2stochasticLanguageTraceIndex);
-			double[] sampleB = sample2stochasticLanguage(tracesB, parameters.getSampleSize(), languageFull.size(),
-					traceIndex2stochasticLanguageTraceIndex);
-			result[1][sampleNumber] = 1 - LogLogTest.getSimilarity(LogLogTest.applySample(languageFull, sampleA),
-					LogLogTest.applySample(languageFull, sampleB), distanceMatrix, emscParameters, canceller);
+		for (int thread = 0; thread < threads.length; thread++) {
+			final int thread2 = thread;
+			threads[thread] = new Thread(new Runnable() {
+				public void run() {
 
-			if (canceller.isCancelled()) {
-				return null;
-			}
+					Random random = new Random(parameters.getSeed() + thread2);
+
+					int sampleNumber = nextSampleNumber.getAndIncrement();
+					while (sampleNumber < parameters.getNumberOfSamples()) {
+
+						if (canceller.isCancelled()) {
+							return;
+						}
+
+						int[] sampleA = sample(traces, parameters.getSampleSize(), random);
+						int[] sampleB = sample(traces, parameters.getSampleSize(), random);
+
+						//distance in numeric attribute
+						result[0][sampleNumber] = Math.abs(average(traces, sampleA, parameters.getAttribute())
+								- average(traces, sampleB, parameters.getAttribute()));
+
+						//distance in process
+						double[] sampleAx = sample2stochasticLanguage(sampleA, parameters.getSampleSize(),
+								languageFull.size(), traceIndex2stochasticLanguageTraceIndex);
+						double[] sampleBx = sample2stochasticLanguage(sampleB, parameters.getSampleSize(),
+								languageFull.size(), traceIndex2stochasticLanguageTraceIndex);
+						result[1][sampleNumber] = 1
+								- LogLogTest.getSimilarity(LogLogTest.applySample(languageFull, sampleAx),
+										LogLogTest.applySample(languageFull, sampleBx), distanceMatrix, emscParameters,
+										canceller);
+
+						if (sampleNumber % 100 == 0) {
+							System.out.println(" sample " + sampleNumber + ", \\varphi=" + result[0][sampleNumber]
+									+ ", \\delta=" + result[1][sampleNumber]);
+						}
+
+						sampleNumber = nextSampleNumber.getAndIncrement();
+					}
+				}
+			}, "log-numerical correlation thread " + thread);
+			threads[thread].start();
 		}
 
+		//join
+		for (Thread thread : threads) {
+			thread.join();
+		}
+
+		return result;
+	}
+
+	private static int[] sample(List<XTrace> traces, int sampleSize, Random random) {
+		int[] result = new int[traces.size()];
+		for (int i = 0; i < sampleSize; i++) {
+			result[random.nextInt(traces.size())]++;
+		}
 		return result;
 	}
 
@@ -148,12 +187,14 @@ public class CorrelationProcessNumerical {
 		return LogLogTest.normalise(result, numberOfTraces);
 	}
 
-	public static double average(List<XTrace> traces, Attribute attribute) {
+	public static double average(List<XTrace> traces, int[] sample, Attribute attribute) {
 		BigDecimal sum = BigDecimal.ZERO;
-		BigDecimal count = BigDecimal.valueOf(traces.size());
-		for (XTrace trace : traces) {
-			sum = sum.add(BigDecimal.valueOf(AttributeUtils.valueDouble(attribute, trace)));
+		int count = 0;
+		for (int i = 0; i < sample.length; i++) {
+			XTrace trace = traces.get(i);
+			count += sample[i];
+			sum = sum.add(BigDecimal.valueOf(AttributeUtils.valueDouble(attribute, trace) * sample[i]));
 		}
-		return sum.divide(count, 10, RoundingMode.HALF_UP).doubleValue();
+		return sum.divide(BigDecimal.valueOf(count), 10, RoundingMode.HALF_UP).doubleValue();
 	}
 }

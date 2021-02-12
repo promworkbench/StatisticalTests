@@ -31,7 +31,7 @@ public class Test {
 
 	public static void Bpic15() throws IOException, InterruptedException, Exception {
 		for (int i = 1; i <= 5; i++) {
-			for (int j = i; j <= 5; j++) {
+			for (int j = i + 1; j <= 5; j++) {
 				File inputLog1 = new File(folder, "BPIC15_" + i + ".xes");
 				File inputLog2 = new File(folder, "BPIC15_" + j + ".xes");
 				File outputCsv = new File(outputFolder, "BPIC15-" + i + "-BPIC15-" + j + ".csv");
