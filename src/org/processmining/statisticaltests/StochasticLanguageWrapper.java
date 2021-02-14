@@ -3,8 +3,9 @@ package org.processmining.statisticaltests;
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.Activity2IndexKey;
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.StochasticLanguage;
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.StochasticTraceIterator;
+import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.log.StochasticLanguageLog;
 
-public class StochasticLanguageWrapper implements StochasticLanguage {
+public class StochasticLanguageWrapper implements StochasticLanguageLog {
 
 	private final StochasticLanguage superLanguage;
 	private double[] newProbabilities;

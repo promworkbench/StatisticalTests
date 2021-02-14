@@ -39,14 +39,15 @@ public class CorrelationTest {
 	}
 
 	public static void testLogSingle() throws Exception {
-		int testLog = 1;
+		int testLog = 2;
+		int sampleSize = 10000;
 		File inputLog = new File(folder, "testLog" + testLog + ".xes.gz");
 		Attribute attribute = new AttributeImpl("value", Type.numeric);
 		File outputCsv = new File(
 				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/04 - correlation/testLog" + testLog
-						+ "-2.csv");
+						+ "-" + sampleSize + ".csv");
 
-		correlation(inputLog, outputCsv, attribute, 500, 2);
+		correlation(inputLog, outputCsv, attribute, 500, sampleSize);
 	}
 
 	public static void bpic11Age() throws Exception {
@@ -120,7 +121,7 @@ public class CorrelationTest {
 		};
 
 		CorrelationParametersAbstract parameters = new CorrelationParametersAbstract(numberOfSamples, sampleSize,
-				new XEventNameClassifier(), attribute, System.currentTimeMillis()) {
+				new XEventNameClassifier(), attribute, System.currentTimeMillis(), true) {
 		};
 
 		double[][] result = CorrelationProcessNumerical.compute(parameters, log, canceller);
@@ -165,7 +166,7 @@ public class CorrelationTest {
 		};
 
 		CorrelationParametersAbstract parameters = new CorrelationParametersAbstract(numberOfSamples, 10,
-				new XEventNameClassifier(), attribute, System.currentTimeMillis()) {
+				new XEventNameClassifier(), attribute, System.currentTimeMillis(), true) {
 		};
 
 		for (int sampleSize = startSampleSize; sampleSize <= maxSampleSize; sampleSize += step) {

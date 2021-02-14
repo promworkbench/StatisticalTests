@@ -10,14 +10,16 @@ public abstract class CorrelationParametersAbstract implements CorrelationParame
 	private XEventClassifier classifier;
 	private Attribute attribute;
 	private long seed;
+	private boolean debug;
 
 	public CorrelationParametersAbstract(int numberOfSamples, int sampleSize, XEventClassifier classifier,
-			Attribute attribute, long seed) {
+			Attribute attribute, long seed, boolean debug) {
 		this.numberOfSamples = numberOfSamples;
 		this.sampleSize = sampleSize;
 		this.classifier = classifier;
 		this.attribute = attribute;
 		this.seed = seed;
+		this.debug = debug;
 	}
 
 	public int getNumberOfSamples() {
@@ -58,6 +60,14 @@ public abstract class CorrelationParametersAbstract implements CorrelationParame
 
 	public void setSeed(long seed) {
 		this.seed = seed;
+	}
+
+	public boolean isDebug() {
+		return debug;
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 
 }

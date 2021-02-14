@@ -1,7 +1,5 @@
 package org.processmining.correlation;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,17 +32,27 @@ public class CorrelationProcessNumerical {
 	public static double[][] compute(CorrelationParameters parameters, XLog log, ProMCanceller canceller)
 			throws InterruptedException {
 		//select traces that have the attribute
+		if (parameters.isDebug()) {
+			System.out.println(" select traces");
+		}
 		List<XTrace> traces = new ArrayList<>();
+		final double maxAttributeValue;
 		{
+			double max = -Double.MAX_VALUE;
 			for (XTrace trace : log) {
 				double value = AttributeUtils.valueDouble(parameters.getAttribute(), trace);
 				if (value != -Double.MAX_VALUE) {
+					max = Math.max(max, value);
 					traces.add(trace);
 				}
 			}
+			maxAttributeValue = max;
 		}
 
 		//construct the full stochastic language
+		if (parameters.isDebug()) {
+			System.out.println(" make stochastic language");
+		}
 		StochasticLanguageLog languageFull;
 		{
 			Activity2IndexKey activityKey = new Activity2IndexKey();
@@ -53,6 +61,9 @@ public class CorrelationProcessNumerical {
 		}
 
 		//create a map traces => stochastic language trace index
+		if (parameters.isDebug()) {
+			System.out.println(" create trace map");
+		}
 		int[] traceIndex2stochasticLanguageTraceIndex = traceIndex2stochasticLanguageTraceIndex(
 				parameters.getClassifier(), traces, languageFull);
 
@@ -69,6 +80,9 @@ public class CorrelationProcessNumerical {
 		}
 
 		//perform the sampling
+		if (parameters.isDebug()) {
+			System.out.println(" start sampling threads");
+		}
 		double[][] result = new double[2][parameters.getNumberOfSamples()];
 
 		AtomicInteger nextSampleNumber = new AtomicInteger(0);
@@ -92,27 +106,54 @@ public class CorrelationProcessNumerical {
 						int[] sampleA = sample(traces, parameters.getSampleSize(), random);
 						int[] sampleB = sample(traces, parameters.getSampleSize(), random);
 
-						//distance in numeric attribute
-						result[0][sampleNumber] = Math.abs(average(traces, sampleA, parameters.getAttribute())
-								- average(traces, sampleB, parameters.getAttribute()));
+						double[] result2 = performSampleMeasure(parameters, canceller, traces, languageFull,
+								traceIndex2stochasticLanguageTraceIndex, emscParameters, distanceMatrix, sampleA,
+								sampleB, maxAttributeValue);
 
-						//distance in process
-						double[] sampleAx = sample2stochasticLanguage(sampleA, parameters.getSampleSize(),
-								languageFull.size(), traceIndex2stochasticLanguageTraceIndex);
-						double[] sampleBx = sample2stochasticLanguage(sampleB, parameters.getSampleSize(),
-								languageFull.size(), traceIndex2stochasticLanguageTraceIndex);
-						result[1][sampleNumber] = 1
-								- LogLogTest.getSimilarity(LogLogTest.applySample(languageFull, sampleAx),
-										LogLogTest.applySample(languageFull, sampleBx), distanceMatrix, emscParameters,
-										canceller);
+						if (canceller.isCancelled()) {
+							return;
+						}
 
-						if (sampleNumber % 100 == 0) {
+						result[0][sampleNumber] = result2[0];
+						result[1][sampleNumber] = result2[1];
+
+						if (parameters.isDebug() && sampleNumber % 100 == 0) {
 							System.out.println(" sample " + sampleNumber + ", \\varphi=" + result[0][sampleNumber]
 									+ ", \\delta=" + result[1][sampleNumber]);
 						}
 
 						sampleNumber = nextSampleNumber.getAndIncrement();
 					}
+				}
+
+				public double[] performSampleMeasure(CorrelationParameters parameters, ProMCanceller canceller,
+						List<XTrace> traces, StochasticLanguageLog languageFull,
+						int[] traceIndex2stochasticLanguageTraceIndex, EMSCParametersLogLogAbstract emscParameters,
+						DistanceMatrix distanceMatrix, int[] sampleA, int[] sampleB, double maxAttributeValue) {
+					//distance in numeric attribute
+					double attributeDistance = average(traces, parameters.getSampleSize(), sampleA, sampleB,
+							parameters.getAttribute(), canceller, maxAttributeValue);
+
+					if (canceller.isCancelled()) {
+						return null;
+					}
+
+					//distance in process
+					double[] sampleAx = sample2stochasticLanguage(sampleA, parameters.getSampleSize(),
+							languageFull.size(), traceIndex2stochasticLanguageTraceIndex);
+					double[] sampleBx = sample2stochasticLanguage(sampleB, parameters.getSampleSize(),
+							languageFull.size(), traceIndex2stochasticLanguageTraceIndex);
+					double processDistance = 1 - LogLogTest.getSimilarity(
+							LogLogTest.applySample(languageFull, sampleAx),
+							LogLogTest.applySample(languageFull, sampleBx), distanceMatrix, emscParameters, canceller);
+
+					//					System.out.println(StochasticLanguageLog2String
+					//							.toString(LogLogTest.applySample(languageFull, sampleAx), false));
+					//					System.out.println(StochasticLanguageLog2String
+					//							.toString(LogLogTest.applySample(languageFull, sampleBx), false));
+
+					double[] result2 = new double[] { attributeDistance, processDistance };
+					return result2;
 				}
 			}, "log-numerical correlation thread " + thread);
 			threads[thread].start();
@@ -186,6 +227,7 @@ public class CorrelationProcessNumerical {
 		for (int traceIndex = 0; traceIndex < sample.length; traceIndex++) {
 			if (sample[traceIndex] > 0) {
 				int stochasticLanguageTraceIndex = traceIndex2stochasticLanguageTraceIndex[traceIndex];
+				//				System.out.println("language trace index " + stochasticLanguageTraceIndex);
 				result[stochasticLanguageTraceIndex] += sample[traceIndex];
 			}
 		}
@@ -193,14 +235,32 @@ public class CorrelationProcessNumerical {
 		return LogLogTest.normalise(result, numberOfTraces);
 	}
 
-	public static double average(List<XTrace> traces, int[] sample, Attribute attribute) {
-		BigDecimal sum = BigDecimal.ZERO;
-		int count = 0;
+	public static double average(List<XTrace> traces, int sampleSize, int[] sampleA, int[] sampleB, Attribute attribute,
+			ProMCanceller canceller, double maxAttributeValue) {
+		double[] valuesA = gatherValuesOfSample(traces, sampleSize, sampleA, attribute, maxAttributeValue);
+		double[] valuesB = gatherValuesOfSample(traces, sampleSize, sampleB, attribute, maxAttributeValue);
+
+		return NumericalEarthMoversDistance.compute(sampleSize, valuesA, valuesB, canceller);
+	}
+
+	public static double[] gatherValuesOfSample(List<XTrace> traces, int sampleSize, int[] sample, Attribute attribute,
+			double maxAttributeValue) {
+		double[] result = new double[sampleSize];
+
+		int j = 0;
+
 		for (int i = 0; i < sample.length; i++) {
-			XTrace trace = traces.get(i);
-			count += sample[i];
-			sum = sum.add(BigDecimal.valueOf(AttributeUtils.valueDouble(attribute, trace) * sample[i]));
+			if (sample[i] > 0) {
+				XTrace trace = traces.get(i);
+
+				for (int x = j; x < j + sample[i]; x++) {
+					result[x] = AttributeUtils.valueDouble(attribute, trace) / maxAttributeValue;
+				}
+
+				j += sample[i];
+			}
 		}
-		return sum.divide(BigDecimal.valueOf(count), 10, RoundingMode.HALF_UP).doubleValue();
+
+		return result;
 	}
 }

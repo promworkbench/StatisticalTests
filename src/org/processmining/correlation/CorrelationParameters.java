@@ -13,4 +13,6 @@ public interface CorrelationParameters {
 	public Attribute getAttribute();
 
 	public long getSeed();
+	
+	public boolean isDebug();
 }

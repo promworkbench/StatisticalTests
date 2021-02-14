@@ -158,7 +158,7 @@ public class LogLogTest {
 		return p.getB();
 	}
 
-	public static StochasticLanguage applySample(StochasticLanguage language, double[] sample) {
+	public static StochasticLanguageLog applySample(StochasticLanguage language, double[] sample) {
 		return new StochasticLanguageWrapper(language, sample);
 	}
 
