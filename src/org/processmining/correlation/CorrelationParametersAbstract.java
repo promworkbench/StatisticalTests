@@ -6,16 +6,14 @@ import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 public abstract class CorrelationParametersAbstract implements CorrelationParameters {
 
 	private int numberOfSamples;
-	private int sampleSize;
 	private XEventClassifier classifier;
 	private Attribute attribute;
 	private long seed;
 	private boolean debug;
 
-	public CorrelationParametersAbstract(int numberOfSamples, int sampleSize, XEventClassifier classifier,
-			Attribute attribute, long seed, boolean debug) {
+	public CorrelationParametersAbstract(int numberOfSamples, XEventClassifier classifier, Attribute attribute,
+			long seed, boolean debug) {
 		this.numberOfSamples = numberOfSamples;
-		this.sampleSize = sampleSize;
 		this.classifier = classifier;
 		this.attribute = attribute;
 		this.seed = seed;
@@ -28,14 +26,6 @@ public abstract class CorrelationParametersAbstract implements CorrelationParame
 
 	public void setNumberOfSamples(int numberOfSamples) {
 		this.numberOfSamples = numberOfSamples;
-	}
-
-	public int getSampleSize() {
-		return sampleSize;
-	}
-
-	public void setSampleSize(int sampleSize) {
-		this.sampleSize = sampleSize;
 	}
 
 	public XEventClassifier getClassifier() {

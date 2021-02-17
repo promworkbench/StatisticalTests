@@ -40,14 +40,13 @@ public class CorrelationTest {
 
 	public static void testLogSingle() throws Exception {
 		int testLog = 2;
-		int sampleSize = 10000;
 		File inputLog = new File(folder, "testLog" + testLog + ".xes.gz");
 		Attribute attribute = new AttributeImpl("value", Type.numeric);
 		File outputCsv = new File(
 				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/04 - correlation/testLog" + testLog
-						+ "-" + sampleSize + ".csv");
+						+ ".csv");
 
-		correlation(inputLog, outputCsv, attribute, 500, sampleSize);
+		correlation(inputLog, outputCsv, attribute, 500);
 	}
 
 	public static void bpic11Age() throws Exception {
@@ -65,7 +64,7 @@ public class CorrelationTest {
 		File outputCsv = new File(
 				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/04 - correlation/bpic11-Age1.csv");
 
-		correlation(inputLog, outputCsv, attribute, 500, 1000);
+		correlation(inputLog, outputCsv, attribute, 500);
 	}
 
 	public static void bpic12aAmountRequested() throws Exception {
@@ -83,7 +82,7 @@ public class CorrelationTest {
 		File outputCsv = new File(
 				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/04 - correlation/bpic12a-AMOUNT_REQ.csv");
 
-		correlation(inputLog, outputCsv, attribute, 500, 1000);
+		correlation(inputLog, outputCsv, attribute, 500);
 	}
 
 	public static void roadFinesAmountRequested() throws Exception {
@@ -101,11 +100,11 @@ public class CorrelationTest {
 		File outputCsv = new File(
 				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/04 - correlation/roadFines-amount.csv");
 
-		correlation(inputLog, outputCsv, attribute, 500, 1000);
+		correlation(inputLog, outputCsv, attribute, 500);
 	}
 
-	private static void correlation(File inputLog, File outputCsv, Attribute attribute, int numberOfSamples,
-			int sampleSize) throws Exception {
+	private static void correlation(File inputLog, File outputCsv, Attribute attribute, int numberOfSamples)
+			throws Exception {
 		outputCsv.getParentFile().mkdirs();
 		outputCsv.createNewFile();
 		BufferedWriter output = new BufferedWriter(new FileWriter(outputCsv, false));
@@ -120,7 +119,7 @@ public class CorrelationTest {
 			}
 		};
 
-		CorrelationParametersAbstract parameters = new CorrelationParametersAbstract(numberOfSamples, sampleSize,
+		CorrelationParametersAbstract parameters = new CorrelationParametersAbstract(numberOfSamples,
 				new XEventNameClassifier(), attribute, System.currentTimeMillis(), true) {
 		};
 
@@ -165,14 +164,12 @@ public class CorrelationTest {
 			}
 		};
 
-		CorrelationParametersAbstract parameters = new CorrelationParametersAbstract(numberOfSamples, 10,
+		CorrelationParametersAbstract parameters = new CorrelationParametersAbstract(numberOfSamples,
 				new XEventNameClassifier(), attribute, System.currentTimeMillis(), true) {
 		};
 
 		for (int sampleSize = startSampleSize; sampleSize <= maxSampleSize; sampleSize += step) {
 			System.out.println("sample size " + sampleSize);
-
-			parameters.setSampleSize(sampleSize);
 
 			long startTime = System.currentTimeMillis();
 			double[][] result = CorrelationProcessNumerical.compute(parameters, log, canceller);
