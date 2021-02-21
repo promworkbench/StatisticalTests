@@ -72,7 +72,7 @@ public class CorrelationProcessNumerical {
 						result[0][sampleNumber] = result2[0];
 						result[1][sampleNumber] = result2[1];
 
-						if (parameters.isDebug() && sampleNumber % 100 == 0) {
+						if (parameters.isDebug() && sampleNumber % 100000 == 0) {
 							System.out.println(" sample " + sampleNumber + ", \\varphi=" + result[0][sampleNumber]
 									+ ", \\delta=" + result[1][sampleNumber]);
 						}
