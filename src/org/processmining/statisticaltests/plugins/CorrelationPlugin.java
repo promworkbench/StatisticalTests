@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import org.deckfour.uitopia.api.event.TaskListener.InteractionResult;
 import org.deckfour.xes.model.XLog;
-import org.processmining.cohortanalysis.visualisation.CohortsLauncher;
 import org.processmining.contexts.uitopia.UIPluginContext;
 import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
 import org.processmining.correlation.Associations;
@@ -24,7 +23,7 @@ import org.processmining.plugins.inductiveminer2.attributes.AttributesInfoImpl;
 
 public class CorrelationPlugin {
 	@Plugin(name = "Compute association/correlation between the process and trace attributes", level = PluginLevel.Regular, returnLabels = {
-			"Association result" }, returnTypes = { CohortsLauncher.class }, parameterLabels = {
+			"Association result" }, returnTypes = { Associations.class }, parameterLabels = {
 					"Event log" }, userAccessible = true, categories = { PluginCategory.Analytics,
 							PluginCategory.ConformanceChecking }, help = "Compute the association and correlation of process behaviour and trace attributes.")
 	@UITopiaVariant(affiliation = IMMiningDialog.affiliation, author = IMMiningDialog.author, email = IMMiningDialog.email)

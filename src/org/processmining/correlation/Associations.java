@@ -21,4 +21,16 @@ public class Associations {
 	public void setCorrelation(Attribute attribute, double correlation) {
 		correlations[attributes.indexOf(attribute)] = correlation;
 	}
+
+	public int getNumberOfAttributes() {
+		return attributes.size();
+	}
+
+	public Attribute getAttribute(int att) {
+		return attributes.get(att);
+	}
+
+	public double getCorrelation(int att) {
+		return correlations[att];
+	}
 }
