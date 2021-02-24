@@ -4,14 +4,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.deckfour.xes.model.XLog;
-import org.processmining.cohortanalysis.chain.Cl01GatherAttributes;
-import org.processmining.cohortanalysis.chain.Cl05Mine;
-import org.processmining.cohortanalysis.chain.Cl07Align;
 import org.processmining.cohortanalysis.chain.Cl08LayoutAlignment;
 import org.processmining.cohortanalysis.chain.Cl08LayoutAlignmentAnti;
 import org.processmining.cohortanalysis.chain.Cl17DataAnalysisCohort;
 import org.processmining.cohortanalysis.chain.Cl18ApplyCohort;
-import org.processmining.cohortanalysis.chain.Cl19Done;
 import org.processmining.cohortanalysis.chain.Cl19ProcessDifferences;
 import org.processmining.cohortanalysis.feature.Features2String;
 import org.processmining.framework.plugin.PluginContext;
@@ -19,7 +15,13 @@ import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.plugins.graphviz.dot.Dot.GraphDirection;
 import org.processmining.plugins.inductiveVisualMiner.InductiveVisualMinerSelectionColourer;
 import org.processmining.plugins.inductiveVisualMiner.alignedLogVisualisation.data.AlignedLogVisualisationData;
-import org.processmining.plugins.inductiveVisualMiner.chain.Chain;
+import org.processmining.plugins.inductiveVisualMiner.chain.Cl01GatherAttributes;
+import org.processmining.plugins.inductiveVisualMiner.chain.Cl05Mine;
+import org.processmining.plugins.inductiveVisualMiner.chain.Cl07Align;
+import org.processmining.plugins.inductiveVisualMiner.chain.DataChain;
+import org.processmining.plugins.inductiveVisualMiner.chain.DataChainImplNonBlocking;
+import org.processmining.plugins.inductiveVisualMiner.chain.DataState;
+import org.processmining.plugins.inductiveVisualMiner.configuration.InductiveVisualMinerConfiguration;
 import org.processmining.plugins.inductiveVisualMiner.mode.ModeRelativePaths;
 import org.processmining.plugins.inductiveVisualMiner.visualisation.ProcessTreeVisualisationParameters;
 
@@ -33,33 +35,21 @@ public class CohortsController {
 
 	public static CohortsPanel controller(PluginContext context, XLog log, ProMCanceller globalCanceller) {
 
-		CohortsState state = new CohortsState(log);
 		CohortsPanel panel = new CohortsPanel();
 
 		state.setGraphUserSettings(panel.getCohortGraph().getUserSettings());
 		state.getGraphUserSettings().setDirection(GraphDirection.leftRight);
 
 		//chain
-		Chain<CohortsState> chain = new Chain<>(state, globalCanceller, context.getExecutor());
+		DataState state = new DataState();
+		InductiveVisualMinerConfiguration configuration;
+		DataChain chain = new DataChainImplNonBlocking(state, globalCanceller, context.getExecutor(), configuration,
+				panel);
 		{
 
-			chain.setOnChange(new Runnable() {
-				public void run() {
-
-				}
-			});
-
-			Cl01GatherAttributes gatherAttributes = new Cl01GatherAttributes();
-
-			Cl05Mine mine = new Cl05Mine();
-			{
-				chain.addConnection(gatherAttributes, mine);
-			}
-
-			Cl07Align alignment = new Cl07Align();
-			{
-				chain.addConnection(mine, alignment);
-			}
+			chain.register(new Cl01GatherAttributes());
+			chain.register(new Cl05Mine());
+			chain.register(new Cl07Align());
 
 			Cl08LayoutAlignment layoutAlignment = new Cl08LayoutAlignment();
 			{
@@ -107,7 +97,7 @@ public class CohortsController {
 				applyCohort.setOnComplete(new Runnable() {
 					public void run() {
 						ProcessTreeVisualisationParameters visualisationParameters = new ModeRelativePaths()
-								.getFinalVisualisationParameters(null);
+								.getVisualisationParametersWithAlignments(null);
 						{
 							AlignedLogVisualisationData cohortVisualisationData = new ModeRelativePaths()
 									.getVisualisationData(state.getModel(), state.getCohortLog(),
@@ -150,14 +140,6 @@ public class CohortsController {
 				});
 				chain.addConnection(applyCohort, differences);
 			}
-
-			Cl19Done done = new Cl19Done();
-			{
-				chain.addConnection(differences, done);
-			}
-
-			//start the chain
-			chain.execute(Cl01GatherAttributes.class);
 		}
 
 		//respond to cohort selection

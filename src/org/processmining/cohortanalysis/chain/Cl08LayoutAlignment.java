@@ -31,7 +31,7 @@ public class Cl08LayoutAlignment extends
 	protected Quadruple<IvMModel, IvMLogInfo, ProcessTreeVisualisationParameters, DotPanelUserSettings> generateInput(
 			CohortsState state) {
 		ProcessTreeVisualisationParameters visualisationParameters = new ModeRelativePaths()
-				.getFinalVisualisationParameters(null);
+				.getVisualisationParametersWithAlignments(null);
 		return Quadruple.of(state.getModel(), state.getCohortLogInfo(), visualisationParameters,
 				state.getGraphUserSettings());
 	}
@@ -61,8 +61,7 @@ public class Cl08LayoutAlignment extends
 		return Triple.of(p.getA(), diagramCohort, p.getB());
 	}
 
-	protected void processResult(Triple<Dot, SVGDiagram, ProcessTreeVisualisationInfo> result,
-			CohortsState state) {
+	protected void processResult(Triple<Dot, SVGDiagram, ProcessTreeVisualisationInfo> result, CohortsState state) {
 		state.setLayoutCohort(result.getA(), result.getB(), result.getC());
 	}
 

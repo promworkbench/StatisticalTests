@@ -23,16 +23,24 @@ public class CorrelationProcessNumerical {
 		}
 		List<XTrace> traces = new ArrayList<>();
 		final double maxAttributeValue;
+		final double minAttributeValue;
 		{
 			double max = -Double.MAX_VALUE;
+			double min = Double.MAX_VALUE;
 			for (XTrace trace : log) {
 				double value = AttributeUtils.valueDouble(parameters.getAttribute(), trace);
 				if (value != -Double.MAX_VALUE) {
 					max = Math.max(max, value);
+					min = Math.min(min, value);
 					traces.add(trace);
 				}
 			}
 			maxAttributeValue = max;
+			minAttributeValue = min;
+		}
+
+		if (minAttributeValue == maxAttributeValue) {
+			return null;
 		}
 
 		//perform the sampling
@@ -63,7 +71,7 @@ public class CorrelationProcessNumerical {
 						int sampleB = random.nextInt(traces.size());
 
 						double[] result2 = performSampleMeasure(parameters, canceller, traces, sampleA, sampleB,
-								maxAttributeValue);
+								minAttributeValue, maxAttributeValue);
 
 						if (canceller.isCancelled()) {
 							return;
@@ -82,11 +90,12 @@ public class CorrelationProcessNumerical {
 				}
 
 				private double[] performSampleMeasure(CorrelationParameters parameters, ProMCanceller canceller,
-						List<XTrace> traces, int sampleA, int sampleB, double maxAttributeValue) {
-					double valueA = AttributeUtils.valueDouble(parameters.getAttribute(), traces.get(sampleA))
-							/ maxAttributeValue;
-					double valueB = AttributeUtils.valueDouble(parameters.getAttribute(), traces.get(sampleB))
-							/ maxAttributeValue;
+						List<XTrace> traces, int sampleA, int sampleB, double minAttributeValue,
+						double maxAttributeValue) {
+					double valueA = (AttributeUtils.valueDouble(parameters.getAttribute(), traces.get(sampleA))
+							- minAttributeValue) / (maxAttributeValue - minAttributeValue);
+					double valueB = (AttributeUtils.valueDouble(parameters.getAttribute(), traces.get(sampleB))
+							- minAttributeValue) / (maxAttributeValue - minAttributeValue);
 
 					double valueDelta = Math.abs(valueA - valueB);
 

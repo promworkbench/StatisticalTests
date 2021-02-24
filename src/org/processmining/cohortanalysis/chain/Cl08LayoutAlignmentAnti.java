@@ -18,14 +18,13 @@ public class Cl08LayoutAlignmentAnti extends Cl08LayoutAlignment {
 	protected Quadruple<IvMModel, IvMLogInfo, ProcessTreeVisualisationParameters, DotPanelUserSettings> generateInput(
 			CohortsState state) {
 		ProcessTreeVisualisationParameters visualisationParameters = new ModeRelativePaths()
-				.getFinalVisualisationParameters(null);
+				.getVisualisationParametersWithAlignments(null);
 		return Quadruple.of(state.getModel(), state.getAntiCohortLogInfo(), visualisationParameters,
 				state.getGraphUserSettings());
 	}
 
 	@Override
-	protected void processResult(Triple<Dot, SVGDiagram, ProcessTreeVisualisationInfo> result,
-			CohortsState state) {
+	protected void processResult(Triple<Dot, SVGDiagram, ProcessTreeVisualisationInfo> result, CohortsState state) {
 		state.setLayoutAntiCohort(result.getA(), result.getB(), result.getC());
 	}
 

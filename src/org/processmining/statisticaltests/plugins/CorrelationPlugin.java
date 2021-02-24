@@ -69,6 +69,10 @@ public class CorrelationPlugin {
 		};
 		double[][] result = CorrelationProcessNumerical.compute(parametersc, log, canceller);
 
+		if (result == null) {
+			return Double.NaN;
+		}
+
 		double[] x = result[0];
 		double[] y = result[1];
 		BigDecimal meanY = Correlation.mean(y);

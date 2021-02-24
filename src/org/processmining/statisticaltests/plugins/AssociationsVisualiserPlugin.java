@@ -40,7 +40,7 @@ public class AssociationsVisualiserPlugin {
 			} else {
 				data[att][2] = "coming soon";
 			}
-			data[att][4] = "coming soon";
+			data[att][3] = "coming soon";
 		}
 
 		JTable table = new JTable(data, columnNames) {
@@ -50,8 +50,6 @@ public class AssociationsVisualiserPlugin {
 				return false;
 			}
 		};
-		table.setColumnSelectionAllowed(false);
-		table.setCellSelectionEnabled(false);
 		JScrollPane scrollPane = new JScrollPane(table);
 		table.setFillsViewportHeight(true);
 		return scrollPane;
