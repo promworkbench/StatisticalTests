@@ -1,5 +1,6 @@
 package org.processmining.statisticaltests.plugins;
 
+import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.util.Collection;
 
@@ -7,15 +8,21 @@ import org.deckfour.uitopia.api.event.TaskListener.InteractionResult;
 import org.deckfour.xes.model.XLog;
 import org.processmining.contexts.uitopia.UIPluginContext;
 import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
+import org.processmining.correlation.AssociationParametersCategoricalAbstract;
+import org.processmining.correlation.AssociationParametersCategoricalDefault;
 import org.processmining.correlation.Associations;
 import org.processmining.correlation.AssociationsParameters;
 import org.processmining.correlation.CorrelationParametersAbstract;
+import org.processmining.correlation.CorrelationParametersDefault;
+import org.processmining.correlation.CorrelationPlot;
+import org.processmining.correlation.CorrelationProcessCategorical;
 import org.processmining.correlation.CorrelationProcessNumerical;
 import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.framework.plugin.annotations.PluginCategory;
 import org.processmining.framework.plugin.annotations.PluginLevel;
 import org.processmining.framework.plugin.annotations.PluginVariant;
+import org.processmining.plugins.InductiveMiner.Pair;
 import org.processmining.plugins.InductiveMiner.plugins.dialogs.IMMiningDialog;
 import org.processmining.plugins.inductiveVisualMiner.dataanalysis.traceattributes.Correlation;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
@@ -50,27 +57,36 @@ public class CorrelationPlugin {
 			throws InterruptedException {
 		//gather attributes
 		Collection<Attribute> attributes = new AttributesInfoImpl(log).getTraceAttributes();
+		CorrelationPlot plot = new CorrelationPlot();
+		plot.setSizeY2DPlot(150);
 		Associations result = new Associations(attributes);
 
 		for (Attribute attribute : attributes) {
 			if (attribute.isDuration() || attribute.isNumeric() || attribute.isTime()) {
 				//numerical
-				result.setCorrelation(attribute, computeNumericCorrelation(log, attribute, parameters, canceller));
+				Pair<Double, BufferedImage> p = computeNumericCorrelation(log, attribute, parameters, plot, canceller);
+				if (p != null) {
+					result.setAssociation(attribute, p);
+				} else {
+					result.setAssociation(attribute, Pair.of(Double.NaN, null));
+				}
+			} else if (attribute.isLiteral()) {
+				double correlation = computeCategoricalCorrelation(log, attribute, parameters, canceller);
+				result.setAssociation(attribute, Pair.of(correlation, null));
 			}
 		}
 
 		return result;
 	}
 
-	public static double computeNumericCorrelation(XLog log, Attribute attribute, AssociationsParameters parameters,
-			ProMCanceller canceller) throws InterruptedException {
-		CorrelationParametersAbstract parametersc = new CorrelationParametersAbstract(100000,
-				parameters.getClassifier(), attribute, System.currentTimeMillis(), false) {
-		};
+	public static Pair<Double, BufferedImage> computeNumericCorrelation(XLog log, Attribute attribute,
+			AssociationsParameters parameters, CorrelationPlot plot, ProMCanceller canceller)
+			throws InterruptedException {
+		CorrelationParametersAbstract parametersc = new CorrelationParametersDefault(attribute);
 		double[][] result = CorrelationProcessNumerical.compute(parametersc, log, canceller);
 
 		if (result == null) {
-			return Double.NaN;
+			return null;
 		}
 
 		double[] x = result[0];
@@ -79,6 +95,22 @@ public class CorrelationPlugin {
 		double standardDeviationYd = Correlation.standardDeviation(y, meanY);
 		double correlation = Correlation.correlation(x, y, meanY, standardDeviationYd).doubleValue();
 
-		return correlation;
+		BufferedImage image = plot.create("Δ " + attribute.getName(), x, "Δ trace", y);
+
+		return Pair.of(correlation, image);
+	}
+
+	public static double computeCategoricalCorrelation(XLog log, Attribute attribute, AssociationsParameters parameters,
+			ProMCanceller canceller) throws InterruptedException {
+		AssociationParametersCategoricalAbstract parametersc = new AssociationParametersCategoricalDefault(attribute);
+		double[] result = CorrelationProcessCategorical.compute(parametersc, log, canceller);
+
+		if (result == null) {
+			return -Double.MAX_VALUE;
+		}
+
+		BigDecimal mean = Correlation.mean(result);
+
+		return mean.doubleValue();
 	}
 }

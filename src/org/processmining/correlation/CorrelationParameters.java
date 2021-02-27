@@ -13,4 +13,6 @@ public interface CorrelationParameters {
 	public long getSeed();
 
 	public boolean isDebug();
+	
+	public int getThreads();
 }

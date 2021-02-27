@@ -118,7 +118,7 @@ public class CorrelationProcessNumerical {
 		return result;
 	}
 
-	private static String[] getTraceString(XTrace xTrace, XEventClassifier classifier) {
+	public static String[] getTraceString(XTrace xTrace, XEventClassifier classifier) {
 		String[] result = new String[xTrace.size()];
 		for (int i = 0; i < xTrace.size(); i++) {
 			XEvent event = xTrace.get(i);
