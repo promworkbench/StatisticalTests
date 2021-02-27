@@ -8,10 +8,10 @@ import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 
 import org.deckfour.xes.model.XLog;
-import org.processmining.correlation.AssociationsParameters;
-import org.processmining.correlation.AssociationsParametersAbstract;
-import org.processmining.correlation.AssociationsParametersDefault;
 import org.processmining.plugins.InductiveMiner.ClassifierChooser;
+import org.processmining.statisticaltests.association.AssociationsParameters;
+import org.processmining.statisticaltests.association.AssociationsParametersAbstract;
+import org.processmining.statisticaltests.association.AssociationsParametersDefault;
 
 import com.fluxicon.slickerbox.factory.SlickerFactory;
 

@@ -8,15 +8,6 @@ import org.deckfour.uitopia.api.event.TaskListener.InteractionResult;
 import org.deckfour.xes.model.XLog;
 import org.processmining.contexts.uitopia.UIPluginContext;
 import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
-import org.processmining.correlation.AssociationParametersCategoricalAbstract;
-import org.processmining.correlation.AssociationParametersCategoricalDefault;
-import org.processmining.correlation.Associations;
-import org.processmining.correlation.AssociationsParameters;
-import org.processmining.correlation.CorrelationParametersAbstract;
-import org.processmining.correlation.CorrelationParametersDefault;
-import org.processmining.correlation.CorrelationPlot;
-import org.processmining.correlation.CorrelationProcessCategorical;
-import org.processmining.correlation.CorrelationProcessNumerical;
 import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.framework.plugin.annotations.PluginCategory;
@@ -27,6 +18,15 @@ import org.processmining.plugins.InductiveMiner.plugins.dialogs.IMMiningDialog;
 import org.processmining.plugins.inductiveVisualMiner.dataanalysis.traceattributes.Correlation;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 import org.processmining.plugins.inductiveminer2.attributes.AttributesInfoImpl;
+import org.processmining.statisticaltests.association.AssociationParametersCategoricalAbstract;
+import org.processmining.statisticaltests.association.AssociationParametersCategoricalDefault;
+import org.processmining.statisticaltests.association.Associations;
+import org.processmining.statisticaltests.association.AssociationsParameters;
+import org.processmining.statisticaltests.association.CorrelationParametersAbstract;
+import org.processmining.statisticaltests.association.CorrelationParametersDefault;
+import org.processmining.statisticaltests.association.CorrelationPlot;
+import org.processmining.statisticaltests.association.CorrelationProcessCategorical;
+import org.processmining.statisticaltests.association.CorrelationProcessNumerical;
 
 public class CorrelationPlugin {
 	@Plugin(name = "Compute association/correlation between the process and trace attributes", level = PluginLevel.Regular, returnLabels = {

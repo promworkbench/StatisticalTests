@@ -1,4 +1,4 @@
-package org.processmining.correlation;
+package org.processmining.statisticaltests.association;
 
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 

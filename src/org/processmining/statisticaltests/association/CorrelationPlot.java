@@ -1,4 +1,4 @@
-package org.processmining.correlation;
+package org.processmining.statisticaltests.association;
 
 import java.awt.Color;
 import java.awt.Font;

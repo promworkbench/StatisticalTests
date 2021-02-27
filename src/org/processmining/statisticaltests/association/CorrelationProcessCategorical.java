@@ -1,4 +1,4 @@
-package org.processmining.correlation;
+package org.processmining.statisticaltests.association;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

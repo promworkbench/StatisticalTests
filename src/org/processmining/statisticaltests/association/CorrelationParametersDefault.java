@@ -1,4 +1,4 @@
-package org.processmining.correlation;
+package org.processmining.statisticaltests.association;
 
 import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.classification.XEventNameClassifier;

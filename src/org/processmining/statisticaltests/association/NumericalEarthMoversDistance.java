@@ -1,4 +1,4 @@
-package org.processmining.correlation;
+package org.processmining.statisticaltests.association;
 
 import org.processmining.earthmoversstochasticconformancechecking.distancematrix.DistanceMatrix;
 import org.processmining.earthmoversstochasticconformancechecking.distancematrix.DistanceMatrixAbstract;

@@ -8,13 +8,13 @@ import javax.swing.table.DefaultTableModel;
 
 import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
 import org.processmining.contexts.uitopia.annotations.Visualizer;
-import org.processmining.correlation.Associations;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.plugins.InductiveMiner.efficienttree.UnknownTreeNodeException;
 import org.processmining.plugins.InductiveMiner.plugins.dialogs.IMMiningDialog;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
+import org.processmining.statisticaltests.association.Associations;
 
 public class AssociationsVisualiserPlugin {
 	@Plugin(name = "Associations visualisation", returnLabels = { "Associations visualisation" }, returnTypes = {
