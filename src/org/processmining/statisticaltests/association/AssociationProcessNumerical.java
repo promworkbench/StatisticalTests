@@ -13,9 +13,9 @@ import org.processmining.earthmoversstochasticconformancechecking.distancematrix
 import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.plugins.inductiveminer2.attributes.AttributeUtils;
 
-public class CorrelationProcessNumerical {
+public class AssociationProcessNumerical {
 
-	public static double[][] compute(CorrelationParameters parameters, XLog log, ProMCanceller canceller)
+	public static double[][] compute(AssociationParameters parameters, XLog log, ProMCanceller canceller)
 			throws InterruptedException {
 		//select traces that have the attribute
 		if (parameters.isDebug()) {
@@ -89,7 +89,7 @@ public class CorrelationProcessNumerical {
 					}
 				}
 
-				private double[] performSampleMeasure(CorrelationParameters parameters, ProMCanceller canceller,
+				private double[] performSampleMeasure(AssociationParameters parameters, ProMCanceller canceller,
 						List<XTrace> traces, int sampleA, int sampleB, double minAttributeValue,
 						double maxAttributeValue) {
 					double valueA = (AttributeUtils.valueDouble(parameters.getAttribute(), traces.get(sampleA))

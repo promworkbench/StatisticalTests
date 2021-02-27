@@ -18,7 +18,7 @@ import org.processmining.plugins.inductiveminer2.attributes.AttributeUtils;
 
 import gnu.trove.set.hash.THashSet;
 
-public class CorrelationProcessCategorical {
+public class AssociationProcessCategorical {
 
 	public static double[] compute(AssociationParametersCategorical parameters, XLog log, ProMCanceller canceller)
 			throws InterruptedException {
@@ -106,10 +106,10 @@ public class CorrelationProcessCategorical {
 		int countA = 0;
 		BigDecimal sumR = BigDecimal.ZERO;
 		for (int i = 0; i < sample.length; i++) {
-			String[] traceI = CorrelationProcessNumerical.getTraceString(traces.get(sample[i]), classifier);
+			String[] traceI = AssociationProcessNumerical.getTraceString(traces.get(sample[i]), classifier);
 			String valueI = AttributeUtils.valueString(attribute, traces.get(sample[i]));
 			for (int j = i + 1; j < sample.length; j++) {
-				String[] traceJ = CorrelationProcessNumerical.getTraceString(traces.get(sample[j]), classifier);
+				String[] traceJ = AssociationProcessNumerical.getTraceString(traces.get(sample[j]), classifier);
 				String valueJ = AttributeUtils.valueString(attribute, traces.get(sample[j]));
 				BigDecimal x = BigDecimal.valueOf(Levenshtein.getNormalisedDistance(traceI, traceJ));
 

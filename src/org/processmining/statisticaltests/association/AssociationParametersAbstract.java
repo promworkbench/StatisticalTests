@@ -3,7 +3,7 @@ package org.processmining.statisticaltests.association;
 import org.deckfour.xes.classification.XEventClassifier;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 
-public abstract class CorrelationParametersAbstract implements CorrelationParameters {
+public abstract class AssociationParametersAbstract implements AssociationParameters {
 
 	private int numberOfSamples;
 	private XEventClassifier classifier;
@@ -12,7 +12,7 @@ public abstract class CorrelationParametersAbstract implements CorrelationParame
 	private boolean debug;
 	private int threads;
 
-	public CorrelationParametersAbstract(int numberOfSamples, XEventClassifier classifier, Attribute attribute,
+	public AssociationParametersAbstract(int numberOfSamples, XEventClassifier classifier, Attribute attribute,
 			long seed, boolean debug, int threads) {
 		this.numberOfSamples = numberOfSamples;
 		this.classifier = classifier;

@@ -8,7 +8,7 @@ public class AssociationParametersCategoricalDefault extends AssociationParamete
 	public final static int defaultSampleSize = 100;
 
 	public AssociationParametersCategoricalDefault(Attribute attribute) {
-		super(defaultNumberOfSamples, CorrelationParametersDefault.defaultClassifier, attribute,
-				System.currentTimeMillis(), CorrelationParametersDefault.defaultDebug, defaultSampleSize);
+		super(defaultNumberOfSamples, AssociationParametersDefault.defaultClassifier, attribute,
+				System.currentTimeMillis(), AssociationParametersDefault.defaultDebug, defaultSampleSize);
 	}
 }
