@@ -18,17 +18,17 @@ import org.processmining.plugins.InductiveMiner.plugins.dialogs.IMMiningDialog;
 import org.processmining.plugins.inductiveVisualMiner.dataanalysis.traceattributes.Correlation;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 import org.processmining.plugins.inductiveminer2.attributes.AttributesInfoImpl;
+import org.processmining.statisticaltests.association.AssociationParametersAbstract;
 import org.processmining.statisticaltests.association.AssociationParametersCategoricalAbstract;
 import org.processmining.statisticaltests.association.AssociationParametersCategoricalDefault;
+import org.processmining.statisticaltests.association.AssociationParametersDefault;
+import org.processmining.statisticaltests.association.AssociationProcessCategorical;
+import org.processmining.statisticaltests.association.AssociationProcessNumerical;
 import org.processmining.statisticaltests.association.Associations;
 import org.processmining.statisticaltests.association.AssociationsParameters;
-import org.processmining.statisticaltests.association.CorrelationParametersAbstract;
-import org.processmining.statisticaltests.association.CorrelationParametersDefault;
 import org.processmining.statisticaltests.association.CorrelationPlot;
-import org.processmining.statisticaltests.association.CorrelationProcessCategorical;
-import org.processmining.statisticaltests.association.CorrelationProcessNumerical;
 
-public class CorrelationPlugin {
+public class AssociationsPlugin {
 	@Plugin(name = "Compute association/correlation between the process and trace attributes", level = PluginLevel.Regular, returnLabels = {
 			"Association result" }, returnTypes = { Associations.class }, parameterLabels = {
 					"Event log" }, userAccessible = true, categories = { PluginCategory.Analytics,
@@ -36,7 +36,7 @@ public class CorrelationPlugin {
 	@UITopiaVariant(affiliation = IMMiningDialog.affiliation, author = IMMiningDialog.author, email = IMMiningDialog.email)
 	@PluginVariant(variantLabel = "Mine, dialog", requiredParameterLabels = { 0 })
 	public Associations mineGuiProcessTree(final UIPluginContext context, XLog log) throws InterruptedException {
-		CorrelationDialog dialog = new CorrelationDialog(log);
+		AssociationsDialog dialog = new AssociationsDialog(log);
 		InteractionResult result = context.showWizard("Process-Attribute Association & Correlation", true, true,
 				dialog);
 
@@ -82,8 +82,8 @@ public class CorrelationPlugin {
 	public static Pair<Double, BufferedImage> computeNumericCorrelation(XLog log, Attribute attribute,
 			AssociationsParameters parameters, CorrelationPlot plot, ProMCanceller canceller)
 			throws InterruptedException {
-		CorrelationParametersAbstract parametersc = new CorrelationParametersDefault(attribute);
-		double[][] result = CorrelationProcessNumerical.compute(parametersc, log, canceller);
+		AssociationParametersAbstract parametersc = new AssociationParametersDefault(attribute);
+		double[][] result = AssociationProcessNumerical.compute(parametersc, log, canceller);
 
 		if (result == null) {
 			return null;
@@ -103,7 +103,7 @@ public class CorrelationPlugin {
 	public static double computeCategoricalCorrelation(XLog log, Attribute attribute, AssociationsParameters parameters,
 			ProMCanceller canceller) throws InterruptedException {
 		AssociationParametersCategoricalAbstract parametersc = new AssociationParametersCategoricalDefault(attribute);
-		double[] result = CorrelationProcessCategorical.compute(parametersc, log, canceller);
+		double[] result = AssociationProcessCategorical.compute(parametersc, log, canceller);
 
 		if (result == null) {
 			return -Double.MAX_VALUE;

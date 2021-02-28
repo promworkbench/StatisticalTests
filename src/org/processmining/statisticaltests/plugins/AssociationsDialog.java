@@ -15,7 +15,7 @@ import org.processmining.statisticaltests.association.AssociationsParametersDefa
 
 import com.fluxicon.slickerbox.factory.SlickerFactory;
 
-public class CorrelationDialog extends JPanel {
+public class AssociationsDialog extends JPanel {
 
 	private static final long serialVersionUID = -1097548788215530060L;
 
@@ -28,7 +28,7 @@ public class CorrelationDialog extends JPanel {
 	private final SpringLayout layout;
 	private ClassifierChooser classifiers;
 
-	public CorrelationDialog(XLog log) {
+	public AssociationsDialog(XLog log) {
 		SlickerFactory factory = SlickerFactory.instance();
 
 		layout = new SpringLayout();

@@ -13,16 +13,16 @@ import javax.imageio.ImageIO;
 
 import org.deckfour.xes.classification.XEventNameClassifier;
 import org.deckfour.xes.model.XLog;
-import org.processmining.correlation.CorrelationParametersAbstract;
-import org.processmining.correlation.CorrelationPlot;
-import org.processmining.correlation.CorrelationPlotLegend;
-import org.processmining.correlation.CorrelationProcessNumerical;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.plugins.inductiveVisualMiner.dataanalysis.traceattributes.Correlation;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 import org.processmining.plugins.inductiveminer2.attributes.AttributeImpl;
 import org.processmining.plugins.inductiveminer2.attributes.AttributeImpl.Type;
+import org.processmining.statisticaltests.association.AssociationParametersAbstract;
+import org.processmining.statisticaltests.association.AssociationProcessNumerical;
+import org.processmining.statisticaltests.association.CorrelationPlot;
+import org.processmining.statisticaltests.association.CorrelationPlotLegend;
 import org.processmining.xeslite.plugin.OpenLogFileLiteImplPlugin;
 
 import gnu.trove.list.TDoubleList;
@@ -32,7 +32,7 @@ public class CorrelationTest {
 	static File folder = new File("/home/sander/Documents/svn/41 - stochastic statistics/experiments/logs");
 
 	public static void main(String... args) throws Exception {
-//		bpic20DDAmountSingle();
+		//		bpic20DDAmountSingle();
 		bpic20DDAmountPlot();
 
 		//		testLogSingle(1);
@@ -89,7 +89,7 @@ public class CorrelationTest {
 
 		correlation(inputLog, outputCsv, attribute, 1000000, true);
 	}
-	
+
 	public static void bpic20DDAmountPlot() throws Exception {
 		File outputCsv = new File(
 				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/04 - correlation/bpic20-DomesticDeclarations-Amount.csv");
@@ -325,11 +325,11 @@ public class CorrelationTest {
 			}
 		};
 
-		CorrelationParametersAbstract parameters = new CorrelationParametersAbstract(numberOfSamples,
-				new XEventNameClassifier(), attribute, System.currentTimeMillis(), true) {
+		AssociationParametersAbstract parameters = new AssociationParametersAbstract(numberOfSamples,
+				new XEventNameClassifier(), attribute, System.currentTimeMillis(), true, 7) {
 		};
 
-		double[][] result = CorrelationProcessNumerical.compute(parameters, log, canceller);
+		double[][] result = AssociationProcessNumerical.compute(parameters, log, canceller);
 
 		for (int i = 0; i < result[0].length; i++) {
 			output.write(result[0][i] + "," + result[1][i] + "\n");
@@ -378,15 +378,15 @@ public class CorrelationTest {
 			}
 		};
 
-		CorrelationParametersAbstract parameters = new CorrelationParametersAbstract(0, new XEventNameClassifier(),
-				attribute, System.currentTimeMillis(), true) {
+		AssociationParametersAbstract parameters = new AssociationParametersAbstract(0, new XEventNameClassifier(),
+				attribute, System.currentTimeMillis(), true, 7) {
 		};
 
 		for (int numberOfSamples = startNumberOfSamples; numberOfSamples <= maxNumberOfSamples; numberOfSamples += step) {
 			parameters.setNumberOfSamples(numberOfSamples);
 
 			long startTime = System.currentTimeMillis();
-			double[][] result = CorrelationProcessNumerical.compute(parameters, log, canceller);
+			double[][] result = AssociationProcessNumerical.compute(parameters, log, canceller);
 			long time = System.currentTimeMillis() - startTime;
 
 			double[] x = result[0];

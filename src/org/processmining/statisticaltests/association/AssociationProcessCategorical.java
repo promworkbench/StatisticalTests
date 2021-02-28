@@ -105,6 +105,7 @@ public class AssociationProcessCategorical {
 		BigDecimal sumA = BigDecimal.ZERO;
 		int countA = 0;
 		BigDecimal sumR = BigDecimal.ZERO;
+		int countR = 0;
 		for (int i = 0; i < sample.length; i++) {
 			String[] traceI = AssociationProcessNumerical.getTraceString(traces.get(sample[i]), classifier);
 			String valueI = AttributeUtils.valueString(attribute, traces.get(sample[i]));
@@ -118,6 +119,7 @@ public class AssociationProcessCategorical {
 					countA++;
 				}
 				sumR = sumR.add(x);
+				countR++;
 			}
 		}
 
@@ -125,7 +127,7 @@ public class AssociationProcessCategorical {
 			return 1;
 		}
 		BigDecimal a = sumA.divide(BigDecimal.valueOf(countA), 10, RoundingMode.HALF_UP);
-		BigDecimal r = sumR.divide(BigDecimal.valueOf(sample.length), 10, RoundingMode.HALF_UP);
+		BigDecimal r = sumR.divide(BigDecimal.valueOf(countR), 10, RoundingMode.HALF_UP);
 
 		return a.divide(r, 10, RoundingMode.HALF_UP).doubleValue();
 	}
