@@ -1,6 +1,5 @@
 package org.processmining.statisticaltests;
 
-import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -19,7 +18,8 @@ import com.google.common.util.concurrent.AtomicDouble;
 public class LogLogUnknownProcessTest {
 	public static double p(XLog logA, XLog logB, Parameters parameters, ProMCanceller canceller)
 			throws InterruptedException {
-		double[] sampleDistances = new double[parameters.getNumberOfReSamples()];
+		double[] sampleDistances = new double[parameters.getNumberOfSamples()];
+		AtomicDouble distanceAB = new AtomicDouble();
 
 		Activity2IndexKey activityKey = new Activity2IndexKey();
 		activityKey.feed(logA, parameters.getClassifierA());
@@ -29,16 +29,30 @@ public class LogLogUnknownProcessTest {
 			return -Double.MAX_VALUE;
 		}
 
+		if (parameters.isDebug()) {
+			System.out.println("create stochastic languages");
+		}
+
 		//set up objects for Earth Movers' conformance
 		StochasticLanguageLog languageA = XLog2StochasticLanguage.convert(logA, parameters.getClassifierA(),
 				activityKey, canceller);
 		StochasticLanguageLog languageB = XLog2StochasticLanguage.convert(logB, parameters.getClassifierB(),
 				activityKey, canceller);
 
-		EMSCParametersLogLogAbstract emscParameters = new EMSCParametersLogLogDefault();
+		return p(parameters, canceller, sampleDistances, distanceAB, languageA, languageB);
+	}
+
+	public static double p(Parameters parameters, ProMCanceller canceller, double[] sampleDistances,
+			AtomicDouble distanceAB, StochasticLanguageLog languageA, StochasticLanguageLog languageB)
+			throws InterruptedException {
+		if (parameters.isDebug()) {
+			System.out.println("create distance matrices");
+		}
+
+		final EMSCParametersLogLogAbstract emscParameters = new EMSCParametersLogLogDefault();
 		emscParameters.setComputeStochasticTraceAlignments(false);
-		DistanceMatrix distanceMatrixAA = EMSCParametersDefault.defaultDistanceMatrix.clone();
-		DistanceMatrix distanceMatrixAB = EMSCParametersDefault.defaultDistanceMatrix.clone();
+		final DistanceMatrix distanceMatrixAA = EMSCParametersDefault.defaultDistanceMatrix.clone();
+		final DistanceMatrix distanceMatrixAB = EMSCParametersDefault.defaultDistanceMatrix.clone();
 		distanceMatrixAA.init(languageA, languageA, canceller);
 		distanceMatrixAB.init(languageA, languageB, canceller);
 
@@ -46,11 +60,13 @@ public class LogLogUnknownProcessTest {
 			return -Double.MAX_VALUE;
 		}
 
-		AtomicDouble distanceAB = new AtomicDouble();
+		if (parameters.isDebug()) {
+			System.out.println("start sampling threads");
+		}
 
 		AtomicInteger nextSampleNumber = new AtomicInteger(-1);
 
-		Thread[] threads = new Thread[7];
+		Thread[] threads = new Thread[parameters.getThreads()];
 
 		for (int thread = 0; thread < threads.length; thread++) {
 			final int thread2 = thread;
@@ -58,7 +74,7 @@ public class LogLogUnknownProcessTest {
 				public void run() {
 					//create sampler method
 					Random random = new Random(parameters.getSeed() + thread2);
-					double[] massKeyA = LogLogTest.getMassKey(languageA);
+					double[] massKeyA = LogLogTest.getMassKeyNormal(languageA);
 					AliasMethod aliasMethodA = new AliasMethod(massKeyA, random);
 
 					int sampleNumber = nextSampleNumber.getAndIncrement();
@@ -68,14 +84,16 @@ public class LogLogUnknownProcessTest {
 							//full log-log comparison
 							distanceAB.set(1 - LogLogTest.getSimilarity(languageA, languageB, distanceMatrixAB,
 									emscParameters, canceller));
-							System.out.println(" sample reference " + distanceAB);
+							if (parameters.isDebug()) {
+								System.out.println(" sample reference " + distanceAB);
+							}
 						} else {
 							double[] sampleA = LogLogTest.sample(aliasMethodA, parameters.getSampleSize());
+							StochasticLanguageLog languageX = LogLogTest.applySample(languageA, sampleA);
 
-							sampleDistances[sampleNumber] = 1
-									- LogLogTest.getSimilarity(languageA, LogLogTest.applySample(languageA, sampleA),
-											distanceMatrixAA, emscParameters, canceller);
-							if (sampleNumber % 100 == 0) {
+							sampleDistances[sampleNumber] = 1 - LogLogTest.getSimilarity(languageA, languageX,
+									distanceMatrixAA, emscParameters, canceller);
+							if (parameters.isDebug() && sampleNumber % 1000 == 0) {
 								System.out.println(
 										" sample " + sampleNumber + ", distance " + sampleDistances[sampleNumber]);
 							}
@@ -93,14 +111,28 @@ public class LogLogUnknownProcessTest {
 			thread.join();
 		}
 
-		Arrays.sort(sampleDistances);
-
-		int pos = Arrays.binarySearch(sampleDistances, distanceAB.get());
-
-		if (pos >= 0) {
-			return pos / (sampleDistances.length * 1.0);
-		} else {
-			return (~pos) / (sampleDistances.length * 1.0);
+		if (parameters.isDebug()) {
+			System.out.println("find leq distances");
 		}
+
+		//find leq distances
+		int leq = 0;
+		for (double distance : sampleDistances) {
+			if (distance <= distanceAB.get()) {
+				leq++;
+			}
+		}
+
+		if (parameters.isDebug()) {
+			System.out.println("distance leq AB distance " + leq + " (of " + sampleDistances.length + ")");
+		}
+
+		double p = leq / (sampleDistances.length * 1.0);
+
+		if (parameters.isDebug()) {
+			System.out.println("p " + p);
+		}
+
+		return p;
 	}
 }

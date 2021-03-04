@@ -35,9 +35,9 @@ public class LogLogTest {
 	@UITopiaVariant(affiliation = IMMiningDialog.affiliation, author = IMMiningDialog.author, email = IMMiningDialog.email)
 	@PluginVariant(variantLabel = "Filter log on life cycle, default", requiredParameterLabels = { 0, 1 })
 	public HTMLToString test(final PluginContext context, XLog logA, XLog logB) throws Exception {
-		final ParametersAbstract parameters = new ParametersDefault(logA.size() + logB.size());
+		final ParametersAbstract parameters = new ParametersDefault();
 
-		parameters.setNumberOfReSamples(10000);
+		parameters.setNumberOfSamples(10000);
 		parameters.setSampleSize(Math.max(logA.size(), logB.size()) / 20);
 
 		ProMCanceller canceller = new ProMCanceller() {
@@ -50,7 +50,7 @@ public class LogLogTest {
 		final StringBuilder result = new StringBuilder();
 		result.append("<table>");
 		result.append("<tr><td>Sample size</td><td>" + parameters.getSampleSize() + "</td></tr>");
-		result.append("<tr><td>Number of samples</td><td>" + parameters.getNumberOfReSamples() + "</td></tr>");
+		result.append("<tr><td>Number of samples</td><td>" + parameters.getNumberOfSamples() + "</td></tr>");
 		result.append("<tr><td> </td><td></td></tr>");
 		result.append("<tr><td>p value</td><td>" + p + "</td></tr>");
 		result.append("<tr><td colspan=2>0.5 => equal, 0 or 1 => unequal</td></tr>");
@@ -96,8 +96,8 @@ public class LogLogTest {
 			return -Double.MAX_VALUE;
 		}
 
-		double[] massKeyA = getMassKey(languageA);
-		double[] massKeyB = getMassKey(languageB);
+		double[] massKeyA = getMassKeyCumulative(languageA);
+		double[] massKeyB = getMassKeyCumulative(languageB);
 
 		//create sampler methods
 		AliasMethod aliasMethodA = new AliasMethod(massKeyA, random);
@@ -110,7 +110,7 @@ public class LogLogTest {
 		int winsA = 0;
 		int winsB = 0;
 
-		for (int sample = 0; sample < parameters.getNumberOfReSamples(); sample++) {
+		for (int sample = 0; sample < parameters.getNumberOfSamples(); sample++) {
 			//			double[] sampleA = sample(massKeyA, parameters.getSampleSize(), random);
 			//			double[] sampleB = sample(massKeyB, parameters.getSampleSize(), random);
 			double[] sampleA = sample(aliasMethodA, parameters.getSampleSize());
@@ -139,7 +139,13 @@ public class LogLogTest {
 		return p;
 	}
 
-	public static double[] getMassKey(StochasticLanguageLog language) {
+	/**
+	 * Cumulative mass key
+	 * 
+	 * @param language
+	 * @return
+	 */
+	public static double[] getMassKeyCumulative(StochasticLanguageLog language) {
 		double[] result = new double[language.size()];
 		BigDecimal cumulative = BigDecimal.ZERO;
 		StochasticTraceIterator it = language.iterator();
@@ -147,6 +153,16 @@ public class LogLogTest {
 			it.nextIntegerTrace();
 			cumulative = cumulative.add(new BigDecimal(it.getProbability()));
 			result[i] = cumulative.doubleValue();
+		}
+		return result;
+	}
+
+	public static double[] getMassKeyNormal(StochasticLanguageLog language) {
+		double[] result = new double[language.size()];
+		StochasticTraceIterator it = language.iterator();
+		for (int i = 0; i < result.length; i++) {
+			it.nextIntegerTrace();
+			result[i] = it.getProbability();
 		}
 		return result;
 	}

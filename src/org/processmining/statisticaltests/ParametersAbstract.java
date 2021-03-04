@@ -2,21 +2,25 @@ package org.processmining.statisticaltests;
 
 import org.deckfour.xes.classification.XEventClassifier;
 
-public abstract class ParametersAbstract implements Parameters {
+public class ParametersAbstract implements Parameters {
 
 	private int sampleSize;
-	private int numberOfReSamples;
+	private int numberOfSamples;
 	private long seed;
 	private XEventClassifier classifierA;
 	private XEventClassifier classifierB;
+	private boolean debug;
+	private int threads;
 
 	public ParametersAbstract(int sampleSize, int numberOfSamples, long seed, XEventClassifier classifierA,
-			XEventClassifier classifierB) {
+			XEventClassifier classifierB, boolean debug, int threads) {
 		this.sampleSize = sampleSize;
-		this.numberOfReSamples = numberOfSamples;
+		this.numberOfSamples = numberOfSamples;
 		this.seed = seed;
 		this.classifierA = classifierA;
 		this.classifierB = classifierB;
+		this.debug = debug;
+		this.threads = threads;
 	}
 
 	public int getSampleSize() {
@@ -27,12 +31,12 @@ public abstract class ParametersAbstract implements Parameters {
 		this.sampleSize = sampleSize;
 	}
 
-	public int getNumberOfReSamples() {
-		return numberOfReSamples;
+	public int getNumberOfSamples() {
+		return numberOfSamples;
 	}
 
-	public void setNumberOfReSamples(int numberOfSamples) {
-		this.numberOfReSamples = numberOfSamples;
+	public void setNumberOfSamples(int numberOfSamples) {
+		this.numberOfSamples = numberOfSamples;
 	}
 
 	public long getSeed() {
@@ -57,6 +61,22 @@ public abstract class ParametersAbstract implements Parameters {
 
 	public void setClassifierB(XEventClassifier classifierB) {
 		this.classifierB = classifierB;
+	}
+
+	public boolean isDebug() {
+		return debug;
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
+
+	public int getThreads() {
+		return threads;
+	}
+
+	public void setThreads(int threads) {
+		this.threads = threads;
 	}
 
 }

@@ -14,11 +14,14 @@ import org.processmining.plugins.InductiveMiner.mining.MiningParameters;
 public class ParametersDefault extends ParametersAbstract {
 
 	public final static int defaultNumberOfSamples = 10000;
+	public final static int defaultSampleSize = 100;
 	public final static XEventClassifier defaultClassifier = MiningParameters.getDefaultClassifier();
+	public final static boolean defaultDebug = false;
+	public final static int defaultThreads = Math.max(1, Runtime.getRuntime().availableProcessors() - 1);
 
-	public ParametersDefault(int sampleSize) {
-		super(sampleSize, defaultNumberOfSamples, System.currentTimeMillis(), defaultClassifier,
-				defaultClassifier);
+	public ParametersDefault() {
+		super(defaultSampleSize, defaultNumberOfSamples, System.currentTimeMillis(), defaultClassifier,
+				defaultClassifier, defaultDebug, defaultThreads);
 	}
 
 }

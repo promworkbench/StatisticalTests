@@ -32,8 +32,7 @@ public class CorrelationTest {
 	static File folder = new File("/home/sander/Documents/svn/41 - stochastic statistics/experiments/logs");
 
 	public static void main(String... args) throws Exception {
-		//		bpic20DDAmountSingle();
-		bpic20DDAmountPlot();
+		bpic15EndDate(1);
 
 		//		testLogSingle(1);
 		//		testLogPlot();
@@ -240,6 +239,15 @@ public class CorrelationTest {
 				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/04 - correlation/bpic17-RequestedAmount.csv");
 
 		correlation(inputLog, outputCsv, attribute, 1000000, true);
+	}
+
+	public static void bpic17AmountRequested() throws Exception {
+		File inputLog = new File(folder, "BPI Challenge 2017.xes.gz");
+		Attribute attribute = new AttributeImpl("RequestedAmount", Type.numeric);
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/05 - correlation sampleSize sensitivity/bpic17-RequestedAmount-samsen.csv");
+
+		multipleCorrelation(inputLog, outputCsv, 10000, 1000000, attribute);
 	}
 
 	public static void bpic17AmountRequestedPlot() throws Exception {
