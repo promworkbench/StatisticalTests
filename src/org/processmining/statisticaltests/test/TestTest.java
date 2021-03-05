@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.Arrays;
 
+import org.apache.commons.lang.SystemUtils;
 import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.classification.XEventNameClassifier;
 import org.deckfour.xes.model.XLog;
@@ -24,25 +25,26 @@ import org.processmining.statisticaltests.association.AssociationProcessNumerica
 import org.processmining.xeslite.plugin.OpenLogFileLiteImplPlugin;
 
 public class TestTest {
-	static File folder = new File("/home/sander/Documents/svn/41 - stochastic statistics/experiments/logs");
+	static File folder = SystemUtils.IS_OS_LINUX
+			? new File("/home/sander/Documents/svn/41 - stochastic statistics/experiments/")
+			: new File("C:\\Users\\leemans2\\Documents\\svn\\41 - stochastic statistics\\experiments\\");
 
 	public static void main(String[] args) throws Exception {
 		multipleTests("Road fines with trace attributes.xes.gz");
-		multipleTests("bpic12-a.xes");
+		//multipleTests("bpic12-a.xes");
 	}
 
 	public static void multipleTests(String logName) throws Exception {
-		File inputLogA = new File(folder, logName);
+		File inputLogA = new File(new File(folder, "logs"), logName);
 
 		String[] logsB = new String[] { "TE", "MS", "TS", "LE", "LL" };
 
 		for (String logB : logsB) {
 			System.out.println(logB);
-			File outputCsv = new File(
-					"/home/sander/Documents/svn/41 - stochastic statistics/experiments/06 - log log test/" + logName
-							+ "-" + logB + "-samsen.csv");
+			File outputCsv = new File(new File(folder, "06 - log log test"), logName + "-" + logB + "-samsen.csv");
 
-			multipleTests(inputLogA, new File(folder, logName + "-" + logB + ".xes.gz"), outputCsv, 10, 100000000);
+			multipleTests(inputLogA, new File(new File(folder, "logs"), logName + "-" + logB + ".xes.gz"), outputCsv,
+					10, 1000000000);
 		}
 	}
 
