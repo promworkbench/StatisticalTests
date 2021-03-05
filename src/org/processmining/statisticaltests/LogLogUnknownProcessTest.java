@@ -1,6 +1,6 @@
 package org.processmining.statisticaltests;
 
-import java.util.Random;
+import java.util.SplittableRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.deckfour.xes.model.XLog;
@@ -73,9 +73,13 @@ public class LogLogUnknownProcessTest {
 			threads[thread] = new Thread(new Runnable() {
 				public void run() {
 					//create sampler method
-					Random random = new Random(parameters.getSeed() + thread2);
+					SplittableRandom random = new SplittableRandom(parameters.getSeed() + thread2);
 					double[] massKeyA = LogLogTest.getMassKeyNormal(languageA);
 					AliasMethod aliasMethodA = new AliasMethod(massKeyA, random);
+
+					long timeSample = 0;
+					long timeCompare = 0;
+					int countInThread = 0;
 
 					int sampleNumber = nextSampleNumber.getAndIncrement();
 					while (sampleNumber < sampleDistances.length) {
@@ -88,18 +92,34 @@ public class LogLogUnknownProcessTest {
 								System.out.println(" sample reference " + distanceAB);
 							}
 						} else {
-							double[] sampleA = LogLogTest.sample(aliasMethodA, parameters.getSampleSize());
-							StochasticLanguageLog languageX = LogLogTest.applySample(languageA, sampleA);
 
+							//sample
+							long startSample = System.currentTimeMillis();
+
+							double[] sampleA = LogLogTest.sample(aliasMethodA, parameters.getSampleSize());
+							
+							timeSample += System.currentTimeMillis() - startSample;
+
+							//compare
+							long startCompare = System.currentTimeMillis();
+
+							StochasticLanguageLog languageX = LogLogTest.applySample(languageA, sampleA);
 							sampleDistances[sampleNumber] = 1 - LogLogTest.getSimilarity(languageA, languageX,
 									distanceMatrixAA, emscParameters, canceller);
-							if (parameters.isDebug() && sampleNumber % 1000 == 0) {
+
+							timeCompare += System.currentTimeMillis() - startCompare;
+
+							if (parameters.isDebug() && countInThread % 10 == 0) {
 								System.out.println(
-										" sample " + sampleNumber + ", distance " + sampleDistances[sampleNumber]);
+										" sample " + sampleNumber + ", distance " + sampleDistances[sampleNumber]
+												+ ", sampling@" + timeSample + ", compare@" + timeCompare);
+								timeSample = 0;
+								timeCompare = 0;
 							}
 						}
 
 						sampleNumber = nextSampleNumber.getAndIncrement();
+						countInThread++;
 					}
 				}
 			}, "log-log test thread " + thread);

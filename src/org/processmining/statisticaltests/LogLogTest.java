@@ -1,8 +1,7 @@
 package org.processmining.statisticaltests;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Random;
+import java.util.SplittableRandom;
 
 import org.deckfour.xes.model.XLog;
 import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
@@ -65,7 +64,7 @@ public class LogLogTest {
 
 	public static double p(XLog logA, XLog logB, Parameters parameters, ProMCanceller canceller)
 			throws InterruptedException {
-		Random random = new Random(parameters.getSeed());
+		SplittableRandom random = new SplittableRandom(parameters.getSeed());
 
 		Activity2IndexKey activityKey = new Activity2IndexKey();
 		activityKey.feed(logA, parameters.getClassifierA());
@@ -96,8 +95,8 @@ public class LogLogTest {
 			return -Double.MAX_VALUE;
 		}
 
-		double[] massKeyA = getMassKeyCumulative(languageA);
-		double[] massKeyB = getMassKeyCumulative(languageB);
+		double[] massKeyA = getMassKeyNormal(languageA);
+		double[] massKeyB = getMassKeyNormal(languageB);
 
 		//create sampler methods
 		AliasMethod aliasMethodA = new AliasMethod(massKeyA, random);
@@ -179,28 +178,15 @@ public class LogLogTest {
 	}
 
 	public static double[] sample(AliasMethod aliasMethod, int sampleSize) {
-		int[] result = new int[aliasMethod.getProbabilitiesSize()];
+		double[] result = new double[aliasMethod.getProbabilitiesSize()];
 		for (int i = 0; i < sampleSize; i++) {
 			result[aliasMethod.next()]++;
 		}
-		return normalise(result, sampleSize);
-	}
-
-	public static double[] sample(double[] massKey, int sampleSize, Random random) {
-		int[] result = new int[massKey.length];
-		for (int i = 0; i < sampleSize; i++) {
-			double addAt = random.nextDouble();
-
-			int position = Arrays.binarySearch(massKey, addAt);
-			if (position < 0) {
-				position = ~position;
-			}
-			if (position == result.length) {
-				position = result.length - 1;
-			}
-			result[position]++;
+		double ss = sampleSize;
+		for (int i = 0; i < result.length; i++) {
+			result[i] = result[i] / ss;
 		}
-		return normalise(result, sampleSize);
+		return result;
 	}
 
 	public static double[] normalise(int[] sample, int sampleSize) {

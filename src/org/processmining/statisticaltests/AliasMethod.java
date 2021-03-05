@@ -18,13 +18,13 @@ package org.processmining.statisticaltests;
  */
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Random;
+import java.util.SplittableRandom;
 
 import org.apache.commons.lang3.ArrayUtils;
 
 public final class AliasMethod {
 	/* The random number generator used to sample from the distribution. */
-	private final Random random;
+	private final SplittableRandom random;
 
 	/* The probability and alias tables. */
 	private final int[] alias;
@@ -42,7 +42,7 @@ public final class AliasMethod {
 	 *            The list of probabilities.
 	 */
 	public AliasMethod(double[] probabilities) {
-		this(probabilities, new Random());
+		this(probabilities, new SplittableRandom());
 	}
 
 	/**
@@ -56,10 +56,10 @@ public final class AliasMethod {
 	 *
 	 * @param probabilities
 	 *            The list of probabilities.
-	 * @param random
+	 * @param random2
 	 *            The random number generator
 	 */
-	public AliasMethod(double[] probabilities, Random random) {
+	public AliasMethod(double[] probabilities, SplittableRandom random) {
 		/* Begin by doing basic structural checks on the inputs. */
 		if (probabilities == null || random == null) {
 			throw new NullPointerException();
@@ -151,20 +151,25 @@ public final class AliasMethod {
 		}
 	}
 
+	private int lColumn;
+	private boolean lCoinToss;
+
 	/**
 	 * Samples a value from the underlying distribution.
+	 * 
+	 * NOT THREAD SAFE
 	 *
 	 * @return A random value sampled from the underlying distribution.
 	 */
 	public int next() {
 		/* Generate a fair die roll to determine which column to inspect. */
-		int column = random.nextInt(probability.length);
+		lColumn = random.nextInt(probability.length);
 
 		/* Generate a biased coin toss to determine which option to pick. */
-		boolean coinToss = random.nextDouble() < probability[column];
+		lCoinToss = random.nextDouble() < probability[lColumn];
 
 		/* Based on the outcome, return either the column or its alias. */
-		return coinToss ? column : alias[column];
+		return lCoinToss ? lColumn : alias[lColumn];
 	}
 
 	public int getProbabilitiesSize() {
