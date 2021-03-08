@@ -38,7 +38,7 @@ public class TestTest {
 	public static void testBPIC15() throws Exception {
 		for (int i = 1; i < 5; i++) {
 			File logI = new File(new File(folder, "logs"), "BPIC15_" + i + ".xes");
-			for (int j = i; j < 5; j++) {
+			for (int j = i + 1; j < 5; j++) {
 				File logJ = new File(new File(folder, "logs"), "BPIC15_" + j + ".xes");
 
 				File outputCsv = new File(new File(folder, "06 - log log test/BPIC"),
