@@ -30,8 +30,23 @@ public class TestTest {
 			: new File("C:\\Users\\leemans2\\Documents\\svn\\41 - stochastic statistics\\experiments\\");
 
 	public static void main(String[] args) throws Exception {
-		multipleTests("Road fines with trace attributes.xes.gz");
-		//multipleTests("bpic12-a.xes");
+		testBPIC15();
+		//		multipleTests("Road fines with trace attributes.xes.gz");
+		//		multipleTests("bpic12-a.xes");
+	}
+
+	public static void testBPIC15() throws Exception {
+		for (int i = 1; i < 5; i++) {
+			File logI = new File(new File(folder, "logs"), "BPIC15_" + i + ".xes");
+			for (int j = i; j < 5; j++) {
+				File logJ = new File(new File(folder, "logs"), "BPIC15_" + j + ".xes");
+
+				File outputCsv = new File(new File(folder, "06 - log log test/BPIC"),
+						"BPIC15_" + i + "-BPIC15_" + j + "samsen.csv");
+
+				multipleTests(logI, logJ, outputCsv, 10, 100);
+			}
+		}
 	}
 
 	public static void multipleTests(String logName) throws Exception {
