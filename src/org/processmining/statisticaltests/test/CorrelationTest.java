@@ -35,15 +35,18 @@ public class CorrelationTest {
 	public static void main(String... args) throws Exception {
 		//bpic15mergedStartDateSingle();
 		//bpic15mergedStartDatePlot();
-		bpic15mergedStartDate();
+		//bpic15mergedStartDate();
 
-		//bpic15EndDate(1);
+		//bpic15EndDateSingle(1);
+		//bpic15EndDatePlot(1);
 
 		//		testLogSingle(1);
 		//		testLogPlot();
 		//		bpic11AgePlot();
 		//		bpic12aAmountRequestedPlot();
 		//		roadFinesAmountRequestedPlot();
+		//roadFinesAmountRequested();
+		bpic11Age();
 	}
 
 	public static void legend() throws IOException {
@@ -198,7 +201,7 @@ public class CorrelationTest {
 		File outputCsv = new File(
 				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/05 - correlation sampleSize sensitivity/bpic11-Age1-samsen.csv");
 
-		multipleCorrelation(inputLog, outputCsv, 10000, 1000000, attribute);
+		multipleCorrelation(inputLog, outputCsv, 10000, 2000000, attribute);
 	}
 
 	public static void bpic11AgeSingle() throws Exception {
@@ -297,7 +300,7 @@ public class CorrelationTest {
 		File outputCsv = new File(
 				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/05 - correlation sampleSize sensitivity/roadFines-amount-samsen.csv");
 
-		multipleCorrelation(inputLog, outputCsv, 10000, 1000000, attribute);
+		multipleCorrelation(inputLog, outputCsv, 10000, 2000000, attribute);
 	}
 
 	public static void roadFinesAmountRequestedSingle() throws Exception {

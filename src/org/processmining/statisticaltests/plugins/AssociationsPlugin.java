@@ -9,6 +9,7 @@ import org.deckfour.xes.model.XLog;
 import org.processmining.contexts.uitopia.UIPluginContext;
 import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
 import org.processmining.framework.plugin.ProMCanceller;
+import org.processmining.framework.plugin.Progress;
 import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.framework.plugin.annotations.PluginCategory;
 import org.processmining.framework.plugin.annotations.PluginLevel;
@@ -50,18 +51,38 @@ public class AssociationsPlugin {
 			public boolean isCancelled() {
 				return context.getProgress().isCancelled();
 			}
-		});
+		}, context.getProgress());
 	}
 
-	public static Associations compute(XLog log, AssociationsParameters parameters, ProMCanceller canceller)
-			throws InterruptedException {
+	/**
+	 * 
+	 * @param log
+	 * @param parameters
+	 * @param canceller
+	 * @param progress
+	 *            give NULL if not present; not required.
+	 * @return
+	 * @throws InterruptedException
+	 */
+	public static Associations compute(XLog log, AssociationsParameters parameters, ProMCanceller canceller,
+			Progress progress) throws InterruptedException {
 		//gather attributes
 		Collection<Attribute> attributes = new AttributesInfoImpl(log).getTraceAttributes();
 		CorrelationPlot plot = new CorrelationPlot();
 		plot.setSizeY2DPlot(150);
 		Associations result = new Associations(attributes);
 
+		if (progress != null) {
+			progress.setMinimum(0);
+			progress.setMaximum(attributes.size());
+		}
+
 		for (Attribute attribute : attributes) {
+
+			if (progress != null) {
+				progress.setCaption("Computing association of " + attribute);
+			}
+
 			if (attribute.isDuration() || attribute.isNumeric() || attribute.isTime()) {
 				//numerical
 				Pair<Double, BufferedImage> p = computeNumericCorrelation(log, attribute, parameters, plot, canceller);
@@ -73,6 +94,10 @@ public class AssociationsPlugin {
 			} else if (attribute.isLiteral()) {
 				double correlation = computeCategoricalCorrelation(log, attribute, parameters, canceller);
 				result.setAssociation(attribute, Pair.of(correlation, null));
+			}
+
+			if (progress != null) {
+				progress.setValue(progress.getValue() + 1);
 			}
 		}
 
