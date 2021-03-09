@@ -25,7 +25,7 @@ import org.processmining.statisticaltests.association.AssociationProcessNumerica
 import org.processmining.xeslite.plugin.OpenLogFileLiteImplPlugin;
 
 public class TestTest {
-	static File folder = SystemUtils.IS_OS_LINUX
+	public static File folder = SystemUtils.IS_OS_LINUX
 			? new File("/home/sander/Documents/svn/41 - stochastic statistics/experiments/")
 			: new File("C:\\Users\\leemans2\\Documents\\svn\\41 - stochastic statistics\\experiments\\");
 
@@ -35,16 +35,31 @@ public class TestTest {
 		//		multipleTests("bpic12-a.xes");
 	}
 
+	public static enum Type {
+		linear {
+			int step(int current, int step) {
+				return current + step;
+			}
+		},
+		exponential {
+			int step(int current, int step) {
+				return current * step;
+			}
+		};
+
+		abstract int step(int current, int step);
+	}
+
 	public static void testBPIC15() throws Exception {
-		for (int i = 1; i < 5; i++) {
+		for (int i = 1; i <= 5; i++) {
 			File logI = new File(new File(folder, "logs"), "BPIC15_" + i + ".xes");
-			for (int j = i + 1; j < 5; j++) {
+			for (int j = i + 1; j <= 5; j++) {
 				File logJ = new File(new File(folder, "logs"), "BPIC15_" + j + ".xes");
 
-				File outputCsv = new File(new File(folder, "06 - log log test/BPIC"),
+				File outputCsv = new File(new File(folder, "06 - log log test"),
 						"BPIC15_" + i + "-BPIC15_" + j + "samsen.csv");
 
-				multipleTests(logI, logJ, outputCsv, 10, 100);
+				multipleTests(logI, logJ, outputCsv, 10, 100, Type.linear);
 			}
 		}
 	}
@@ -59,12 +74,12 @@ public class TestTest {
 			File outputCsv = new File(new File(folder, "06 - log log test"), logName + "-" + logB + "-samsen.csv");
 
 			multipleTests(inputLogA, new File(new File(folder, "logs"), logName + "-" + logB + ".xes.gz"), outputCsv,
-					10, 1000000000);
+					10, 1000000000, Type.exponential);
 		}
 	}
 
-	private static void multipleTests(File inputLogA, File inputLogB, File outputCsv, int step, int maxSampleSize)
-			throws Exception {
+	private static void multipleTests(File inputLogA, File inputLogB, File outputCsv, int step, int maxSampleSize,
+			Type type) throws Exception {
 		outputCsv.getParentFile().mkdirs();
 		int startSampleSize = step;
 		BufferedWriter output;
@@ -78,7 +93,7 @@ public class TestTest {
 			BufferedReader reader = new BufferedReader(new FileReader(outputCsv));
 			startSampleSize = 1;
 			while (reader.readLine() != null) {
-				startSampleSize *= step;
+				startSampleSize = type.step(startSampleSize, step);
 			}
 			reader.close();
 
@@ -98,7 +113,7 @@ public class TestTest {
 		ParametersAbstract parameters = new ParametersDefault();
 		parameters.setDebug(true);
 
-		for (int sampleSize = startSampleSize; sampleSize <= maxSampleSize; sampleSize *= step) {
+		for (int sampleSize = startSampleSize; sampleSize <= maxSampleSize; sampleSize = type.step(sampleSize, step)) {
 			System.out.println("sample size " + sampleSize);
 			parameters.setSampleSize(sampleSize);
 

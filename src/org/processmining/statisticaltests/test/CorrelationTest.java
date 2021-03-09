@@ -20,6 +20,7 @@ import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 import org.processmining.plugins.inductiveminer2.attributes.AttributeImpl;
 import org.processmining.plugins.inductiveminer2.attributes.AttributeImpl.Type;
 import org.processmining.statisticaltests.association.AssociationParametersAbstract;
+import org.processmining.statisticaltests.association.AssociationParametersDefault;
 import org.processmining.statisticaltests.association.AssociationProcessNumerical;
 import org.processmining.statisticaltests.association.CorrelationPlot;
 import org.processmining.statisticaltests.association.CorrelationPlotLegend;
@@ -32,7 +33,11 @@ public class CorrelationTest {
 	static File folder = new File("/home/sander/Documents/svn/41 - stochastic statistics/experiments/logs");
 
 	public static void main(String... args) throws Exception {
-		bpic15EndDate(1);
+		//bpic15mergedStartDateSingle();
+		//bpic15mergedStartDatePlot();
+		bpic15mergedStartDate();
+
+		//bpic15EndDate(1);
 
 		//		testLogSingle(1);
 		//		testLogPlot();
@@ -125,6 +130,33 @@ public class CorrelationTest {
 		File outputImageFile = new File(
 				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/04 - correlation/BPIC15_"
 						+ municipality + "-endDate.png");
+
+		createCorrelationPlot(outputCsv, outputImageFile);
+	}
+
+	public static void bpic15mergedStartDate() throws Exception {
+		File inputLog = new File(folder, "BPIC15_merged.xes.gz");
+		Attribute attribute = new AttributeImpl("startDate", Type.time);
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/05 - correlation sampleSize sensitivity/BPIC15_merged-startDate-samsen.csv");
+
+		multipleCorrelation(inputLog, outputCsv, 10000, 2000000, attribute);
+	}
+
+	public static void bpic15mergedStartDateSingle() throws Exception {
+		File inputLog = new File(folder, "BPIC15_merged.xes.gz");
+		Attribute attribute = new AttributeImpl("startDate", Type.time);
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/04 - correlation/BPIC15_merged-startDate.csv");
+
+		correlation(inputLog, outputCsv, attribute, 1000000, true);
+	}
+
+	public static void bpic15mergedStartDatePlot() throws Exception {
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/04 - correlation/BPIC15_merged-startDate.csv");
+		File outputImageFile = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/04 - correlation/BPIC15_merged-startDate.png");
 
 		createCorrelationPlot(outputCsv, outputImageFile);
 	}
@@ -307,7 +339,7 @@ public class CorrelationTest {
 		System.out.println("number of samples " + deltaValues.size());
 
 		outputImageFile.mkdirs();
-
+		
 		BufferedImage image = plot.create("Δ value", deltaValues.toArray(), "Δ trace", deltaTraces.toArray());
 		ImageIO.write(image, "png", outputImageFile);
 	}
@@ -333,9 +365,9 @@ public class CorrelationTest {
 			}
 		};
 
-		AssociationParametersAbstract parameters = new AssociationParametersAbstract(numberOfSamples,
-				new XEventNameClassifier(), attribute, System.currentTimeMillis(), true, 7) {
-		};
+		AssociationParametersAbstract parameters = new AssociationParametersDefault(attribute);
+		parameters.setNumberOfSamples(numberOfSamples);
+		parameters.setDebug(true);
 
 		double[][] result = AssociationProcessNumerical.compute(parameters, log, canceller);
 
