@@ -81,9 +81,17 @@ public class CategoricalComparisonPlugin {
 			if (logA.isEmpty() || logB.isEmpty()) {
 				result.add(Pair.of(Double.NaN, value));
 			} else {
-
 				double p = LogLogUnknownProcessTest.p(logA, logB, pParameters, canceller);
+
+				if (canceller.isCancelled()) {
+					return null;
+				}
+
 				result.add(Pair.of(p, value));
+			}
+
+			if (canceller.isCancelled()) {
+				return null;
 			}
 
 			if (progress != null) {
@@ -91,8 +99,16 @@ public class CategoricalComparisonPlugin {
 			}
 		}
 
+		if (canceller.isCancelled()) {
+			return null;
+		}
+
 		//apply Benjamini-Hochberg
 		List<Triple<Double, Boolean, String>> r = benjaminiHochberg(result, parameters.getAlpha());
+
+		if (canceller.isCancelled()) {
+			return null;
+		}
 
 		return new CategoricalComparisonResult(attribute, r, parameters.getAlpha());
 	}
