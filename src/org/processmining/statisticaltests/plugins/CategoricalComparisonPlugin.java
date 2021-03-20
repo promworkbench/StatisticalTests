@@ -29,9 +29,9 @@ import org.processmining.statisticaltests.ParametersDefault;
 
 public class CategoricalComparisonPlugin {
 	@Plugin(name = "Compare sub-logs defined by categorical attribute", level = PluginLevel.Regular, returnLabels = {
-			"Association result" }, returnTypes = { CategoricalComparisonResult.class }, parameterLabels = {
+			"Compare sub-logs result" }, returnTypes = { CategoricalComparisonResult.class }, parameterLabels = {
 					"Event log" }, userAccessible = true, categories = { PluginCategory.Analytics,
-							PluginCategory.ConformanceChecking }, help = "Compare processes of categorical attribute using statistal tests.")
+							PluginCategory.ConformanceChecking }, help = "Compare processes of categorical attribute using statistal tests. Alpha will be adjusted for multiple tests using the Benjamini-Hochberg method.")
 	@UITopiaVariant(affiliation = IMMiningDialog.affiliation, author = IMMiningDialog.author, email = IMMiningDialog.email)
 	@PluginVariant(variantLabel = "Mine, dialog", requiredParameterLabels = { 0 })
 	public CategoricalComparisonResult compare(final UIPluginContext context, XLog log) throws InterruptedException {
@@ -71,15 +71,20 @@ public class CategoricalComparisonPlugin {
 			XLog logB = factory.createLog();
 
 			for (XTrace trace : log) {
-				if (attribute.getLiteral(trace).equals(value)) {
+				if (attribute.getLiteral(trace) != null && attribute.getLiteral(trace).equals(value)) {
 					logA.add(trace);
 				} else {
 					logB.add(trace);
 				}
 			}
 
-			double p = LogLogUnknownProcessTest.p(logA, logB, pParameters, canceller);
-			result.add(Pair.of(p, value));
+			if (logA.isEmpty() || logB.isEmpty()) {
+				result.add(Pair.of(Double.NaN, value));
+			} else {
+
+				double p = LogLogUnknownProcessTest.p(logA, logB, pParameters, canceller);
+				result.add(Pair.of(p, value));
+			}
 
 			if (progress != null) {
 				progress.setValue(progress.getValue() + 1);

@@ -170,6 +170,10 @@ public class LogLogTest {
 			DistanceMatrix distanceMatrix, EMSCParameters parameters, ProMCanceller canceller) {
 		Pair<ReallocationMatrix, Double> p = ComputeReallocationMatrix2.computeWithDistanceMatrixInitialised(languageA,
 				languageB, distanceMatrix, parameters, canceller);
+		if (canceller.isCancelled()) {
+			return -Double.MAX_VALUE;
+		}
+
 		return p.getB();
 	}
 
