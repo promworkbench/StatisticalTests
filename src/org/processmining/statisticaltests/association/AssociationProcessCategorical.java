@@ -124,7 +124,7 @@ public class AssociationProcessCategorical {
 		}
 
 		if (countA == 0) {
-			return 1;
+			return -Double.MAX_VALUE;
 		}
 		BigDecimal a = sumA.divide(BigDecimal.valueOf(countA), 10, RoundingMode.HALF_UP);
 		BigDecimal r = sumR.divide(BigDecimal.valueOf(countR), 10, RoundingMode.HALF_UP);

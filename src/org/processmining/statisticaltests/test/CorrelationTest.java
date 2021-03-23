@@ -46,7 +46,9 @@ public class CorrelationTest {
 		//		bpic12aAmountRequestedPlot();
 		//		roadFinesAmountRequestedPlot();
 		//roadFinesAmountRequested();
-		bpic11Age();
+		//bpic11Age();
+		bpic17AmountRequested();
+		//bpic12aAmountRequested();
 	}
 
 	public static void legend() throws IOException {
@@ -228,7 +230,7 @@ public class CorrelationTest {
 		File outputCsv = new File(
 				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/05 - correlation sampleSize sensitivity/bpic12a-AMOUNT_REQ-samsen.csv");
 
-		multipleCorrelation(inputLog, outputCsv, 10000, 1000000, attribute);
+		multipleCorrelation(inputLog, outputCsv, 10000, 2000000, attribute);
 	}
 
 	public static void bpic12aAmountRequestedSingle() throws Exception {
@@ -282,7 +284,7 @@ public class CorrelationTest {
 		File outputCsv = new File(
 				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/05 - correlation sampleSize sensitivity/bpic17-RequestedAmount-samsen.csv");
 
-		multipleCorrelation(inputLog, outputCsv, 10000, 1000000, attribute);
+		multipleCorrelation(inputLog, outputCsv, 10000, 2000000, attribute);
 	}
 
 	public static void bpic17AmountRequestedPlot() throws Exception {

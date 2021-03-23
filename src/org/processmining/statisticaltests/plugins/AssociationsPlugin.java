@@ -104,6 +104,17 @@ public class AssociationsPlugin {
 		return result;
 	}
 
+	/**
+	 * 
+	 * @param log
+	 * @param attribute
+	 * @param parameters
+	 * @param plot
+	 * @param canceller
+	 * @return pair of correlation and correlation plot, or null if the
+	 *         correlation does not exist
+	 * @throws InterruptedException
+	 */
 	public static Pair<Double, BufferedImage> computeNumericCorrelation(XLog log, Attribute attribute,
 			AssociationsParameters parameters, CorrelationPlot plot, ProMCanceller canceller)
 			throws InterruptedException {
@@ -117,7 +128,15 @@ public class AssociationsPlugin {
 		double[] x = result[0];
 		double[] y = result[1];
 		BigDecimal meanY = Correlation.mean(y);
+		if (meanY == null) {
+			return null;
+		}
+
 		double standardDeviationYd = Correlation.standardDeviation(y, meanY);
+		if (!Correlation.isValid(standardDeviationYd)) {
+			return null;
+		}
+
 		double correlation = Correlation.correlation(x, y, meanY, standardDeviationYd).doubleValue();
 
 		BufferedImage image = plot.create("Δ " + attribute.getName(), x, "Δ trace", y);
@@ -125,16 +144,28 @@ public class AssociationsPlugin {
 		return Pair.of(correlation, image);
 	}
 
+	/**
+	 * 
+	 * @param log
+	 * @param attribute
+	 * @param parameters
+	 * @param canceller
+	 * @return the correlation, or Double.NaN if it does not exist.
+	 * @throws InterruptedException
+	 */
 	public static double computeCategoricalCorrelation(XLog log, Attribute attribute, AssociationsParameters parameters,
 			ProMCanceller canceller) throws InterruptedException {
 		AssociationParametersCategoricalAbstract parametersc = new AssociationParametersCategoricalDefault(attribute);
 		double[] result = AssociationProcessCategorical.compute(parametersc, log, canceller);
 
 		if (result == null) {
-			return -Double.MAX_VALUE;
+			return Double.NaN;
 		}
 
 		BigDecimal mean = Correlation.mean(result);
+		if (mean == null) {
+			return Double.NaN;
+		}
 
 		return mean.doubleValue();
 	}
