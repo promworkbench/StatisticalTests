@@ -20,7 +20,15 @@ import gnu.trove.set.hash.THashSet;
 
 public class AssociationProcessCategorical {
 
-	public static double[] compute(AssociationParametersCategorical parameters, XLog log, ProMCanceller canceller)
+	/**
+	 * 
+	 * @param parameters
+	 * @param log
+	 * @param canceller
+	 * @return the association measures, or NaN if it does not exist
+	 * @throws InterruptedException
+	 */
+	public static double compute(AssociationParametersCategorical parameters, XLog log, ProMCanceller canceller)
 			throws InterruptedException {
 		//select traces that have the attribute
 		if (parameters.isDebug()) {
@@ -39,11 +47,12 @@ public class AssociationProcessCategorical {
 			}
 
 			if (values.size() < 2) {
-				return null;
+				return Double.NaN;
 			}
 		}
 
-		double[] result = new double[parameters.getNumberOfSamples()];
+		AtomicInteger countSuccess = new AtomicInteger(0);
+		AtomicInteger count = new AtomicInteger(0);
 
 		//perform the sampling
 		if (parameters.isDebug()) {
@@ -70,8 +79,14 @@ public class AssociationProcessCategorical {
 
 						int[] sample = getSample(traces, parameters.getSampleSize(), random);
 
-						result[sampleNumber] = processSample(traces, sample, parameters.getClassifier(),
+						Boolean result = processSample(traces, sample, parameters.getClassifier(),
 								parameters.getAttribute());
+						if (result != null) {
+							if (result) {
+								countSuccess.incrementAndGet();
+							}
+							count.getAndIncrement();
+						}
 
 						if (parameters.isDebug() && sampleNumber % 100 == 0) {
 							System.out.println(" sample " + sampleNumber);
@@ -89,7 +104,11 @@ public class AssociationProcessCategorical {
 			thread.join();
 		}
 
-		return result;
+		if (count.get() == 0) {
+			return Double.NaN;
+		}
+
+		return countSuccess.get() / (count.get() * 1.0);
 	}
 
 	public static int[] getSample(List<XTrace> traces, int sampleSize, Random random) {
@@ -100,7 +119,7 @@ public class AssociationProcessCategorical {
 		return sample;
 	}
 
-	public static double processSample(List<XTrace> traces, int[] sample, XEventClassifier classifier,
+	public static Boolean processSample(List<XTrace> traces, int[] sample, XEventClassifier classifier,
 			Attribute attribute) {
 		BigDecimal sumA = BigDecimal.ZERO;
 		int countA = 0;
@@ -124,11 +143,11 @@ public class AssociationProcessCategorical {
 		}
 
 		if (countA == 0) {
-			return -Double.MAX_VALUE;
+			return null;
 		}
 		BigDecimal a = sumA.divide(BigDecimal.valueOf(countA), 10, RoundingMode.HALF_UP);
 		BigDecimal r = sumR.divide(BigDecimal.valueOf(countR), 10, RoundingMode.HALF_UP);
 
-		return a.divide(r, 10, RoundingMode.HALF_UP).doubleValue();
+		return a.compareTo(r) >= 0;
 	}
 }

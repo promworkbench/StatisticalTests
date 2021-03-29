@@ -156,17 +156,6 @@ public class AssociationsPlugin {
 	public static double computeCategoricalCorrelation(XLog log, Attribute attribute, AssociationsParameters parameters,
 			ProMCanceller canceller) throws InterruptedException {
 		AssociationParametersCategoricalAbstract parametersc = new AssociationParametersCategoricalDefault(attribute);
-		double[] result = AssociationProcessCategorical.compute(parametersc, log, canceller);
-
-		if (result == null) {
-			return Double.NaN;
-		}
-
-		BigDecimal mean = Correlation.mean(result);
-		if (mean == null) {
-			return Double.NaN;
-		}
-
-		return mean.doubleValue();
+		return AssociationProcessCategorical.compute(parametersc, log, canceller);
 	}
 }
