@@ -1,16 +1,16 @@
 package org.processmining.statisticaltests;
 
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.Activity2IndexKey;
-import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.StochasticLanguage;
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.StochasticTraceIterator;
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.log.StochasticLanguageLog;
 
-public class StochasticLanguageWrapper implements StochasticLanguageLog {
+public class StochasticLanguageWrapper extends StochasticLanguageLog {
 
-	private final StochasticLanguage superLanguage;
+	private final StochasticLanguageLog superLanguage;
 	private double[] newProbabilities;
 
-	public StochasticLanguageWrapper(StochasticLanguage superLanguage, double[] newProbabilities) {
+	public StochasticLanguageWrapper(StochasticLanguageLog superLanguage, double[] newProbabilities) {
+		super(superLanguage.getActivityKey());
 		this.superLanguage = superLanguage;
 		this.newProbabilities = newProbabilities;
 	}
@@ -19,7 +19,7 @@ public class StochasticLanguageWrapper implements StochasticLanguageLog {
 		return superLanguage.size();
 	}
 
-	public String[] getTraceString(int traceIndex) {
+	public String getTraceString(int traceIndex) {
 		return superLanguage.getTraceString(traceIndex);
 	}
 
@@ -27,27 +27,30 @@ public class StochasticLanguageWrapper implements StochasticLanguageLog {
 		return superLanguage.getTrace(traceIndex);
 	}
 
-	public StochasticTraceIterator iterator() {
-		final StochasticTraceIterator superIterator = superLanguage.iterator();
-		return new StochasticTraceIterator() {
+	public StochasticTraceIterator<int[]> iterator() {
+		final StochasticTraceIterator<int[]> superIterator = superLanguage.iterator();
+		return new StochasticTraceIterator<int[]>() {
 			int i = -1;
 
+			@Override
 			public boolean hasNext() {
 				return superIterator.hasNext();
 			}
 
-			public int[] nextIntegerTrace() {
-				i++;
-				return superIterator.nextIntegerTrace();
-			}
-
-			public String[] next() {
+			@Override
+			public int[] next() {
 				i++;
 				return superIterator.next();
 			}
 
+			@Override
 			public double getProbability() {
 				return newProbabilities[i];
+			}
+
+			@Override
+			public int getTraceIndex() {
+				return i;
 			}
 		};
 	}

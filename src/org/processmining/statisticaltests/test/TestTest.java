@@ -159,7 +159,8 @@ public class TestTest {
 			double probMinTrace = Double.MAX_VALUE;
 			String[] traceMinTrace = null;
 			for (StochasticTraceIterator it = language.iterator(); it.hasNext();) {
-				String[] trace = it.next();
+				it.next();
+				String[] trace = language.getStringTrace(it.getTraceIndex());
 				if (it.getProbability() < probMinTrace) {
 					probMinTrace = it.getProbability();
 					traceMinTrace = trace;
@@ -172,7 +173,8 @@ public class TestTest {
 			double probSMinTrace = Double.MAX_VALUE;
 			String[] traceSMinTrace = null;
 			for (StochasticTraceIterator it = language.iterator(); it.hasNext();) {
-				String[] trace = it.next();
+				it.next();
+				String[] trace = language.getStringTrace(it.getTraceIndex());
 				if (it.getProbability() < probSMinTrace && it.getProbability() > probMinTrace) {
 					probSMinTrace = it.getProbability();
 					traceSMinTrace = trace;
@@ -220,7 +222,8 @@ public class TestTest {
 			double probMinTrace = Double.MAX_VALUE;
 			String[] traceMinTrace = null;
 			for (StochasticTraceIterator it = language.iterator(); it.hasNext();) {
-				String[] trace = it.next();
+				it.next();
+				String[] trace = language.getStringTrace(it.getTraceIndex());
 				if (it.getProbability() < probMinTrace) {
 					probMinTrace = it.getProbability();
 					traceMinTrace = trace;
@@ -233,7 +236,8 @@ public class TestTest {
 			double probSMinTrace = Double.MAX_VALUE;
 			String[] traceSMinTrace = null;
 			for (StochasticTraceIterator it = language.iterator(); it.hasNext();) {
-				String[] trace = it.next();
+				it.next();
+				String[] trace = language.getStringTrace(it.getTraceIndex());
 				if (it.getProbability() < probSMinTrace && it.getProbability() > probMinTrace) {
 					probSMinTrace = it.getProbability();
 					traceSMinTrace = trace;
@@ -278,7 +282,8 @@ public class TestTest {
 		if (!LE.exists()) {
 			XLogWriterIncremental writer = new XLogWriterIncremental(LE);
 			for (StochasticTraceIterator it = language.iterator(); it.hasNext();) {
-				String[] trace = it.next();
+				it.next();
+				String[] trace = language.getStringTrace(it.getTraceIndex());
 				writer.startTrace();
 				for (String activity : trace) {
 					writer.writeEvent(activity, "complete");
@@ -296,7 +301,8 @@ public class TestTest {
 			double probMaxTrace = -Double.MAX_VALUE;
 			String[] traceMaxTrace = null;
 			for (StochasticTraceIterator it = language.iterator(); it.hasNext();) {
-				String[] trace = it.next();
+				it.next();
+				String[] trace = language.getStringTrace(it.getTraceIndex());
 				if (it.getProbability() > probMaxTrace) {
 					probMaxTrace = it.getProbability();
 					traceMaxTrace = trace;
@@ -309,7 +315,8 @@ public class TestTest {
 			double probSMaxTrace = -Double.MAX_VALUE;
 			String[] traceSMaxTrace = null;
 			for (StochasticTraceIterator it = language.iterator(); it.hasNext();) {
-				String[] trace = it.next();
+				it.next();
+				String[] trace = language.getStringTrace(it.getTraceIndex());
 				if (it.getProbability() > probSMaxTrace && it.getProbability() < probMaxTrace) {
 					probSMaxTrace = it.getProbability();
 					traceSMaxTrace = trace;

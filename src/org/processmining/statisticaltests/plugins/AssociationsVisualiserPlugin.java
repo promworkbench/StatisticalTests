@@ -81,7 +81,9 @@ public class AssociationsVisualiserPlugin {
 		};
 
 		JTable table = new JTable(model);
-		table.setRowHeight(height);
+		if (height > 0) {
+			table.setRowHeight(height);
+		}
 		table.setAutoCreateRowSorter(true);
 		table.setFillsViewportHeight(true);
 

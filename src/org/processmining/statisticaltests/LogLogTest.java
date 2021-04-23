@@ -86,8 +86,10 @@ public class LogLogTest {
 		//System.out.println(StochasticLanguageLog2String.toString(languageB, false));
 		EMSCParametersLogLogAbstract emscParameters = new EMSCParametersLogLogDefault();
 		emscParameters.setComputeStochasticTraceAlignments(false);
-		DistanceMatrix distanceMatrixAA = EMSCParametersDefault.defaultDistanceMatrix.clone();
-		DistanceMatrix distanceMatrixAB = EMSCParametersDefault.defaultDistanceMatrix.clone();
+		@SuppressWarnings("unchecked")
+		DistanceMatrix<int[], int[]> distanceMatrixAA = EMSCParametersDefault.defaultDistanceMatrix.clone();
+		@SuppressWarnings("unchecked")
+		DistanceMatrix<int[], int[]> distanceMatrixAB = EMSCParametersDefault.defaultDistanceMatrix.clone();
 		distanceMatrixAA.init(languageA, languageA, canceller);
 		distanceMatrixAB.init(languageA, languageB, canceller);
 
@@ -147,9 +149,9 @@ public class LogLogTest {
 	public static double[] getMassKeyCumulative(StochasticLanguageLog language) {
 		double[] result = new double[language.size()];
 		BigDecimal cumulative = BigDecimal.ZERO;
-		StochasticTraceIterator it = language.iterator();
+		StochasticTraceIterator<int[]> it = language.iterator();
 		for (int i = 1; i < result.length; i++) {
-			it.nextIntegerTrace();
+			it.next();
 			cumulative = cumulative.add(new BigDecimal(it.getProbability()));
 			result[i] = cumulative.doubleValue();
 		}
@@ -158,16 +160,16 @@ public class LogLogTest {
 
 	public static double[] getMassKeyNormal(StochasticLanguageLog language) {
 		double[] result = new double[language.size()];
-		StochasticTraceIterator it = language.iterator();
+		StochasticTraceIterator<int[]> it = language.iterator();
 		for (int i = 0; i < result.length; i++) {
-			it.nextIntegerTrace();
+			it.next();
 			result[i] = it.getProbability();
 		}
 		return result;
 	}
 
-	public static double getSimilarity(StochasticLanguage languageA, StochasticLanguage languageB,
-			DistanceMatrix distanceMatrix, EMSCParameters parameters, ProMCanceller canceller) {
+	public static double getSimilarity(StochasticLanguage<?> languageA, StochasticLanguage<?> languageB,
+			DistanceMatrix<?, ?> distanceMatrix, EMSCParameters parameters, ProMCanceller canceller) {
 		Pair<ReallocationMatrix, Double> p = ComputeReallocationMatrix2.computeWithDistanceMatrixInitialised(languageA,
 				languageB, distanceMatrix, parameters, canceller);
 		if (canceller.isCancelled()) {
@@ -177,7 +179,7 @@ public class LogLogTest {
 		return p.getB();
 	}
 
-	public static StochasticLanguageLog applySample(StochasticLanguage language, double[] sample) {
+	public static StochasticLanguageLog applySample(StochasticLanguageLog language, double[] sample) {
 		return new StochasticLanguageWrapper(language, sample);
 	}
 
