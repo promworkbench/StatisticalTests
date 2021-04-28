@@ -29,7 +29,7 @@ public class AssociationProcessNumerical {
 			double min = Double.MAX_VALUE;
 			for (XTrace trace : log) {
 				double value = AttributeUtils.valueDouble(parameters.getAttribute(), trace);
-				if (value != -Double.MAX_VALUE) {
+				if (value != -Double.MAX_VALUE && !(parameters.getAttribute().isTime() && value < 0)) {
 					max = Math.max(max, value);
 					min = Math.min(min, value);
 					traces.add(trace);
