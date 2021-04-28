@@ -27,14 +27,14 @@ public class CategoricalComparisonVisualiserPlugin {
 	@Visualizer
 	@UITopiaVariant(affiliation = IMMiningDialog.affiliation, author = IMMiningDialog.author, email = IMMiningDialog.email)
 	@PluginVariant(variantLabel = "Visualise process tree", requiredParameterLabels = { 0 })
-	public JComponent fancy(PluginContext context, CategoricalComparisonResult comparison)
+	public JComponent fancy(PluginContext context, CategoricalComparisonResult<?> comparison)
 			throws UnknownTreeNodeException {
 		String[] columnNames = new String[] { comparison.getAttribute().getName(), "p-value", "result" };
 
 		Object[][] data = new Object[comparison.get().size()][3];
 
 		int i = 0;
-		for (Triple<Double, Boolean, String> t : comparison.get()) {
+		for (Triple<Double, Boolean, ?> t : comparison.get()) {
 
 			data[i][0] = t.getC();
 			if (t.getA() != -Double.MAX_VALUE) {

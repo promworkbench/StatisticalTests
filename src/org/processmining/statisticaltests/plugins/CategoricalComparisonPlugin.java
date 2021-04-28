@@ -34,7 +34,7 @@ public class CategoricalComparisonPlugin {
 							PluginCategory.ConformanceChecking }, help = "Compare processes of categorical attribute using statistal tests. Alpha will be adjusted for multiple tests using the Benjamini-Hochberg method.")
 	@UITopiaVariant(affiliation = IMMiningDialog.affiliation, author = IMMiningDialog.author, email = IMMiningDialog.email)
 	@PluginVariant(variantLabel = "Mine, dialog", requiredParameterLabels = { 0 })
-	public CategoricalComparisonResult compare(final UIPluginContext context, XLog log) throws InterruptedException {
+	public CategoricalComparisonResult<?> compare(final UIPluginContext context, XLog log) throws InterruptedException {
 		CategoricalComparisonDialog dialog = new CategoricalComparisonDialog(log);
 		InteractionResult result = context.showWizard("Categorical attribute-process comparison", true, true, dialog);
 
@@ -44,15 +44,87 @@ public class CategoricalComparisonPlugin {
 		}
 
 		CategoricalComparisonParameters parameters = dialog.getParameters();
-		return compute(log, parameters, new ProMCanceller() {
+		return computePairWise(log, parameters, new ProMCanceller() {
 			public boolean isCancelled() {
 				return context.getProgress().isCancelled();
 			}
 		}, context.getProgress());
 	}
 
-	public static CategoricalComparisonResult compute(XLog log, CategoricalComparisonParameters parameters,
-			ProMCanceller canceller, Progress progress) throws InterruptedException {
+	public static CategoricalComparisonResult<Pair<String, String>> computePairWise(XLog log,
+			CategoricalComparisonParameters parameters, ProMCanceller canceller, Progress progress)
+			throws InterruptedException {
+		Attribute attribute = parameters.getAttribute();
+		XFactory factory = new XFactoryNaiveImpl();
+
+		if (progress != null) {
+			progress.setMinimum(0);
+			progress.setMaximum(attribute.getStringValues().size());
+		}
+
+		ParametersDefault pParameters = new ParametersDefault();
+
+		List<Pair<Double, Pair<String, String>>> result = new ArrayList<>();
+
+		for (String valueA : attribute.getStringValues()) {
+			for (String valueB : attribute.getStringValues()) {
+				if (valueA.compareTo(valueB) < 0) {
+					System.out.println(valueA + " vs. " + valueB);
+					//create two logs
+					XLog logA = factory.createLog();
+					XLog logB = factory.createLog();
+
+					for (XTrace trace : log) {
+						if (attribute.getLiteral(trace) != null) {
+							if (attribute.getLiteral(trace).equals(valueA)) {
+								logA.add(trace);
+							} else if (attribute.getLiteral(trace).equals(valueB)) {
+								logB.add(trace);
+							}
+						}
+					}
+
+					if (logA.isEmpty() || logB.isEmpty()) {
+						result.add(Pair.of(Double.NaN, Pair.of(valueA, valueB)));
+					} else {
+						double p = LogLogUnknownProcessTest.p(logA, logB, pParameters, canceller);
+
+						if (canceller.isCancelled()) {
+							return null;
+						}
+
+						System.out.println(p);
+						result.add(Pair.of(p, Pair.of(valueA, valueB)));
+					}
+
+					if (canceller.isCancelled()) {
+						return null;
+					}
+
+					if (progress != null) {
+						progress.setValue(progress.getValue() + 1);
+					}
+				}
+			}
+		}
+
+		if (canceller.isCancelled()) {
+			return null;
+		}
+
+		//apply Benjamini-Hochberg
+		List<Triple<Double, Boolean, Pair<String, String>>> r = benjaminiHochberg(result, parameters.getAlpha());
+
+		if (canceller.isCancelled()) {
+			return null;
+		}
+
+		return new CategoricalComparisonResult<Pair<String, String>>(attribute, r, parameters.getAlpha());
+	}
+
+	public static CategoricalComparisonResult<String> computeOneVsOther(XLog log,
+			CategoricalComparisonParameters parameters, ProMCanceller canceller, Progress progress)
+			throws InterruptedException {
 		Attribute attribute = parameters.getAttribute();
 		XFactory factory = new XFactoryNaiveImpl();
 
@@ -110,7 +182,7 @@ public class CategoricalComparisonPlugin {
 			return null;
 		}
 
-		return new CategoricalComparisonResult(attribute, r, parameters.getAlpha());
+		return new CategoricalComparisonResult<String>(attribute, r, parameters.getAlpha());
 	}
 
 	/**

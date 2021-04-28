@@ -37,8 +37,8 @@ public class CorrelationTest {
 		//bpic15mergedStartDatePlot();
 		//bpic15mergedStartDate();
 
-		//bpic15EndDateSingle(1);
-		//bpic15EndDatePlot(1);
+		bpic15EndDateSingle(1);
+		bpic15EndDatePlot(1);
 
 		//		testLogSingle(1);
 		//		testLogPlot();
@@ -47,7 +47,7 @@ public class CorrelationTest {
 		//		roadFinesAmountRequestedPlot();
 		//roadFinesAmountRequested();
 		//bpic11Age();
-		bpic17AmountRequested();
+		//bpic17AmountRequested();
 		//bpic12aAmountRequested();
 	}
 

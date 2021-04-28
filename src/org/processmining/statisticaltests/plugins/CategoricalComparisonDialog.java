@@ -34,6 +34,7 @@ public class CategoricalComparisonDialog extends JPanel {
 	private ClassifierChooser classifiers;
 	private JComboBox<Attribute> attributesc;
 
+	@SuppressWarnings("unchecked")
 	public CategoricalComparisonDialog(XLog log) {
 		SlickerFactory factory = SlickerFactory.instance();
 
