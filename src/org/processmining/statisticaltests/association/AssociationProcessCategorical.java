@@ -13,6 +13,7 @@ import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
 import org.processmining.earthmoversstochasticconformancechecking.distancematrix.Levenshtein;
 import org.processmining.framework.plugin.ProMCanceller;
+import org.processmining.plugins.InductiveMiner.Pair;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 import org.processmining.plugins.inductiveminer2.attributes.AttributeUtils;
 
@@ -25,10 +26,10 @@ public class AssociationProcessCategorical {
 	 * @param parameters
 	 * @param log
 	 * @param canceller
-	 * @return the association measures, or NaN if it does not exist
+	 * @return the sample data, or null if it does not exist
 	 * @throws InterruptedException
 	 */
-	public static double compute(AssociationParametersCategorical parameters, XLog log, ProMCanceller canceller)
+	public static double[][] compute(AssociationParametersCategorical parameters, XLog log, ProMCanceller canceller)
 			throws InterruptedException {
 		//select traces that have the attribute
 		if (parameters.isDebug()) {
@@ -47,12 +48,13 @@ public class AssociationProcessCategorical {
 			}
 
 			if (values.size() < 2) {
-				return Double.NaN;
+				return null;
 			}
 		}
 
-		AtomicInteger countSuccess = new AtomicInteger(0);
-		AtomicInteger count = new AtomicInteger(0);
+		//setup result
+		final double[] as = new double[parameters.getNumberOfSamples()];
+		final double[] rs = new double[parameters.getNumberOfSamples()];
 
 		//perform the sampling
 		if (parameters.isDebug()) {
@@ -77,15 +79,16 @@ public class AssociationProcessCategorical {
 							return;
 						}
 
-						int[] sample = getSample(traces, parameters.getSampleSize(), random);
+						int[] sample = getSample(traces, log.size(), random);
 
-						Boolean result = processSample(traces, sample, parameters.getClassifier(),
+						Pair<BigDecimal, BigDecimal> result = processSample(traces, sample, parameters.getClassifier(),
 								parameters.getAttribute());
-						if (result != null) {
-							if (result) {
-								countSuccess.incrementAndGet();
-							}
-							count.getAndIncrement();
+						if (result == null) {
+							as[sampleNumber] = Double.NaN;
+							rs[sampleNumber] = Double.NaN;
+						} else {
+							as[sampleNumber] = result.getA().doubleValue();
+							rs[sampleNumber] = result.getB().doubleValue();
 						}
 
 						if (parameters.isDebug() && sampleNumber % 100 == 0) {
@@ -104,11 +107,7 @@ public class AssociationProcessCategorical {
 			thread.join();
 		}
 
-		if (count.get() == 0) {
-			return Double.NaN;
-		}
-
-		return countSuccess.get() / (count.get() * 1.0);
+		return new double[][] { as, rs };
 	}
 
 	public static int[] getSample(List<XTrace> traces, int sampleSize, Random random) {
@@ -119,8 +118,17 @@ public class AssociationProcessCategorical {
 		return sample;
 	}
 
-	public static Boolean processSample(List<XTrace> traces, int[] sample, XEventClassifier classifier,
-			Attribute attribute) {
+	/**
+	 * 
+	 * @param traces
+	 * @param sample
+	 * @param classifier
+	 * @param attribute
+	 * @return (average trace distance with knowledge, average trace distance
+	 *         without knowledge)
+	 */
+	public static Pair<BigDecimal, BigDecimal> processSample(List<XTrace> traces, int[] sample,
+			XEventClassifier classifier, Attribute attribute) {
 		BigDecimal sumA = BigDecimal.ZERO;
 		int countA = 0;
 		BigDecimal sumR = BigDecimal.ZERO;
@@ -148,6 +156,6 @@ public class AssociationProcessCategorical {
 		BigDecimal a = sumA.divide(BigDecimal.valueOf(countA), 10, RoundingMode.HALF_UP);
 		BigDecimal r = sumR.divide(BigDecimal.valueOf(countR), 10, RoundingMode.HALF_UP);
 
-		return a.compareTo(r) >= 0;
+		return Pair.of(a, r);
 	}
 }
