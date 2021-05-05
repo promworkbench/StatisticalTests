@@ -89,7 +89,7 @@ public class AssociationProcessCategorical {
 							return;
 						}
 
-						int[] sample = getSample(traces, parameters.getSampleSize(), random);
+						int[] sample = getSample(traces, Math.max(parameters.getSampleSize(), traces.size()), random);
 
 						Pair<BigDecimal, BigDecimal> result = processSample(traces, sample, parameters.getClassifier(),
 								parameters.getAttribute());
