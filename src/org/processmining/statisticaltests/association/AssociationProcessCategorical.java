@@ -33,7 +33,7 @@ public class AssociationProcessCategorical {
 			throws InterruptedException {
 		//select traces that have the attribute
 		if (parameters.isDebug()) {
-			System.out.println(" select traces");
+			System.out.println(" select traces for attribute " + parameters.getAttribute());
 		}
 		final List<XTrace> traces = new ArrayList<>();
 		{
@@ -48,18 +48,28 @@ public class AssociationProcessCategorical {
 			}
 
 			if (values.size() < 2) {
+				if (parameters.isDebug()) {
+					System.out.println("  attribute rejected as it does not have 2 values");
+				}
 				return null;
+			}
+
+			if (values.size() == traces.size()) {
+				if (parameters.isDebug()) {
+					System.out.println("  attribute rejected as each value of the attribute is unique");
+				}
+				return null;
+			}
+
+			//perform the sampling
+			if (parameters.isDebug()) {
+				System.out.println(" start sampling threads; traces: " + traces.size() + "; values: " + values.size());
 			}
 		}
 
 		//setup result
 		final double[] as = new double[parameters.getNumberOfSamples()];
 		final double[] rs = new double[parameters.getNumberOfSamples()];
-
-		//perform the sampling
-		if (parameters.isDebug()) {
-			System.out.println(" start sampling threads");
-		}
 
 		final AtomicInteger nextSampleNumber = new AtomicInteger(0);
 
@@ -79,7 +89,7 @@ public class AssociationProcessCategorical {
 							return;
 						}
 
-						int[] sample = getSample(traces, log.size(), random);
+						int[] sample = getSample(traces, parameters.getSampleSize(), random);
 
 						Pair<BigDecimal, BigDecimal> result = processSample(traces, sample, parameters.getClassifier(),
 								parameters.getAttribute());
@@ -153,6 +163,7 @@ public class AssociationProcessCategorical {
 		if (countA == 0) {
 			return null;
 		}
+
 		BigDecimal a = sumA.divide(BigDecimal.valueOf(countA), 10, RoundingMode.HALF_UP);
 		BigDecimal r = sumR.divide(BigDecimal.valueOf(countR), 10, RoundingMode.HALF_UP);
 

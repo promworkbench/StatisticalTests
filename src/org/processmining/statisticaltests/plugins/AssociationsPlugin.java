@@ -156,6 +156,7 @@ public class AssociationsPlugin {
 	public static double computeCategoricalCorrelation(XLog log, Attribute attribute, AssociationsParameters parameters,
 			ProMCanceller canceller) throws InterruptedException {
 		AssociationParametersCategoricalAbstract parametersc = new AssociationParametersCategoricalDefault(attribute);
+		parametersc.setDebug(true);
 
 		double[][] result = AssociationProcessCategorical.compute(parametersc, log, canceller);
 
@@ -167,15 +168,25 @@ public class AssociationsPlugin {
 		double[] y = result[1];
 		BigDecimal meanY = Correlation.mean(y);
 		if (meanY == null) {
+			if (parametersc.isDebug()) {
+				System.out.println("  attribute rejected as there is no mean");
+			}
 			return Double.NaN;
 		}
 
 		double standardDeviationYd = Correlation.standardDeviation(y, meanY);
 		if (!Correlation.isValid(standardDeviationYd)) {
+			if (parametersc.isDebug()) {
+				System.out.println("  attribute rejected as standard deviation is invalid");
+			}
 			return Double.NaN;
 		}
 
-		double correlation = Correlation.correlation(x, y, meanY, standardDeviationYd).doubleValue();
+		double correlation = 1 - Correlation.correlation(x, y, meanY, standardDeviationYd).doubleValue();
+
+		if (parametersc.isDebug()) {
+			System.out.println("  correlation: " + correlation);
+		}
 
 		return correlation;
 	}
