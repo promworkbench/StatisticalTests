@@ -2,10 +2,8 @@ package org.processmining.statisticaltests.association;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.deckfour.xes.classification.XEventClassifier;
@@ -16,8 +14,7 @@ import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.plugins.InductiveMiner.Pair;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 import org.processmining.plugins.inductiveminer2.attributes.AttributeUtils;
-
-import gnu.trove.set.hash.THashSet;
+import org.processmining.statisticaltests.helperclasses.StatisticalTestUtils;
 
 public class AssociationProcessCategorical {
 
@@ -35,36 +32,10 @@ public class AssociationProcessCategorical {
 		if (parameters.isDebug()) {
 			System.out.println(" select traces for attribute " + parameters.getAttribute());
 		}
-		final List<XTrace> traces = new ArrayList<>();
-		{
-			Set<String> values = new THashSet<>();
-
-			for (XTrace trace : log) {
-				String value = AttributeUtils.valueString(parameters.getAttribute(), trace);
-				if (value != null) {
-					values.add(value);
-					traces.add(trace);
-				}
-			}
-
-			if (values.size() < 2) {
-				if (parameters.isDebug()) {
-					System.out.println("  attribute rejected as it does not have 2 values");
-				}
-				return null;
-			}
-
-			if (values.size() == traces.size()) {
-				if (parameters.isDebug()) {
-					System.out.println("  attribute rejected as each value of the attribute is unique");
-				}
-				return null;
-			}
-
-			//perform the sampling
-			if (parameters.isDebug()) {
-				System.out.println(" start sampling threads; traces: " + traces.size() + "; values: " + values.size());
-			}
+		final List<XTrace> traces = StatisticalTestUtils.filterTracesCategorical(parameters.getAttribute(), log,
+				parameters.isDebug());
+		if (traces == null) {
+			return null;
 		}
 
 		//setup result
@@ -89,7 +60,8 @@ public class AssociationProcessCategorical {
 							return;
 						}
 
-						int[] sample = getSample(traces, Math.max(parameters.getSampleSize(), traces.size()), random);
+						int[] sample = StatisticalTestUtils.getSample(traces,
+								Math.max(parameters.getSampleSize(), traces.size()), random);
 
 						Pair<BigDecimal, BigDecimal> result = processSample(traces, sample, parameters.getClassifier(),
 								parameters.getAttribute());
@@ -118,14 +90,6 @@ public class AssociationProcessCategorical {
 		}
 
 		return new double[][] { as, rs };
-	}
-
-	public static int[] getSample(List<XTrace> traces, int sampleSize, Random random) {
-		int[] sample = new int[sampleSize];
-		for (int i = 0; i < sampleSize; i++) {
-			sample[i] = random.nextInt(traces.size());
-		}
-		return sample;
 	}
 
 	/**
