@@ -25,6 +25,7 @@ import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.framework.util.HTMLToString;
 import org.processmining.plugins.InductiveMiner.Pair;
 import org.processmining.plugins.InductiveMiner.plugins.dialogs.IMMiningDialog;
+import org.processmining.statisticaltests.helperclasses.AliasMethod;
 
 @Plugin(name = "Significance test: log-log differs", returnLabels = { "Statistical significance" }, returnTypes = {
 		HTMLToString.class }, parameterLabels = { "Log A", "Log B" }, userAccessible = true, categories = {

@@ -1,4 +1,4 @@
-package org.processmining.statisticaltests;
+package org.processmining.statisticaltests.helperclasses;
 
 /******************************************************************************
  * File: AliasMethod.java Author: Keith Schwarz (htiek@cs.stanford.edu)

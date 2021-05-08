@@ -12,6 +12,7 @@ import org.processmining.earthmoversstochasticconformancechecking.parameters.EMS
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.Activity2IndexKey;
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.log.StochasticLanguageLog;
 import org.processmining.framework.plugin.ProMCanceller;
+import org.processmining.statisticaltests.helperclasses.AliasMethod;
 
 import com.google.common.util.concurrent.AtomicDouble;
 
