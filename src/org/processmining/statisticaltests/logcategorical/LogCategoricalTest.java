@@ -8,8 +8,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
 import org.processmining.framework.plugin.ProMCanceller;
+import org.processmining.plugins.InductiveMiner.Pair;
 import org.processmining.plugins.inductiveminer2.attributes.AttributeUtils;
 import org.processmining.statisticaltests.StatisticalTest;
+import org.processmining.statisticaltests.helperclasses.ConcurrentSamples;
 import org.processmining.statisticaltests.helperclasses.DistanceCache;
 import org.processmining.statisticaltests.helperclasses.StatisticalTestUtils;
 
@@ -26,7 +28,8 @@ public class LogCategoricalTest implements StatisticalTest<XLog, LogCategoricalT
 		return p < alpha;
 	}
 
-	public double test(XLog log, final LogCategoricalTestParameters parameters, final ProMCanceller canceller) {
+	public double test(XLog log, final LogCategoricalTestParameters parameters, final ProMCanceller canceller)
+			throws InterruptedException {
 		AtomicInteger e = new AtomicInteger(0);
 		AtomicInteger n = new AtomicInteger(0);
 
@@ -36,71 +39,64 @@ public class LogCategoricalTest implements StatisticalTest<XLog, LogCategoricalT
 			return Double.NaN;
 		}
 
-		final AtomicInteger nextSampleNumber = new AtomicInteger(0);
+		new ConcurrentSamples<Pair<Random, DistanceCache>>(parameters.getThreads(), parameters.getNumberOfSamples(),
+				canceller) {
 
-		Thread[] threads = new Thread[parameters.getThreads()];
+			protected Pair<Random, DistanceCache> createThreadConstants(int threadNumber) {
+				Random random = new Random(parameters.getSeed() + threadNumber);
+				DistanceCache distances = new DistanceCache(parameters.getClassifier());
 
-		for (int thread = 0; thread < threads.length; thread++) {
-			final int thread2 = thread;
-			threads[thread] = new Thread(new Runnable() {
-				public void run() {
+				return Pair.of(random, distances);
+			}
 
-					Random random = new Random(parameters.getSeed() + thread2);
-					DistanceCache distances = new DistanceCache(parameters.getClassifier());
+			protected void performSample(Pair<Random, DistanceCache> input, int sampleNumber) {
+				Random random = input.getA();
+				DistanceCache distances = input.getB();
 
-					int sampleNumber = nextSampleNumber.getAndIncrement();
-					while (sampleNumber < parameters.getNumberOfSamples()) {
+				int[] sample = StatisticalTestUtils.getSample(traces,
+						Math.max(parameters.getSampleSize(), traces.size()), random);
 
-						if (canceller.isCancelled()) {
-							return;
+				//initialise result variables
+				int countA = 0;
+				BigDecimal sumA = BigDecimal.ZERO;
+				int countR = 0;
+				BigDecimal sumR = BigDecimal.ZERO;
+
+				//perform sample
+				for (int i = 0; i < sample.length; i++) {
+					for (int j = i + 1; j < sample.length; j++) {
+						int indexA = sample[i];
+						int indexB = sample[j];
+
+						XTrace traceA = traces.get(indexA);
+						XTrace traceB = traces.get(indexB);
+
+						BigDecimal distance = BigDecimal.valueOf(distances.get(indexA, traceA, indexB, traceB));
+
+						//keep track of average over all traces
+						countR++;
+						sumR = sumR.add(distance);
+
+						//keep track of average over traces with equal attribute
+						String valueA = AttributeUtils.valueString(parameters.getAttribute(), traceA);
+						String valueB = AttributeUtils.valueString(parameters.getAttribute(), traceB);
+
+						if (valueA.equals(valueB)) {
+							sumA = sumA.add(distance);
+							countA++;
 						}
 
-						int[] sample = StatisticalTestUtils.getSample(traces,
-								Math.max(parameters.getSampleSize(), traces.size()), random);
-
-						//initialise result variables
-						int countA = 0;
-						BigDecimal sumA = BigDecimal.ZERO;
-						int countR = 0;
-						BigDecimal sumR = BigDecimal.ZERO;
-
-						//perform sample
-						for (int i = 0; i < sample.length; i++) {
-							for (int j = i + 1; j < sample.length; j++) {
-								int indexA = sample[i];
-								int indexB = sample[j];
-
-								XTrace traceA = traces.get(indexA);
-								XTrace traceB = traces.get(indexB);
-
-								BigDecimal distance = BigDecimal.valueOf(distances.get(indexA, traceA, indexB, traceB));
-
-								//keep track of average over all traces
-								countR++;
-								sumR = sumR.add(distance);
-
-								//keep track of average over traces with equal attribute
-								String valueA = AttributeUtils.valueString(parameters.getAttribute(), traceA);
-								String valueB = AttributeUtils.valueString(parameters.getAttribute(), traceB);
-
-								if (valueA.equals(valueB)) {
-									sumA = sumA.add(distance);
-									countA++;
-								}
-
-							}
-						}
-
-						if (countA > 0) {
-							n.incrementAndGet();
-							if (sumA.doubleValue() / countA < sumR.doubleValue() / countR) {
-								e.incrementAndGet();
-							}
-						}
 					}
 				}
-			});
-		}
+
+				if (countA > 0) {
+					n.incrementAndGet();
+					if (sumA.doubleValue() / countA < sumR.doubleValue() / countR) {
+						e.incrementAndGet();
+					}
+				}
+			}
+		};
 
 		double p = 1 - e.get() / (1.0 * n.get());
 

@@ -22,6 +22,7 @@ public interface StatisticalTest<I, P extends StatisticalTestParameters> {
 	 * @return the p-value of the test (confirm with
 	 *         rejectHypothesisForSingleTest whether hypothesis is rejected),
 	 *         Double.NaN if the test failed.
+	 * @throws InterruptedException
 	 */
-	public double test(I input, P parameters, ProMCanceller canceller);
+	public double test(I input, P parameters, ProMCanceller canceller) throws InterruptedException;
 }

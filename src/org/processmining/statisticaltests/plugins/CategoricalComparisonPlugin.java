@@ -24,8 +24,8 @@ import org.processmining.plugins.InductiveMiner.plugins.dialogs.IMMiningDialog;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 import org.processmining.statisticaltests.CategoricalComparisonParameters;
 import org.processmining.statisticaltests.CategoricalComparisonResult;
-import org.processmining.statisticaltests.LogLogUnknownProcessTest;
 import org.processmining.statisticaltests.ParametersDefault;
+import org.processmining.statisticaltests.loglogunknownprocesstest.LogLogUnknownProcessTest;
 
 public class CategoricalComparisonPlugin {
 	@Plugin(name = "Compare sub-logs defined by categorical attribute", level = PluginLevel.Regular, returnLabels = {
@@ -153,7 +153,7 @@ public class CategoricalComparisonPlugin {
 			if (logA.isEmpty() || logB.isEmpty()) {
 				result.add(Pair.of(Double.NaN, value));
 			} else {
-				double p = LogLogUnknownProcessTest.p(logA, logB, pParameters, canceller);
+				double p = new LogLogUnknownProcessTest().test(Pair.of(logA, logB), pParameters, canceller);
 
 				if (canceller.isCancelled()) {
 					return null;

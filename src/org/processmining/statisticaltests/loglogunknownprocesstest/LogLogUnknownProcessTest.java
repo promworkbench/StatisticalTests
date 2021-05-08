@@ -12,14 +12,27 @@ import org.processmining.earthmoversstochasticconformancechecking.parameters.EMS
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.Activity2IndexKey;
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.log.StochasticLanguageLog;
 import org.processmining.framework.plugin.ProMCanceller;
+import org.processmining.plugins.InductiveMiner.Pair;
 import org.processmining.statisticaltests.LogLogTest;
+import org.processmining.statisticaltests.StatisticalTest;
 import org.processmining.statisticaltests.helperclasses.AliasMethod;
+import org.processmining.statisticaltests.helperclasses.ConcurrentSamples;
 
 import com.google.common.util.concurrent.AtomicDouble;
 
-public class LogLogUnknownProcessTest {
-	public static double p(XLog logA, XLog logB, LogLogUnknownProcessTestParameters parameters, ProMCanceller canceller)
+public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog>, LogLogUnknownProcessTestParameters> {
+
+	public boolean rejectHypothesisForSingleTest(double p, double alpha) {
+		return p >= 1 - alpha;
+	}
+
+	public double test(Pair<XLog, XLog> input, LogLogUnknownProcessTestParameters parameters, ProMCanceller canceller)
 			throws InterruptedException {
+		XLog logA = input.getA();
+		XLog logB = input.getB();
+
+		int sampleSize = logA.size();
+
 		double[] sampleDistances = new double[parameters.getNumberOfSamples()];
 		AtomicDouble distanceAB = new AtomicDouble();
 
@@ -41,12 +54,12 @@ public class LogLogUnknownProcessTest {
 		StochasticLanguageLog languageB = XLog2StochasticLanguage.convert(logB, parameters.getClassifierB(),
 				activityKey, canceller);
 
-		return p(parameters, canceller, sampleDistances, distanceAB, languageA, languageB);
+		return p(parameters, canceller, sampleDistances, distanceAB, languageA, languageB, sampleSize);
 	}
 
-	public static double p(Parameters parameters, ProMCanceller canceller, double[] sampleDistances,
-			AtomicDouble distanceAB, StochasticLanguageLog languageA, StochasticLanguageLog languageB)
-			throws InterruptedException {
+	public static double p(LogLogUnknownProcessTestParameters parameters, ProMCanceller canceller,
+			double[] sampleDistances, AtomicDouble distanceAB, StochasticLanguageLog languageA,
+			StochasticLanguageLog languageB, int sampleSize) throws InterruptedException {
 		if (parameters.isDebug()) {
 			System.out.println("create distance matrices");
 		}
@@ -65,6 +78,37 @@ public class LogLogUnknownProcessTest {
 		if (parameters.isDebug()) {
 			System.out.println("start sampling threads");
 		}
+
+		new ConcurrentSamples<AliasMethod>(parameters.getThreads(), parameters.getNumberOfSamples(), -1, canceller) {
+
+			protected AliasMethod createThreadConstants(int threadNumber) {
+				SplittableRandom random = new SplittableRandom(parameters.getSeed() + threadNumber);
+				double[] massKeyA = LogLogTest.getMassKeyNormal(languageA);
+				AliasMethod aliasMethodA = new AliasMethod(massKeyA, random);
+
+				return aliasMethodA;
+			}
+
+			protected void performSample(AliasMethod aliasMethodA, int sampleNumber) {
+				if (sampleNumber < 0) {
+					//full log-log comparison
+					distanceAB.set(1 - LogLogTest.getSimilarity(languageA, languageB, distanceMatrixAB, emscParameters,
+							canceller));
+					if (parameters.isDebug()) {
+						System.out.println(" sample reference " + distanceAB);
+					}
+				} else {
+
+					//sample
+					double[] sampleA = LogLogTest.sample(aliasMethodA, sampleSize);
+
+					StochasticLanguageLog languageX = LogLogTest.applySample(languageA, sampleA);
+					sampleDistances[sampleNumber] = 1 - LogLogTest.getSimilarity(languageA, languageX, distanceMatrixAA,
+							emscParameters, canceller);
+				}
+			}
+
+		};
 
 		AtomicInteger nextSampleNumber = new AtomicInteger(-1);
 
@@ -85,40 +129,6 @@ public class LogLogUnknownProcessTest {
 
 					int sampleNumber = nextSampleNumber.getAndIncrement();
 					while (sampleNumber < sampleDistances.length) {
-
-						if (sampleNumber < 0) {
-							//full log-log comparison
-							distanceAB.set(1 - LogLogTest.getSimilarity(languageA, languageB, distanceMatrixAB,
-									emscParameters, canceller));
-							if (parameters.isDebug()) {
-								System.out.println(" sample reference " + distanceAB);
-							}
-						} else {
-
-							//sample
-							long startSample = System.currentTimeMillis();
-
-							double[] sampleA = LogLogTest.sample(aliasMethodA, parameters.getSampleSize());
-
-							timeSample += System.currentTimeMillis() - startSample;
-
-							//compare
-							long startCompare = System.currentTimeMillis();
-
-							StochasticLanguageLog languageX = LogLogTest.applySample(languageA, sampleA);
-							sampleDistances[sampleNumber] = 1 - LogLogTest.getSimilarity(languageA, languageX,
-									distanceMatrixAA, emscParameters, canceller);
-
-							timeCompare += System.currentTimeMillis() - startCompare;
-
-							if (parameters.isDebug() && countInThread % 10 == 0) {
-								System.out.println(
-										" sample " + sampleNumber + ", distance " + sampleDistances[sampleNumber]
-												+ ", sampling@" + timeSample + ", compare@" + timeCompare);
-								timeSample = 0;
-								timeCompare = 0;
-							}
-						}
 
 						sampleNumber = nextSampleNumber.getAndIncrement();
 						countInThread++;
@@ -157,4 +167,5 @@ public class LogLogUnknownProcessTest {
 
 		return p;
 	}
+
 }
