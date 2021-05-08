@@ -12,7 +12,7 @@ import org.processmining.plugins.inductiveminer2.attributes.AttributeUtils;
 import org.processmining.statisticaltests.helperclasses.DistanceCache;
 import org.processmining.statisticaltests.helperclasses.StatisticalTestUtils;
 
-public class LogCategoricalTest {
+public class LogCategoricalTest implements StatisticalTest<XLog, LogCategoricalTestParameters> {
 
 	/**
 	 * 
@@ -21,11 +21,11 @@ public class LogCategoricalTest {
 	 * @return true: reject null-hypothesis that at least one categorical value
 	 *         associates with a different process
 	 */
-	public static boolean rejectHypothesisForSingleTest(double p, double alpha) {
+	public boolean rejectHypothesisForSingleTest(double p, double alpha) {
 		return p < alpha;
 	}
 
-	public static double test(XLog log, final LogCategoricalTestParameters parameters, final ProMCanceller canceller) {
+	public double test(XLog log, final LogCategoricalTestParameters parameters, final ProMCanceller canceller) {
 		AtomicInteger e = new AtomicInteger(0);
 		AtomicInteger n = new AtomicInteger(0);
 

@@ -1,11 +1,16 @@
 package org.processmining.statisticaltests;
 
-public interface LogCategoricalTestParameters extends CategoricalComparisonParameters {
-	public long getSeed();
+import org.deckfour.xes.classification.XEventClassifier;
+import org.processmining.plugins.inductiveminer2.attributes.Attribute;
+
+public interface LogCategoricalTestParameters extends StatisticalTestParameters {
 
 	public int getNumberOfSamples();
 
 	public int getSampleSize();
 
-	public int getThreads();
+	public Attribute getAttribute();
+
+	public XEventClassifier getClassifier();
+
 }
