@@ -1,4 +1,4 @@
-package org.processmining.statisticaltests;
+package org.processmining.statisticaltests.logcategorical;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -9,6 +9,7 @@ import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
 import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.plugins.inductiveminer2.attributes.AttributeUtils;
+import org.processmining.statisticaltests.StatisticalTest;
 import org.processmining.statisticaltests.helperclasses.DistanceCache;
 import org.processmining.statisticaltests.helperclasses.StatisticalTestUtils;
 

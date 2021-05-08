@@ -8,6 +8,7 @@ public class StatisticalTestParametersAbstract implements StatisticalTestParamet
 
 	public StatisticalTestParametersAbstract(boolean debug, int threads, long seed) {
 		assert threads > 0;
+
 		this.debug = debug;
 		this.threads = threads;
 		this.seed = seed;
@@ -28,6 +29,7 @@ public class StatisticalTestParametersAbstract implements StatisticalTestParamet
 	}
 
 	public void setThreads(int threads) {
+		assert threads > 0;
 		this.threads = threads;
 	}
 
