@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import org.deckfour.xes.classification.XEventClassifier;
+import org.deckfour.xes.model.XEvent;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
@@ -68,5 +70,14 @@ public class StatisticalTestUtils {
 			sample[i] = random.nextInt(traces.size());
 		}
 		return sample;
+	}
+
+	public static String[] getTraceString(XTrace xTrace, XEventClassifier classifier) {
+		String[] result = new String[xTrace.size()];
+		for (int i = 0; i < xTrace.size(); i++) {
+			XEvent event = xTrace.get(i);
+			result[i] = classifier.getClassIdentity(event);
+		}
+		return result;
 	}
 }

@@ -21,7 +21,7 @@ import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.statisticaltests.LogLogUnknownProcessTest;
 import org.processmining.statisticaltests.ParametersAbstract;
 import org.processmining.statisticaltests.ParametersDefault;
-import org.processmining.statisticaltests.association.AssociationProcessNumerical;
+import org.processmining.statisticaltests.helperclasses.StatisticalTestUtils;
 import org.processmining.xeslite.plugin.OpenLogFileLiteImplPlugin;
 
 public class TestTest {
@@ -187,8 +187,8 @@ public class TestTest {
 			//copy other traces
 			XLogWriterIncremental writer = new XLogWriterIncremental(TE);
 			for (XTrace trace : log) {
-				if (!Arrays.equals(AssociationProcessNumerical.getTraceString(trace, classifier), traceMinTrace)
-						&& !Arrays.equals(AssociationProcessNumerical.getTraceString(trace, classifier),
+				if (!Arrays.equals(StatisticalTestUtils.getTraceString(trace, classifier), traceMinTrace)
+						&& !Arrays.equals(StatisticalTestUtils.getTraceString(trace, classifier),
 								traceSMinTrace)) {
 					writer.writeTrace(trace);
 				}
@@ -250,8 +250,8 @@ public class TestTest {
 			//copy other traces
 			XLogWriterIncremental writer = new XLogWriterIncremental(TS);
 			for (XTrace trace : log) {
-				if (!Arrays.equals(AssociationProcessNumerical.getTraceString(trace, classifier), traceMinTrace)
-						&& !Arrays.equals(AssociationProcessNumerical.getTraceString(trace, classifier),
+				if (!Arrays.equals(StatisticalTestUtils.getTraceString(trace, classifier), traceMinTrace)
+						&& !Arrays.equals(StatisticalTestUtils.getTraceString(trace, classifier),
 								traceSMinTrace)) {
 					writer.writeTrace(trace);
 				}
@@ -329,8 +329,8 @@ public class TestTest {
 			//copy other traces
 			XLogWriterIncremental writer = new XLogWriterIncremental(MS);
 			for (XTrace trace : log) {
-				if (!Arrays.equals(AssociationProcessNumerical.getTraceString(trace, classifier), traceMaxTrace)
-						&& !Arrays.equals(AssociationProcessNumerical.getTraceString(trace, classifier),
+				if (!Arrays.equals(StatisticalTestUtils.getTraceString(trace, classifier), traceMaxTrace)
+						&& !Arrays.equals(StatisticalTestUtils.getTraceString(trace, classifier),
 								traceSMaxTrace)) {
 					writer.writeTrace(trace);
 				}

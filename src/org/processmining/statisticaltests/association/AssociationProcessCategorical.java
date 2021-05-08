@@ -108,10 +108,10 @@ public class AssociationProcessCategorical {
 		BigDecimal sumR = BigDecimal.ZERO;
 		int countR = 0;
 		for (int i = 0; i < sample.length; i++) {
-			String[] traceI = AssociationProcessNumerical.getTraceString(traces.get(sample[i]), classifier);
+			String[] traceI = StatisticalTestUtils.getTraceString(traces.get(sample[i]), classifier);
 			String valueI = AttributeUtils.valueString(attribute, traces.get(sample[i]));
 			for (int j = i + 1; j < sample.length; j++) {
-				String[] traceJ = AssociationProcessNumerical.getTraceString(traces.get(sample[j]), classifier);
+				String[] traceJ = StatisticalTestUtils.getTraceString(traces.get(sample[j]), classifier);
 				String valueJ = AttributeUtils.valueString(attribute, traces.get(sample[j]));
 				BigDecimal x = BigDecimal.valueOf(Levenshtein.getNormalisedDistance(traceI, traceJ));
 
