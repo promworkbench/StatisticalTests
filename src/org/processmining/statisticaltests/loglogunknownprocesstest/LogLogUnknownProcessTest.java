@@ -1,4 +1,4 @@
-package org.processmining.statisticaltests;
+package org.processmining.statisticaltests.loglogunknownprocesstest;
 
 import java.util.SplittableRandom;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,12 +12,13 @@ import org.processmining.earthmoversstochasticconformancechecking.parameters.EMS
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.Activity2IndexKey;
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.log.StochasticLanguageLog;
 import org.processmining.framework.plugin.ProMCanceller;
+import org.processmining.statisticaltests.LogLogTest;
 import org.processmining.statisticaltests.helperclasses.AliasMethod;
 
 import com.google.common.util.concurrent.AtomicDouble;
 
 public class LogLogUnknownProcessTest {
-	public static double p(XLog logA, XLog logB, Parameters parameters, ProMCanceller canceller)
+	public static double p(XLog logA, XLog logB, LogLogUnknownProcessTestParameters parameters, ProMCanceller canceller)
 			throws InterruptedException {
 		double[] sampleDistances = new double[parameters.getNumberOfSamples()];
 		AtomicDouble distanceAB = new AtomicDouble();
@@ -98,7 +99,7 @@ public class LogLogUnknownProcessTest {
 							long startSample = System.currentTimeMillis();
 
 							double[] sampleA = LogLogTest.sample(aliasMethodA, parameters.getSampleSize());
-							
+
 							timeSample += System.currentTimeMillis() - startSample;
 
 							//compare
