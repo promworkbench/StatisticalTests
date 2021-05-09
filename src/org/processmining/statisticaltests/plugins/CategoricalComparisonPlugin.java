@@ -87,7 +87,7 @@ public class CategoricalComparisonPlugin {
 					if (logA.isEmpty() || logB.isEmpty()) {
 						result.add(Pair.of(Double.NaN, Pair.of(valueA, valueB)));
 					} else {
-						double p = LogLogUnknownProcessTest.p(logA, logB, pParameters, canceller);
+						double p = LogLogUnknownProcessTest.test(Pair.of(logA, logB), pParameters, canceller);
 
 						if (canceller.isCancelled()) {
 							return null;

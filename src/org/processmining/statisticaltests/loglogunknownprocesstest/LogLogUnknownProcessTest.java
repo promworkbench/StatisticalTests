@@ -1,7 +1,6 @@
 package org.processmining.statisticaltests.loglogunknownprocesstest;
 
 import java.util.SplittableRandom;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.deckfour.xes.model.XLog;
 import org.processmining.earthmoversstochasticconformancechecking.algorithms.XLog2StochasticLanguage;
@@ -66,8 +65,8 @@ public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog
 
 		final EMSCParametersLogLogAbstract emscParameters = new EMSCParametersLogLogDefault();
 		emscParameters.setComputeStochasticTraceAlignments(false);
-		final DistanceMatrix distanceMatrixAA = EMSCParametersDefault.defaultDistanceMatrix.clone();
-		final DistanceMatrix distanceMatrixAB = EMSCParametersDefault.defaultDistanceMatrix.clone();
+		final DistanceMatrix<int[], int[]> distanceMatrixAA = EMSCParametersDefault.defaultDistanceMatrix.clone();
+		final DistanceMatrix<int[], int[]> distanceMatrixAB = EMSCParametersDefault.defaultDistanceMatrix.clone();
 		distanceMatrixAA.init(languageA, languageA, canceller);
 		distanceMatrixAB.init(languageA, languageB, canceller);
 
@@ -109,39 +108,6 @@ public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog
 			}
 
 		};
-
-		AtomicInteger nextSampleNumber = new AtomicInteger(-1);
-
-		Thread[] threads = new Thread[parameters.getThreads()];
-
-		for (int thread = 0; thread < threads.length; thread++) {
-			final int thread2 = thread;
-			threads[thread] = new Thread(new Runnable() {
-				public void run() {
-					//create sampler method
-					SplittableRandom random = new SplittableRandom(parameters.getSeed() + thread2);
-					double[] massKeyA = LogLogTest.getMassKeyNormal(languageA);
-					AliasMethod aliasMethodA = new AliasMethod(massKeyA, random);
-
-					long timeSample = 0;
-					long timeCompare = 0;
-					int countInThread = 0;
-
-					int sampleNumber = nextSampleNumber.getAndIncrement();
-					while (sampleNumber < sampleDistances.length) {
-
-						sampleNumber = nextSampleNumber.getAndIncrement();
-						countInThread++;
-					}
-				}
-			}, "log-log test thread " + thread);
-			threads[thread].start();
-		}
-
-		//join
-		for (Thread thread : threads) {
-			thread.join();
-		}
 
 		if (parameters.isDebug()) {
 			System.out.println("find leq distances");
