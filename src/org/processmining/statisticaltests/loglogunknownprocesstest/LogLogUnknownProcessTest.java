@@ -40,7 +40,7 @@ public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog
 		activityKey.feed(logB, parameters.getClassifierB());
 
 		if (canceller.isCancelled()) {
-			return -Double.MAX_VALUE;
+			return Double.NaN;
 		}
 
 		if (parameters.isDebug()) {
@@ -52,6 +52,10 @@ public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog
 				activityKey, canceller);
 		StochasticLanguageLog languageB = XLog2StochasticLanguage.convert(logB, parameters.getClassifierB(),
 				activityKey, canceller);
+
+		if (canceller.isCancelled()) {
+			return Double.NaN;
+		}
 
 		return p(parameters, canceller, sampleDistances, distanceAB, languageA, languageB, sampleSize);
 	}
@@ -71,14 +75,15 @@ public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog
 		distanceMatrixAB.init(languageA, languageB, canceller);
 
 		if (canceller.isCancelled()) {
-			return -Double.MAX_VALUE;
+			return Double.NaN;
 		}
 
 		if (parameters.isDebug()) {
 			System.out.println("start sampling threads");
 		}
 
-		new ConcurrentSamples<AliasMethod>(parameters.getThreads(), parameters.getNumberOfSamples(), -1, canceller) {
+		ConcurrentSamples<AliasMethod> cs = new ConcurrentSamples<AliasMethod>(parameters.getThreads(),
+				parameters.getNumberOfSamples(), -1, canceller) {
 
 			protected AliasMethod createThreadConstants(int threadNumber) {
 				SplittableRandom random = new SplittableRandom(parameters.getSeed() + threadNumber);
@@ -88,15 +93,18 @@ public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog
 				return aliasMethodA;
 			}
 
-			protected void performSample(AliasMethod aliasMethodA, int sampleNumber) {
+			protected boolean performSample(AliasMethod aliasMethodA, int sampleNumber, ProMCanceller canceller) {
 				if (sampleNumber < 0) {
 					//full log-log comparison
 					double emsc = StatisticalTestUtils.getSimilarity(languageA, languageB, distanceMatrixAB,
 							emscParameters, canceller);
+
 					if (canceller.isCancelled() || Double.isNaN(emsc)) {
-						return;
+						return false;
 					}
+
 					distanceAB.set(1 - emsc);
+
 					if (parameters.isDebug()) {
 						System.out.println(" sample reference " + distanceAB);
 					}
@@ -109,14 +117,20 @@ public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog
 							emscParameters, canceller);
 
 					if (canceller.isCancelled() || Double.isNaN(emsc)) {
-						return;
+						return false;
 					}
 
 					sampleDistances[sampleNumber] = 1 - emsc;
 				}
+
+				return true;
 			}
 
 		};
+
+		if (cs.isError() || canceller.isCancelled()) {
+			return Double.NaN;
+		}
 
 		if (parameters.isDebug()) {
 			System.out.println("find leq distances");

@@ -39,8 +39,8 @@ public class LogCategoricalTest implements StatisticalTest<XLog, LogCategoricalT
 			return Double.NaN;
 		}
 
-		new ConcurrentSamples<Pair<Random, DistanceCache>>(parameters.getThreads(), parameters.getNumberOfSamples(),
-				canceller) {
+		ConcurrentSamples<Pair<Random, DistanceCache>> cs = new ConcurrentSamples<Pair<Random, DistanceCache>>(
+				parameters.getThreads(), parameters.getNumberOfSamples(), canceller) {
 
 			protected Pair<Random, DistanceCache> createThreadConstants(int threadNumber) {
 				Random random = new Random(parameters.getSeed() + threadNumber);
@@ -49,7 +49,8 @@ public class LogCategoricalTest implements StatisticalTest<XLog, LogCategoricalT
 				return Pair.of(random, distances);
 			}
 
-			protected void performSample(Pair<Random, DistanceCache> input, int sampleNumber) {
+			protected boolean performSample(Pair<Random, DistanceCache> input, int sampleNumber,
+					ProMCanceller canceller) {
 				Random random = input.getA();
 				DistanceCache distances = input.getB();
 
@@ -67,6 +68,10 @@ public class LogCategoricalTest implements StatisticalTest<XLog, LogCategoricalT
 					for (int j = i + 1; j < sample.length; j++) {
 						int indexA = sample[i];
 						int indexB = sample[j];
+
+						if (canceller.isCancelled()) {
+							return false;
+						}
 
 						XTrace traceA = traces.get(indexA);
 						XTrace traceB = traces.get(indexB);
@@ -95,8 +100,14 @@ public class LogCategoricalTest implements StatisticalTest<XLog, LogCategoricalT
 						e.incrementAndGet();
 					}
 				}
+
+				return true;
 			}
 		};
+
+		if (cs.isError() || canceller.isCancelled()) {
+			return Double.NaN;
+		}
 
 		double p = 1 - e.get() / (1.0 * n.get());
 

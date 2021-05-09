@@ -39,6 +39,11 @@ public class LogLogUnknownProcessTestPlugin {
 
 		double p = new LogLogUnknownProcessTest().test(Pair.of(logA, logB), parameters, canceller);
 
+		if (canceller.isCancelled()) {
+			context.getFutureResult(0).cancel(false);
+			return null;
+		}
+
 		String outcome = new LogLogUnknownProcessTest().rejectHypothesisForSingleTest(p, 0.05)
 				? "reject null-hypothesis that the logs were derived from the same process"
 				: "do not reject null-hypothesis that the logs were derived from the same process";

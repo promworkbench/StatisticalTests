@@ -1,5 +1,6 @@
 package org.processmining.statisticaltests.helperclasses;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.processmining.framework.plugin.ProMCanceller;
@@ -13,17 +14,31 @@ public abstract class ConcurrentSamples<I> {
 	 */
 	protected abstract I createThreadConstants(int threadNumber);
 
-	protected abstract void performSample(I input, int sampleNumber);
+	/**
+	 * 
+	 * @param input
+	 * @param sampleNumber
+	 * @return whether the sample was successful
+	 */
+	protected abstract boolean performSample(I input, int sampleNumber, ProMCanceller canceller);
+
+	private final AtomicBoolean error = new AtomicBoolean(false);
 
 	public ConcurrentSamples(int numberOfThreads, int numberOfSamples, ProMCanceller canceller)
 			throws InterruptedException {
 		this(numberOfThreads, numberOfSamples, 0, canceller);
 	}
 
-	public ConcurrentSamples(int numberOfThreads, int numberOfSamples, int firstSampleNumber, ProMCanceller canceller)
-			throws InterruptedException {
+	public ConcurrentSamples(int numberOfThreads, int numberOfSamples, int firstSampleNumber,
+			final ProMCanceller canceller) throws InterruptedException {
 		Thread[] threads = new Thread[numberOfThreads];
 		final AtomicInteger nextSampleNumber = new AtomicInteger(firstSampleNumber);
+
+		final ProMCanceller innerCanceller = new ProMCanceller() {
+			public boolean isCancelled() {
+				return canceller.isCancelled() || isError();
+			}
+		};
 
 		for (int thread = 0; thread < threads.length; thread++) {
 			final int thread2 = thread;
@@ -32,13 +47,16 @@ public abstract class ConcurrentSamples<I> {
 					final I input = createThreadConstants(thread2);
 
 					int sampleNumber = nextSampleNumber.getAndIncrement();
-					while (sampleNumber < numberOfSamples) {
+					while (sampleNumber < numberOfSamples && !error.get()) {
 
-						if (canceller.isCancelled()) {
+						if (innerCanceller.isCancelled()) {
 							return;
 						}
 
-						performSample(input, sampleNumber);
+						if (!performSample(input, sampleNumber, innerCanceller)) {
+							error.set(true);
+							return;
+						}
 
 						sampleNumber = nextSampleNumber.getAndIncrement();
 					}
@@ -51,5 +69,9 @@ public abstract class ConcurrentSamples<I> {
 		for (Thread thread : threads) {
 			thread.join();
 		}
+	}
+
+	public boolean isError() {
+		return error.get();
 	}
 }
