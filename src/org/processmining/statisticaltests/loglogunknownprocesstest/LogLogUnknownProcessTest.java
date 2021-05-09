@@ -16,6 +16,7 @@ import org.processmining.statisticaltests.LogLogTest;
 import org.processmining.statisticaltests.StatisticalTest;
 import org.processmining.statisticaltests.helperclasses.AliasMethod;
 import org.processmining.statisticaltests.helperclasses.ConcurrentSamples;
+import org.processmining.statisticaltests.helperclasses.StatisticalTestUtils;
 
 import com.google.common.util.concurrent.AtomicDouble;
 
@@ -82,7 +83,7 @@ public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog
 
 			protected AliasMethod createThreadConstants(int threadNumber) {
 				SplittableRandom random = new SplittableRandom(parameters.getSeed() + threadNumber);
-				double[] massKeyA = LogLogTest.getMassKeyNormal(languageA);
+				double[] massKeyA = StatisticalTestUtils.getMassKeyNormal(languageA);
 				AliasMethod aliasMethodA = new AliasMethod(massKeyA, random);
 
 				return aliasMethodA;
@@ -91,8 +92,12 @@ public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog
 			protected void performSample(AliasMethod aliasMethodA, int sampleNumber) {
 				if (sampleNumber < 0) {
 					//full log-log comparison
-					distanceAB.set(1 - LogLogTest.getSimilarity(languageA, languageB, distanceMatrixAB, emscParameters,
-							canceller));
+					double emsc = StatisticalTestUtils.getSimilarity(languageA, languageB, distanceMatrixAB,
+							emscParameters, canceller);
+					if (canceller.isCancelled() || Double.isNaN(emsc)) {
+						return;
+					}
+					distanceAB.set(1 - emsc);
 					if (parameters.isDebug()) {
 						System.out.println(" sample reference " + distanceAB);
 					}
@@ -100,10 +105,15 @@ public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog
 
 					//sample
 					double[] sampleA = LogLogTest.sample(aliasMethodA, sampleSize);
-
-					StochasticLanguageLog languageX = LogLogTest.applySample(languageA, sampleA);
-					sampleDistances[sampleNumber] = 1 - LogLogTest.getSimilarity(languageA, languageX, distanceMatrixAA,
+					StochasticLanguageLog languageX = StatisticalTestUtils.applySample(languageA, sampleA);
+					double emsc = StatisticalTestUtils.getSimilarity(languageA, languageX, distanceMatrixAA,
 							emscParameters, canceller);
+
+					if (canceller.isCancelled() || Double.isNaN(emsc)) {
+						return;
+					}
+
+					sampleDistances[sampleNumber] = 1 - emsc;
 				}
 			}
 

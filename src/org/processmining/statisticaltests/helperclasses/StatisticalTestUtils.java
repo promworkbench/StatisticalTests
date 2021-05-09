@@ -9,8 +9,18 @@ import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.model.XEvent;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
+import org.processmining.earthmoversstochasticconformancechecking.distancematrix.DistanceMatrix;
+import org.processmining.earthmoversstochasticconformancechecking.parameters.EMSCParameters;
+import org.processmining.earthmoversstochasticconformancechecking.reallocationmatrix.ReallocationMatrix;
+import org.processmining.earthmoversstochasticconformancechecking.reallocationmatrix.epsa.ComputeReallocationMatrix2;
+import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.StochasticLanguage;
+import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.StochasticTraceIterator;
+import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.log.StochasticLanguageLog;
+import org.processmining.framework.plugin.ProMCanceller;
+import org.processmining.plugins.InductiveMiner.Pair;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 import org.processmining.plugins.inductiveminer2.attributes.AttributeUtils;
+import org.processmining.statisticaltests.StochasticLanguageWrapper;
 
 import gnu.trove.set.hash.THashSet;
 
@@ -79,5 +89,39 @@ public class StatisticalTestUtils {
 			result[i] = classifier.getClassIdentity(event);
 		}
 		return result;
+	}
+
+	public static double[] getMassKeyNormal(StochasticLanguageLog language) {
+		double[] result = new double[language.size()];
+		StochasticTraceIterator<int[]> it = language.iterator();
+		for (int i = 0; i < result.length; i++) {
+			it.next();
+			result[i] = it.getProbability();
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * @param languageA
+	 * @param languageB
+	 * @param distanceMatrix
+	 * @param parameters
+	 * @param canceller
+	 * @return EMSC distance, or Double.NaN if something went wrong
+	 */
+	public static double getSimilarity(StochasticLanguage<?> languageA, StochasticLanguage<?> languageB,
+			DistanceMatrix<?, ?> distanceMatrix, EMSCParameters parameters, ProMCanceller canceller) {
+		Pair<ReallocationMatrix, Double> p = ComputeReallocationMatrix2.computeWithDistanceMatrixInitialised(languageA,
+				languageB, distanceMatrix, parameters, canceller);
+		if (canceller.isCancelled()) {
+			return Double.NaN;
+		}
+
+		return p.getB();
+	}
+	
+	public static StochasticLanguageLog applySample(StochasticLanguageLog language, double[] sample) {
+		return new StochasticLanguageWrapper(language, sample);
 	}
 }
