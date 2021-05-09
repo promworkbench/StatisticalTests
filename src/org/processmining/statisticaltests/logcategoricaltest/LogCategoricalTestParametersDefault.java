@@ -13,7 +13,8 @@ public class LogCategoricalTestParametersDefault extends LogCategoricalTestParam
 
 	public LogCategoricalTestParametersDefault(Attribute attribute) {
 		super(StatisticalTestParametersDefault.defaultDebug, StatisticalTestParametersDefault.defaultThreads,
-				System.currentTimeMillis(), defaultNumberOfSamples, defaultSampleSize, attribute, defaultClassifier);
+				System.currentTimeMillis(), StatisticalTestParametersDefault.defaultAlpha, defaultNumberOfSamples,
+				defaultSampleSize, attribute, defaultClassifier);
 	}
 
 }

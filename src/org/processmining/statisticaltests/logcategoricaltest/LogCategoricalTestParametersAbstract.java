@@ -12,9 +12,9 @@ public class LogCategoricalTestParametersAbstract extends StatisticalTestParamet
 	private Attribute attribute;
 	private XEventClassifier classifier;
 
-	public LogCategoricalTestParametersAbstract(boolean debug, int threads, long seed, int numberOfSamples,
-			int sampleSize, Attribute attribute, XEventClassifier classifier) {
-		super(debug, threads, seed);
+	public LogCategoricalTestParametersAbstract(boolean debug, int threads, long seed, double alpha,
+			int numberOfSamples, int sampleSize, Attribute attribute, XEventClassifier classifier) {
+		super(debug, threads, seed, alpha);
 		this.numberOfSamples = numberOfSamples;
 		this.sampleSize = sampleSize;
 		this.attribute = attribute;

@@ -6,12 +6,12 @@ public interface StatisticalTest<I, P extends StatisticalTestParameters> {
 	/**
 	 * No side effects allowed.
 	 * 
+	 * @param parameters
 	 * @param p
-	 * @param alpha
 	 * @return true: reject null-hypothesis; false: do not reject
 	 *         null-hypothesis
 	 */
-	public boolean rejectHypothesisForSingleTest(double p, double alpha);
+	public boolean rejectHypothesisForSingleTest(P parameters, double p);
 
 	/**
 	 * Perform the test. No side effects allowed.

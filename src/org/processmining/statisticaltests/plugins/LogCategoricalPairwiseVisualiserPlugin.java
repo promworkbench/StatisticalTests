@@ -16,25 +16,25 @@ import org.processmining.contexts.uitopia.annotations.Visualizer;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.framework.plugin.annotations.PluginVariant;
-import org.processmining.plugins.InductiveMiner.Triple;
+import org.processmining.plugins.InductiveMiner.Quadruple;
 import org.processmining.plugins.InductiveMiner.efficienttree.UnknownTreeNodeException;
 import org.processmining.plugins.InductiveMiner.plugins.dialogs.IMMiningDialog;
 import org.processmining.statisticaltests.CategoricalComparisonResult;
 
-public class LogCategoricalTestVisualiserPlugin {
+public class LogCategoricalPairwiseVisualiserPlugin {
 	@Plugin(name = "Associations visualisation", returnLabels = { "Associations visualisation" }, returnTypes = {
 			JComponent.class }, parameterLabels = { "Categorical comparison" }, userAccessible = true)
 	@Visualizer
 	@UITopiaVariant(affiliation = IMMiningDialog.affiliation, author = IMMiningDialog.author, email = IMMiningDialog.email)
 	@PluginVariant(variantLabel = "Visualise process tree", requiredParameterLabels = { 0 })
-	public JComponent fancy(PluginContext context, CategoricalComparisonResult<?> comparison)
+	public JComponent fancy(PluginContext context, CategoricalComparisonResult comparison)
 			throws UnknownTreeNodeException {
 		String[] columnNames = new String[] { comparison.getAttribute().getName(), "p-value", "result" };
 
 		Object[][] data = new Object[comparison.get().size()][3];
 
 		int i = 0;
-		for (Triple<Double, Boolean, ?> t : comparison.get()) {
+		for (Quadruple<Double, Boolean, String, String> t : comparison.get()) {
 
 			data[i][0] = t.getC();
 			if (t.getA() != -Double.MAX_VALUE) {

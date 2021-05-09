@@ -6,4 +6,6 @@ public interface StatisticalTestParameters {
 	public int getThreads();
 
 	public long getSeed();
+
+	public double getAlpha();
 }

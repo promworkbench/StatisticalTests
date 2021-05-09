@@ -19,14 +19,14 @@ import org.processmining.framework.plugin.annotations.PluginCategory;
 import org.processmining.framework.plugin.annotations.PluginLevel;
 import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.plugins.InductiveMiner.Pair;
+import org.processmining.plugins.InductiveMiner.Quadruple;
 import org.processmining.plugins.InductiveMiner.Triple;
 import org.processmining.plugins.InductiveMiner.plugins.dialogs.IMMiningDialog;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
-import org.processmining.statisticaltests.CategoricalComparisonParameters;
 import org.processmining.statisticaltests.CategoricalComparisonResult;
+import org.processmining.statisticaltests.logcategoricaltest.LogCategoricalTestParameters;
 import org.processmining.statisticaltests.loglogunknownprocesstest.LogLogUnknownProcessTest;
 import org.processmining.statisticaltests.loglogunknownprocesstest.LogLogUnknownProcessTestParameters;
-import org.processmining.statisticaltests.loglogunknownprocesstest.LogLogUnknownProcessTestParametersDefault;
 
 public class LogCategoricalTestPlugin {
 	@Plugin(name = "Log vs. categorical attribute test", level = PluginLevel.Regular, returnLabels = {
@@ -35,7 +35,7 @@ public class LogCategoricalTestPlugin {
 							PluginCategory.ConformanceChecking }, help = "Compare processes of a categorical attribute using statistal tests. Alpha will be adjusted for multiple tests using the Benjamini-Hochberg method.")
 	@UITopiaVariant(affiliation = IMMiningDialog.affiliation, author = IMMiningDialog.author, email = IMMiningDialog.email)
 	@PluginVariant(variantLabel = "Mine, dialog", requiredParameterLabels = { 0 })
-	public CategoricalComparisonResult<?> compare(final UIPluginContext context, XLog log) throws InterruptedException {
+	public CategoricalComparisonResult compare(final UIPluginContext context, XLog log) throws InterruptedException {
 		LogCategoricalTestDialog dialog = new LogCategoricalTestDialog(log);
 		InteractionResult result = context.showWizard("Log vs. categorical attribute test", true, true, dialog);
 
@@ -44,89 +44,28 @@ public class LogCategoricalTestPlugin {
 			return null;
 		}
 
-		CategoricalComparisonParameters parameters = dialog.getParameters();
-		return computePairWise(log, parameters, new ProMCanceller() {
-			public boolean isCancelled() {
-				return context.getProgress().isCancelled();
-			}
-		}, context.getProgress());
-	}
+		LogCategoricalTestParameters parameters = dialog.getParameters();
 
-	public static CategoricalComparisonResult<Pair<String, String>> computePairWise(XLog log,
-			CategoricalComparisonParameters parameters, ProMCanceller canceller, Progress progress)
-			throws InterruptedException {
-		Attribute attribute = parameters.getAttribute();
-		XFactory factory = new XFactoryNaiveImpl();
-
-		if (progress != null) {
-			progress.setMinimum(0);
-			progress.setMaximum(attribute.getStringValues().size());
-		}
-
-		LogLogUnknownProcessTestParameters pParameters = new LogLogUnknownProcessTestParametersDefault();
-
-		List<Pair<Double, Pair<String, String>>> result = new ArrayList<>();
-
-		for (String valueA : attribute.getStringValues()) {
-			for (String valueB : attribute.getStringValues()) {
-				if (valueA.compareTo(valueB) < 0) {
-					System.out.println(valueA + " vs. " + valueB);
-					//create two logs
-					XLog logA = factory.createLog();
-					XLog logB = factory.createLog();
-
-					for (XTrace trace : log) {
-						if (attribute.getLiteral(trace) != null) {
-							if (attribute.getLiteral(trace).equals(valueA)) {
-								logA.add(trace);
-							} else if (attribute.getLiteral(trace).equals(valueB)) {
-								logB.add(trace);
-							}
-						}
-					}
-
-					if (logA.isEmpty() || logB.isEmpty()) {
-						result.add(Pair.of(Double.NaN, Pair.of(valueA, valueB)));
-					} else {
-						double p = new LogLogUnknownProcessTest().test(Pair.of(logA, logB), pParameters, canceller);
-
-						if (canceller.isCancelled()) {
-							return null;
-						}
-
-						System.out.println(p);
-						result.add(Pair.of(p, Pair.of(valueA, valueB)));
-					}
-
-					if (canceller.isCancelled()) {
-						return null;
-					}
-
-					if (progress != null) {
-						progress.setValue(progress.getValue() + 1);
-					}
+		if (dialog.getCompare().equals("pairwise")) {
+			return computePairWise(log, attribute, parameters, new ProMCanceller() {
+				public boolean isCancelled() {
+					return context.getProgress().isCancelled();
 				}
-			}
+			}, context.getProgress());
+		} else {
+			return computeOneVsOther(log, attribute, parameters, new ProMCanceller() {
+				public boolean isCancelled() {
+					return context.getProgress().isCancelled();
+				}
+			}, context.getProgress());
 		}
-
-		if (canceller.isCancelled()) {
-			return null;
-		}
-
-		//apply Benjamini-Hochberg
-		List<Triple<Double, Boolean, Pair<String, String>>> r = benjaminiHochberg(result, parameters.getAlpha());
-
-		if (canceller.isCancelled()) {
-			return null;
-		}
-
-		return new CategoricalComparisonResult<Pair<String, String>>(attribute, r, parameters.getAlpha());
 	}
 
-	public static CategoricalComparisonResult<String> computeOneVsOther(XLog log,
-			CategoricalComparisonParameters parameters, ProMCanceller canceller, Progress progress)
+	
+
+	public static CategoricalComparisonResult computeOneVsOther(XLog log, Attribute attribute,
+			LogLogUnknownProcessTestParameters parameters, ProMCanceller canceller, Progress progress)
 			throws InterruptedException {
-		Attribute attribute = parameters.getAttribute();
 		XFactory factory = new XFactoryNaiveImpl();
 
 		if (progress != null) {
@@ -134,9 +73,7 @@ public class LogCategoricalTestPlugin {
 			progress.setMaximum(attribute.getStringValues().size());
 		}
 
-		LogLogUnknownProcessTestParameters pParameters = new LogLogUnknownProcessTestParametersDefault();
-
-		List<Pair<Double, String>> result = new ArrayList<>();
+		List<Triple<Double, String, String>> result = new ArrayList<>();
 
 		for (String value : attribute.getStringValues()) {
 			//create two logs
@@ -152,15 +89,15 @@ public class LogCategoricalTestPlugin {
 			}
 
 			if (logA.isEmpty() || logB.isEmpty()) {
-				result.add(Pair.of(Double.NaN, value));
+				result.add(Triple.of(Double.NaN, value, "[others]"));
 			} else {
-				double p = new LogLogUnknownProcessTest().test(Pair.of(logA, logB), pParameters, canceller);
+				double p = new LogLogUnknownProcessTest().test(Pair.of(logA, logB), parameters, canceller);
 
 				if (canceller.isCancelled()) {
 					return null;
 				}
 
-				result.add(Pair.of(p, value));
+				result.add(Triple.of(p, value, "[others]"));
 			}
 
 			if (canceller.isCancelled()) {
@@ -177,13 +114,13 @@ public class LogCategoricalTestPlugin {
 		}
 
 		//apply Benjamini-Hochberg
-		List<Triple<Double, Boolean, String>> r = benjaminiHochberg(result, parameters.getAlpha());
+		List<Quadruple<Double, Boolean, String, String>> r = benjaminiHochberg(result, parameters.getAlpha());
 
 		if (canceller.isCancelled()) {
 			return null;
 		}
 
-		return new CategoricalComparisonResult<String>(attribute, r, parameters.getAlpha());
+		return new CategoricalComparisonResult(attribute, r, parameters.getAlpha());
 	}
 
 	/**
@@ -193,9 +130,10 @@ public class LogCategoricalTestPlugin {
 	 * @param values
 	 * @return which hypotheses are rejected
 	 */
-	public static <X> List<Triple<Double, Boolean, X>> benjaminiHochberg(List<Pair<Double, X>> values, double alpha) {
-		Collections.sort(values, new Comparator<Pair<Double, X>>() {
-			public int compare(Pair<Double, X> o1, Pair<Double, X> o2) {
+	public static List<Quadruple<Double, Boolean, String, String>> benjaminiHochberg(
+			List<Triple<Double, String, String>> values, double alpha) {
+		Collections.sort(values, new Comparator<Triple<Double, String, String>>() {
+			public int compare(Triple<Double, String, String> o1, Triple<Double, String, String> o2) {
 				return o1.getA().compareTo(o2.getA());
 			}
 		});
@@ -220,9 +158,9 @@ public class LogCategoricalTestPlugin {
 			}
 		}
 
-		List<Triple<Double, Boolean, X>> result = new ArrayList<>();
+		List<Quadruple<Double, Boolean, String, String>> result = new ArrayList<>();
 		for (int i = 0; i < values.size(); i++) {
-			result.add(Triple.of(values.get(i).getA(), rejected[i], values.get(i).getB()));
+			result.add(Quadruple.of(values.get(i).getA(), rejected[i], values.get(i).getB(), values.get(i).getC()));
 		}
 		return result;
 	}

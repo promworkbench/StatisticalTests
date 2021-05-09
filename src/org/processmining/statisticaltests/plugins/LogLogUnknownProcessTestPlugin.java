@@ -21,7 +21,6 @@ public class LogLogUnknownProcessTestPlugin {
 	@UITopiaVariant(affiliation = IMMiningDialog.affiliation, author = IMMiningDialog.author, email = IMMiningDialog.email)
 	@PluginVariant(variantLabel = "test", requiredParameterLabels = { 0, 1 })
 	public HTMLToString test(final UIPluginContext context, XLog logA, XLog logB) throws Exception {
-		double alpha = 0.05;
 
 		ProMCanceller canceller = new ProMCanceller() {
 			public boolean isCancelled() {
@@ -46,7 +45,7 @@ public class LogLogUnknownProcessTestPlugin {
 			return null;
 		}
 
-		String outcome = new LogLogUnknownProcessTest().rejectHypothesisForSingleTest(p, alpha)
+		String outcome = new LogLogUnknownProcessTest().rejectHypothesisForSingleTest(parameters, p)
 				? "reject null-hypothesis that the logs were derived from the same process"
 				: "do not reject null-hypothesis that the logs were derived from the same process";
 
@@ -54,7 +53,7 @@ public class LogLogUnknownProcessTestPlugin {
 		sb.append("<table>");
 		sb.append("<tr><td>Number of samples</td><td>" + parameters.getNumberOfSamples() + "</td></tr>");
 		sb.append("<tr><td> </td><td></td></tr>");
-		sb.append("<tr><td>alpha</td><td>" + alpha + "</td></tr>");
+		sb.append("<tr><td>alpha</td><td>" + parameters.getAlpha() + "</td></tr>");
 		sb.append("<tr><td>p value</td><td>" + p + "</td></tr>");
 		sb.append("<tr><td>result</td><td>" + outcome + "</td></tr>");
 		sb.append("</table>");

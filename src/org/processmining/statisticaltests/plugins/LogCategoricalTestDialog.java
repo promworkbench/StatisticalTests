@@ -14,9 +14,9 @@ import org.deckfour.xes.model.XLog;
 import org.processmining.plugins.InductiveMiner.ClassifierChooser;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 import org.processmining.plugins.inductiveminer2.attributes.AttributesInfoImpl;
-import org.processmining.statisticaltests.CategoricalComparisonParameters;
-import org.processmining.statisticaltests.CategoricalComparisonParametersAbstract;
-import org.processmining.statisticaltests.CategoricalComparisonParametersDefault;
+import org.processmining.statisticaltests.logcategoricaltest.LogCategoricalTestParameters;
+import org.processmining.statisticaltests.logcategoricaltest.LogCategoricalTestParametersAbstract;
+import org.processmining.statisticaltests.logcategoricaltest.LogCategoricalTestParametersDefault;
 
 import com.fluxicon.slickerbox.factory.SlickerFactory;
 
@@ -28,11 +28,13 @@ public class LogCategoricalTestDialog extends JPanel {
 	public static final int columnMargin = 20;
 	public static final int rowHeight = 40;
 
-	private CategoricalComparisonParametersAbstract parameters;
+	private LogCategoricalTestParametersAbstract parameters;
 
 	private final SpringLayout layout;
 	private ClassifierChooser classifiers;
 	private JComboBox<Attribute> attributesc;
+	private JComboBox<String> comparec;
+	private String[] compares = new String[] { "one-against-all", "pairwise" };
 
 	@SuppressWarnings("unchecked")
 	public LogCategoricalTestDialog(XLog log) {
@@ -77,8 +79,22 @@ public class LogCategoricalTestDialog extends JPanel {
 					classifierLabel);
 		}
 
+		//third group
+		{
+			JLabel classifierLabel = factory.createLabel("Compare");
+			layout.putConstraint(SpringLayout.VERTICAL_CENTER, classifierLabel, rowHeight, SpringLayout.VERTICAL_CENTER,
+					attributesc);
+			layout.putConstraint(SpringLayout.EAST, classifierLabel, leftColumnWidth, SpringLayout.WEST, this);
+
+			comparec = SlickerFactory.instance().createComboBox(compares);
+			add(comparec);
+			layout.putConstraint(SpringLayout.WEST, comparec, columnMargin, SpringLayout.EAST, classifierLabel);
+			layout.putConstraint(SpringLayout.VERTICAL_CENTER, comparec, 0, SpringLayout.VERTICAL_CENTER,
+					classifierLabel);
+		}
+
 		//set up the controller
-		parameters = new CategoricalComparisonParametersDefault((Attribute) attributesc.getSelectedItem());
+		parameters = new LogCategoricalTestParametersDefault((Attribute) attributesc.getSelectedItem());
 		attributesc.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				parameters.setAttribute((Attribute) attributesc.getSelectedItem());
@@ -93,7 +109,11 @@ public class LogCategoricalTestDialog extends JPanel {
 		parameters.setClassifier(classifiers.getSelectedClassifier());
 	}
 
-	public CategoricalComparisonParameters getParameters() {
+	public LogCategoricalTestParameters getParameters() {
 		return parameters;
+	}
+
+	public String getCompare() {
+		return (String) comparec.getSelectedItem();
 	}
 }

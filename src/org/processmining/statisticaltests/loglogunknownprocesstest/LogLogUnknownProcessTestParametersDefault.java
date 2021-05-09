@@ -9,8 +9,8 @@ public class LogLogUnknownProcessTestParametersDefault extends LogLogUnknownProc
 
 	public LogLogUnknownProcessTestParametersDefault() {
 		super(StatisticalTestParametersDefault.defaultDebug, StatisticalTestParametersDefault.defaultThreads,
-				System.currentTimeMillis(), defaultNumberOfSamples, MiningParameters.defaultClassifier,
-				MiningParameters.defaultClassifier);
+				System.currentTimeMillis(), StatisticalTestParametersDefault.defaultAlpha, defaultNumberOfSamples,
+				MiningParameters.defaultClassifier, MiningParameters.defaultClassifier);
 	}
 
 }

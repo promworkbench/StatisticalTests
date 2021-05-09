@@ -10,9 +10,9 @@ public class LogLogUnknownProcessTestParametersAbstract extends StatisticalTestP
 	private XEventClassifier classifierA;
 	private XEventClassifier classifierB;
 
-	public LogLogUnknownProcessTestParametersAbstract(boolean debug, int threads, long seed, int numberOfSamples,
+	public LogLogUnknownProcessTestParametersAbstract(boolean debug, int threads, long seed, double alpha, int numberOfSamples,
 			XEventClassifier classifierA, XEventClassifier classifierB) {
-		super(debug, threads, seed);
+		super(debug, threads, seed, alpha);
 		this.numberOfSamples = numberOfSamples;
 		this.classifierA = classifierA;
 		this.classifierB = classifierB;

@@ -24,8 +24,8 @@ public class LogCategoricalTest implements StatisticalTest<XLog, LogCategoricalT
 	 * @return true: reject null-hypothesis that at least one categorical value
 	 *         associates with a different process
 	 */
-	public boolean rejectHypothesisForSingleTest(double p, double alpha) {
-		return p < alpha;
+	public boolean rejectHypothesisForSingleTest(LogCategoricalTestParameters parameters, double p) {
+		return p < parameters.getAlpha();
 	}
 
 	public double test(XLog log, final LogCategoricalTestParameters parameters, final ProMCanceller canceller)

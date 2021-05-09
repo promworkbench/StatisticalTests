@@ -21,8 +21,8 @@ import com.google.common.util.concurrent.AtomicDouble;
 
 public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog>, LogLogUnknownProcessTestParameters> {
 
-	public boolean rejectHypothesisForSingleTest(double p, double alpha) {
-		return p >= 1 - alpha;
+	public boolean rejectHypothesisForSingleTest(LogLogUnknownProcessTestParameters parameters, double p) {
+		return p >= 1 - parameters.getAlpha();
 	}
 
 	public double test(Pair<XLog, XLog> input, LogLogUnknownProcessTestParameters parameters, ProMCanceller canceller)

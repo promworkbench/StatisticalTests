@@ -5,13 +5,15 @@ public class StatisticalTestParametersAbstract implements StatisticalTestParamet
 	private boolean debug;
 	private int threads;
 	private long seed;
+	private double alpha;
 
-	public StatisticalTestParametersAbstract(boolean debug, int threads, long seed) {
+	public StatisticalTestParametersAbstract(boolean debug, int threads, long seed, double alpha) {
 		assert threads > 0;
 
 		this.debug = debug;
 		this.threads = threads;
 		this.seed = seed;
+		this.alpha = alpha;
 	}
 
 	@Override
@@ -40,6 +42,15 @@ public class StatisticalTestParametersAbstract implements StatisticalTestParamet
 
 	public void setSeed(long seed) {
 		this.seed = seed;
+	}
+
+	@Override
+	public double getAlpha() {
+		return alpha;
+	}
+
+	public void setAlpha(double alpha) {
+		this.alpha = alpha;
 	}
 
 }
