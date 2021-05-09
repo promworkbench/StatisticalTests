@@ -12,7 +12,6 @@ import org.processmining.earthmoversstochasticconformancechecking.stochasticlang
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.log.StochasticLanguageLog;
 import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.plugins.InductiveMiner.Pair;
-import org.processmining.statisticaltests.LogLogTest;
 import org.processmining.statisticaltests.StatisticalTest;
 import org.processmining.statisticaltests.helperclasses.AliasMethod;
 import org.processmining.statisticaltests.helperclasses.ConcurrentSamples;
@@ -104,7 +103,7 @@ public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog
 				} else {
 
 					//sample
-					double[] sampleA = LogLogTest.sample(aliasMethodA, sampleSize);
+					double[] sampleA = StatisticalTestUtils.sample(aliasMethodA, sampleSize);
 					StochasticLanguageLog languageX = StatisticalTestUtils.applySample(languageA, sampleA);
 					double emsc = StatisticalTestUtils.getSimilarity(languageA, languageX, distanceMatrixAA,
 							emscParameters, canceller);

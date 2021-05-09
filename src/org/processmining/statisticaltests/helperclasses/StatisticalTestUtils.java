@@ -124,4 +124,16 @@ public class StatisticalTestUtils {
 	public static StochasticLanguageLog applySample(StochasticLanguageLog language, double[] sample) {
 		return new StochasticLanguageWrapper(language, sample);
 	}
+	
+	public static double[] sample(AliasMethod aliasMethod, int sampleSize) {
+		double[] result = new double[aliasMethod.getProbabilitiesSize()];
+		for (int i = 0; i < sampleSize; i++) {
+			result[aliasMethod.next()]++;
+		}
+		double ss = sampleSize;
+		for (int i = 0; i < result.length; i++) {
+			result[i] = result[i] / ss;
+		}
+		return result;
+	}
 }
