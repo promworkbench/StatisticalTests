@@ -1,8 +1,6 @@
 package org.processmining.statisticaltests.plugins;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.deckfour.uitopia.api.event.TaskListener.InteractionResult;
@@ -24,12 +22,13 @@ import org.processmining.plugins.InductiveMiner.Triple;
 import org.processmining.plugins.InductiveMiner.plugins.dialogs.IMMiningDialog;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 import org.processmining.statisticaltests.CategoricalComparisonResult;
+import org.processmining.statisticaltests.helperclasses.StatisticalTestUtils;
 import org.processmining.statisticaltests.logcategoricaltest.LogCategoricalTestParameters;
 import org.processmining.statisticaltests.loglogunknownprocesstest.LogLogUnknownProcessTest;
 import org.processmining.statisticaltests.loglogunknownprocesstest.LogLogUnknownProcessTestParameters;
 
 public class LogCategoricalTestPlugin {
-	@Plugin(name = "Log vs. categorical attribute test", level = PluginLevel.Regular, returnLabels = {
+	@Plugin(name = "TODO Log vs. categorical attribute test", level = PluginLevel.Regular, returnLabels = {
 			"Compare sub-logs result" }, returnTypes = { CategoricalComparisonResult.class }, parameterLabels = {
 					"Event log" }, userAccessible = true, categories = { PluginCategory.Analytics,
 							PluginCategory.ConformanceChecking }, help = "Compare processes of a categorical attribute using statistal tests. Alpha will be adjusted for multiple tests using the Benjamini-Hochberg method.")
@@ -46,22 +45,8 @@ public class LogCategoricalTestPlugin {
 
 		LogCategoricalTestParameters parameters = dialog.getParameters();
 
-		if (dialog.getCompare().equals("pairwise")) {
-			return computePairWise(log, attribute, parameters, new ProMCanceller() {
-				public boolean isCancelled() {
-					return context.getProgress().isCancelled();
-				}
-			}, context.getProgress());
-		} else {
-			return computeOneVsOther(log, attribute, parameters, new ProMCanceller() {
-				public boolean isCancelled() {
-					return context.getProgress().isCancelled();
-				}
-			}, context.getProgress());
-		}
+		return null;
 	}
-
-	
 
 	public static CategoricalComparisonResult computeOneVsOther(XLog log, Attribute attribute,
 			LogLogUnknownProcessTestParameters parameters, ProMCanceller canceller, Progress progress)
@@ -114,7 +99,8 @@ public class LogCategoricalTestPlugin {
 		}
 
 		//apply Benjamini-Hochberg
-		List<Quadruple<Double, Boolean, String, String>> r = benjaminiHochberg(result, parameters.getAlpha());
+		List<Quadruple<Double, Boolean, String, String>> r = StatisticalTestUtils.benjaminiHochberg(result,
+				parameters.getAlpha());
 
 		if (canceller.isCancelled()) {
 			return null;
@@ -123,45 +109,4 @@ public class LogCategoricalTestPlugin {
 		return new CategoricalComparisonResult(attribute, r, parameters.getAlpha());
 	}
 
-	/**
-	 * 
-	 * @param <X>
-	 * @param <X>
-	 * @param values
-	 * @return which hypotheses are rejected
-	 */
-	public static List<Quadruple<Double, Boolean, String, String>> benjaminiHochberg(
-			List<Triple<Double, String, String>> values, double alpha) {
-		Collections.sort(values, new Comparator<Triple<Double, String, String>>() {
-			public int compare(Triple<Double, String, String> o1, Triple<Double, String, String> o2) {
-				return o1.getA().compareTo(o2.getA());
-			}
-		});
-		Collections.reverse(values);
-
-		boolean[] rejected = new boolean[values.size()];
-
-		int r = 0;
-		int x = values.size();
-
-		while (r < values.size() && 1 - values.get(r).getA() < alpha * (r + 1.0) / x) {
-			rejected[r] = true;
-			r = r + 1;
-		}
-
-		//post-processing: reject all hypotheses up to the last one
-		boolean rejecting = false;
-		for (int i = rejected.length - 1; i >= 0; i--) {
-			if (rejecting || rejected[i]) {
-				rejecting = true;
-				rejected[i] = true;
-			}
-		}
-
-		List<Quadruple<Double, Boolean, String, String>> result = new ArrayList<>();
-		for (int i = 0; i < values.size(); i++) {
-			result.add(Quadruple.of(values.get(i).getA(), rejected[i], values.get(i).getB(), values.get(i).getC()));
-		}
-		return result;
-	}
 }
