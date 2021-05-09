@@ -28,16 +28,16 @@ import org.processmining.statisticaltests.loglogunknownprocesstest.LogLogUnknown
 import org.processmining.statisticaltests.loglogunknownprocesstest.LogLogUnknownProcessTestParameters;
 import org.processmining.statisticaltests.loglogunknownprocesstest.LogLogUnknownProcessTestParametersDefault;
 
-public class CategoricalComparisonPlugin {
-	@Plugin(name = "Compare sub-logs defined by categorical attribute", level = PluginLevel.Regular, returnLabels = {
+public class LogCategoricalTestPlugin {
+	@Plugin(name = "Log vs. categorical attribute test", level = PluginLevel.Regular, returnLabels = {
 			"Compare sub-logs result" }, returnTypes = { CategoricalComparisonResult.class }, parameterLabels = {
 					"Event log" }, userAccessible = true, categories = { PluginCategory.Analytics,
-							PluginCategory.ConformanceChecking }, help = "Compare processes of categorical attribute using statistal tests. Alpha will be adjusted for multiple tests using the Benjamini-Hochberg method.")
+							PluginCategory.ConformanceChecking }, help = "Compare processes of a categorical attribute using statistal tests. Alpha will be adjusted for multiple tests using the Benjamini-Hochberg method.")
 	@UITopiaVariant(affiliation = IMMiningDialog.affiliation, author = IMMiningDialog.author, email = IMMiningDialog.email)
 	@PluginVariant(variantLabel = "Mine, dialog", requiredParameterLabels = { 0 })
 	public CategoricalComparisonResult<?> compare(final UIPluginContext context, XLog log) throws InterruptedException {
-		CategoricalComparisonDialog dialog = new CategoricalComparisonDialog(log);
-		InteractionResult result = context.showWizard("Categorical attribute-process comparison", true, true, dialog);
+		LogCategoricalTestDialog dialog = new LogCategoricalTestDialog(log);
+		InteractionResult result = context.showWizard("Log vs. categorical attribute test", true, true, dialog);
 
 		if (result != InteractionResult.FINISHED) {
 			context.getFutureResult(0).cancel(false);

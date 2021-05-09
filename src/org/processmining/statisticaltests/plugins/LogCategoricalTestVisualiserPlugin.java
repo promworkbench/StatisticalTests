@@ -21,7 +21,7 @@ import org.processmining.plugins.InductiveMiner.efficienttree.UnknownTreeNodeExc
 import org.processmining.plugins.InductiveMiner.plugins.dialogs.IMMiningDialog;
 import org.processmining.statisticaltests.CategoricalComparisonResult;
 
-public class CategoricalComparisonVisualiserPlugin {
+public class LogCategoricalTestVisualiserPlugin {
 	@Plugin(name = "Associations visualisation", returnLabels = { "Associations visualisation" }, returnTypes = {
 			JComponent.class }, parameterLabels = { "Categorical comparison" }, userAccessible = true)
 	@Visualizer

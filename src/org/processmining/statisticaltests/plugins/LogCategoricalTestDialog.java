@@ -20,7 +20,7 @@ import org.processmining.statisticaltests.CategoricalComparisonParametersDefault
 
 import com.fluxicon.slickerbox.factory.SlickerFactory;
 
-public class CategoricalComparisonDialog extends JPanel {
+public class LogCategoricalTestDialog extends JPanel {
 
 	private static final long serialVersionUID = -1097548788215530060L;
 
@@ -35,7 +35,7 @@ public class CategoricalComparisonDialog extends JPanel {
 	private JComboBox<Attribute> attributesc;
 
 	@SuppressWarnings("unchecked")
-	public CategoricalComparisonDialog(XLog log) {
+	public LogCategoricalTestDialog(XLog log) {
 		SlickerFactory factory = SlickerFactory.instance();
 
 		layout = new SpringLayout();
