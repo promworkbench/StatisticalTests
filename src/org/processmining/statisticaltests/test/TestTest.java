@@ -1,10 +1,6 @@
 package org.processmining.statisticaltests.test;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.util.Arrays;
 
 import org.apache.commons.lang.SystemUtils;
@@ -18,9 +14,6 @@ import org.processmining.earthmoversstochasticconformancechecking.stochasticlang
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.log.StochasticLanguageLog;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.framework.plugin.ProMCanceller;
-import org.processmining.statisticaltests.LogLogUnknownProcessTest;
-import org.processmining.statisticaltests.ParametersAbstract;
-import org.processmining.statisticaltests.ParametersDefault;
 import org.processmining.statisticaltests.helperclasses.StatisticalTestUtils;
 import org.processmining.xeslite.plugin.OpenLogFileLiteImplPlugin;
 
@@ -30,7 +23,7 @@ public class TestTest {
 			: new File("C:\\Users\\leemans2\\Documents\\svn\\41 - stochastic statistics\\experiments\\");
 
 	public static void main(String[] args) throws Exception {
-		testBPIC15();
+		//		testBPIC15();
 		//		multipleTests("Road fines with trace attributes.xes.gz");
 		//		multipleTests("bpic12-a.xes");
 	}
@@ -50,83 +43,83 @@ public class TestTest {
 		abstract int step(int current, int step);
 	}
 
-	public static void testBPIC15() throws Exception {
-		for (int i = 1; i <= 5; i++) {
-			File logI = new File(new File(folder, "logs"), "BPIC15_" + i + ".xes");
-			for (int j = i + 1; j <= 5; j++) {
-				File logJ = new File(new File(folder, "logs"), "BPIC15_" + j + ".xes");
+	//	public static void testBPIC15() throws Exception {
+	//		for (int i = 1; i <= 5; i++) {
+	//			File logI = new File(new File(folder, "logs"), "BPIC15_" + i + ".xes");
+	//			for (int j = i + 1; j <= 5; j++) {
+	//				File logJ = new File(new File(folder, "logs"), "BPIC15_" + j + ".xes");
+	//
+	//				File outputCsv = new File(new File(folder, "06 - log log test"),
+	//						"BPIC15_" + i + "-BPIC15_" + j + "samsen.csv");
+	//
+	//				multipleTests(logI, logJ, outputCsv, 10, 100, Type.linear);
+	//			}
+	//		}
+	//	}
 
-				File outputCsv = new File(new File(folder, "06 - log log test"),
-						"BPIC15_" + i + "-BPIC15_" + j + "samsen.csv");
+	//	public static void multipleTests(String logName) throws Exception {
+	//		File inputLogA = new File(new File(folder, "logs"), logName);
+	//
+	//		String[] logsB = new String[] { "TE", "MS", "TS", "LE", "LL" };
+	//
+	//		for (String logB : logsB) {
+	//			System.out.println(logB);
+	//			File outputCsv = new File(new File(folder, "06 - log log test"), logName + "-" + logB + "-samsen.csv");
+	//
+	//			multipleTests(inputLogA, new File(new File(folder, "logs"), logName + "-" + logB + ".xes.gz"), outputCsv,
+	//					10, 1000000000, Type.exponential);
+	//		}
+	//	}
 
-				multipleTests(logI, logJ, outputCsv, 10, 100, Type.linear);
-			}
-		}
-	}
-
-	public static void multipleTests(String logName) throws Exception {
-		File inputLogA = new File(new File(folder, "logs"), logName);
-
-		String[] logsB = new String[] { "TE", "MS", "TS", "LE", "LL" };
-
-		for (String logB : logsB) {
-			System.out.println(logB);
-			File outputCsv = new File(new File(folder, "06 - log log test"), logName + "-" + logB + "-samsen.csv");
-
-			multipleTests(inputLogA, new File(new File(folder, "logs"), logName + "-" + logB + ".xes.gz"), outputCsv,
-					10, 1000000000, Type.exponential);
-		}
-	}
-
-	private static void multipleTests(File inputLogA, File inputLogB, File outputCsv, int step, int maxSampleSize,
-			Type type) throws Exception {
-		outputCsv.getParentFile().mkdirs();
-		int startSampleSize = step;
-		BufferedWriter output;
-		if (!outputCsv.exists()) {
-			outputCsv.createNewFile();
-			startSampleSize = step;
-			output = new BufferedWriter(new FileWriter(outputCsv, false));
-			output.write("sampleSize,numberOfSamples,p,time\n");
-		} else {
-			//count the number of lines in the file
-			BufferedReader reader = new BufferedReader(new FileReader(outputCsv));
-			startSampleSize = 1;
-			while (reader.readLine() != null) {
-				startSampleSize = type.step(startSampleSize, step);
-			}
-			reader.close();
-
-			output = new BufferedWriter(new FileWriter(outputCsv, true));
-		}
-
-		PluginContext context = new FakeContext();
-		XLog logA = (XLog) new OpenLogFileLiteImplPlugin().importFile(context, inputLogA);
-		XLog logB = (XLog) new OpenLogFileLiteImplPlugin().importFile(context, inputLogB);
-
-		ProMCanceller canceller = new ProMCanceller() {
-			public boolean isCancelled() {
-				return false;
-			}
-		};
-
-		ParametersAbstract parameters = new ParametersDefault();
-		parameters.setDebug(true);
-
-		for (int sampleSize = startSampleSize; sampleSize <= maxSampleSize; sampleSize = type.step(sampleSize, step)) {
-			System.out.println("sample size " + sampleSize);
-			parameters.setSampleSize(sampleSize);
-
-			long startTime = System.currentTimeMillis();
-			double p = LogLogUnknownProcessTest.p(logA, logB, parameters, canceller);
-			long time = System.currentTimeMillis() - startTime;
-
-			output.write(
-					parameters.getSampleSize() + "," + parameters.getNumberOfSamples() + "," + p + "," + time + "\n");
-			output.flush();
-		}
-		output.close();
-	}
+	//	private static void multipleTests(File inputLogA, File inputLogB, File outputCsv, int step, int maxSampleSize,
+	//			Type type) throws Exception {
+	//		outputCsv.getParentFile().mkdirs();
+	//		int startSampleSize = step;
+	//		BufferedWriter output;
+	//		if (!outputCsv.exists()) {
+	//			outputCsv.createNewFile();
+	//			startSampleSize = step;
+	//			output = new BufferedWriter(new FileWriter(outputCsv, false));
+	//			output.write("sampleSize,numberOfSamples,p,time\n");
+	//		} else {
+	//			//count the number of lines in the file
+	//			BufferedReader reader = new BufferedReader(new FileReader(outputCsv));
+	//			startSampleSize = 1;
+	//			while (reader.readLine() != null) {
+	//				startSampleSize = type.step(startSampleSize, step);
+	//			}
+	//			reader.close();
+	//
+	//			output = new BufferedWriter(new FileWriter(outputCsv, true));
+	//		}
+	//
+	//		PluginContext context = new FakeContext();
+	//		XLog logA = (XLog) new OpenLogFileLiteImplPlugin().importFile(context, inputLogA);
+	//		XLog logB = (XLog) new OpenLogFileLiteImplPlugin().importFile(context, inputLogB);
+	//
+	//		ProMCanceller canceller = new ProMCanceller() {
+	//			public boolean isCancelled() {
+	//				return false;
+	//			}
+	//		};
+	//
+	//		LogLogUnknownProcessTestParametersAbstract parameters = new LogLogUnknownProcessTestParametersDefault();
+	//		parameters.setDebug(true);
+	//
+	//		for (int sampleSize = startSampleSize; sampleSize <= maxSampleSize; sampleSize = type.step(sampleSize, step)) {
+	//			System.out.println("sample size " + sampleSize);
+	//			parameters.setSampleSize(sampleSize);
+	//
+	//			long startTime = System.currentTimeMillis();
+	//			double p = new LogLogUnknownProcessTest().test(Pair.of(logA, logB), parameters, canceller);
+	//			long time = System.currentTimeMillis() - startTime;
+	//
+	//			output.write(
+	//					parameters.getSampleSize() + "," + parameters.getNumberOfSamples() + "," + p + "," + time + "\n");
+	//			output.flush();
+	//		}
+	//		output.close();
+	//	}
 
 	public static void createLogs(String logName) throws Exception {
 		File inputLogA = new File(folder, logName);
@@ -188,8 +181,7 @@ public class TestTest {
 			XLogWriterIncremental writer = new XLogWriterIncremental(TE);
 			for (XTrace trace : log) {
 				if (!Arrays.equals(StatisticalTestUtils.getTraceString(trace, classifier), traceMinTrace)
-						&& !Arrays.equals(StatisticalTestUtils.getTraceString(trace, classifier),
-								traceSMinTrace)) {
+						&& !Arrays.equals(StatisticalTestUtils.getTraceString(trace, classifier), traceSMinTrace)) {
 					writer.writeTrace(trace);
 				}
 			}
@@ -251,8 +243,7 @@ public class TestTest {
 			XLogWriterIncremental writer = new XLogWriterIncremental(TS);
 			for (XTrace trace : log) {
 				if (!Arrays.equals(StatisticalTestUtils.getTraceString(trace, classifier), traceMinTrace)
-						&& !Arrays.equals(StatisticalTestUtils.getTraceString(trace, classifier),
-								traceSMinTrace)) {
+						&& !Arrays.equals(StatisticalTestUtils.getTraceString(trace, classifier), traceSMinTrace)) {
 					writer.writeTrace(trace);
 				}
 			}
@@ -330,8 +321,7 @@ public class TestTest {
 			XLogWriterIncremental writer = new XLogWriterIncremental(MS);
 			for (XTrace trace : log) {
 				if (!Arrays.equals(StatisticalTestUtils.getTraceString(trace, classifier), traceMaxTrace)
-						&& !Arrays.equals(StatisticalTestUtils.getTraceString(trace, classifier),
-								traceSMaxTrace)) {
+						&& !Arrays.equals(StatisticalTestUtils.getTraceString(trace, classifier), traceSMaxTrace)) {
 					writer.writeTrace(trace);
 				}
 			}
