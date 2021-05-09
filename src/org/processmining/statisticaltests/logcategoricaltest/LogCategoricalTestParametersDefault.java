@@ -1,4 +1,4 @@
-package org.processmining.statisticaltests.logcategorical;
+package org.processmining.statisticaltests.logcategoricaltest;
 
 import org.deckfour.xes.classification.XEventClassifier;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;

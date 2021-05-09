@@ -1,4 +1,4 @@
-package org.processmining.statisticaltests.logcategorical;
+package org.processmining.statisticaltests.logcategoricaltest;
 
 import java.math.BigDecimal;
 import java.util.List;
