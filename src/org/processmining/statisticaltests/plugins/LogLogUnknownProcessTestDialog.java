@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 
 import org.deckfour.xes.model.XLog;
@@ -12,33 +11,23 @@ import org.processmining.plugins.InductiveMiner.ClassifierChooser;
 import org.processmining.statisticaltests.loglogunknownprocesstest.LogLogUnknownProcessTestParametersAbstract;
 import org.processmining.statisticaltests.loglogunknownprocesstest.LogLogUnknownProcessTestParametersDefault;
 
-import com.fluxicon.slickerbox.factory.SlickerFactory;
-
-public class LogLogUnknownProcessTestDialog extends JPanel {
+public class LogLogUnknownProcessTestDialog extends StatisticalTestDialog<LogLogUnknownProcessTestParametersAbstract> {
 
 	private static final long serialVersionUID = -1097548788215530060L;
 
-	public static final int leftColumnWidth = 200;
-	public static final int columnMargin = 20;
-	public static final int rowHeight = 40;
-
 	private LogLogUnknownProcessTestParametersAbstract parameters;
 
-	private final SpringLayout layout;
 	private ClassifierChooser classifiersA;
 	private ClassifierChooser classifiersB;
 
 	public LogLogUnknownProcessTestDialog(XLog logA, XLog logB) {
-		SlickerFactory factory = SlickerFactory.instance();
-
-		layout = new SpringLayout();
-		setLayout(layout);
 
 		//first group
 		{
 			JLabel classifierLabel = factory.createLabel("Event classifier first log");
 			add(classifierLabel);
-			layout.putConstraint(SpringLayout.NORTH, classifierLabel, 5, SpringLayout.NORTH, this);
+			layout.putConstraint(SpringLayout.VERTICAL_CENTER, classifierLabel, rowHeight, SpringLayout.VERTICAL_CENTER,
+					alpha);
 			layout.putConstraint(SpringLayout.EAST, classifierLabel, leftColumnWidth, SpringLayout.WEST, this);
 
 			classifiersA = new ClassifierChooser(logA);
@@ -63,9 +52,6 @@ public class LogLogUnknownProcessTestDialog extends JPanel {
 					classifierLabel);
 		}
 
-		//set up the controller
-		parameters = new LogLogUnknownProcessTestParametersDefault();
-
 		classifiersA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				parameters.setClassifierA(classifiersA.getSelectedClassifier());
@@ -82,6 +68,9 @@ public class LogLogUnknownProcessTestDialog extends JPanel {
 	}
 
 	public LogLogUnknownProcessTestParametersAbstract getParameters() {
+		if (parameters == null) {
+			parameters = new LogLogUnknownProcessTestParametersDefault();
+		}
 		return parameters;
 	}
 }

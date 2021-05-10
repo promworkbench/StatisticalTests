@@ -7,45 +7,35 @@ import java.util.function.Predicate;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 
 import org.deckfour.xes.model.XLog;
 import org.processmining.plugins.InductiveMiner.ClassifierChooser;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 import org.processmining.plugins.inductiveminer2.attributes.AttributesInfoImpl;
-import org.processmining.statisticaltests.logcategoricaltest.LogCategoricalPairwiseTestParameters;
 import org.processmining.statisticaltests.logcategoricaltest.LogCategoricalPairwiseTestParametersDefault;
 
 import com.fluxicon.slickerbox.factory.SlickerFactory;
 
-public class LogCategoricalPairwiseTestDialog extends JPanel {
+public class LogCategoricalPairwiseTestDialog
+		extends StatisticalTestDialog<LogCategoricalPairwiseTestParametersDefault> {
 
-	private static final long serialVersionUID = -5763804865997315169L;
+	private static final long serialVersionUID = -5059650442590207291L;
 
-	public static final int leftColumnWidth = 200;
-	public static final int columnMargin = 20;
-	public static final int rowHeight = 40;
-
-	private LogCategoricalPairwiseTestParametersDefault parameters;
-
-	private final SpringLayout layout;
 	private ClassifierChooser classifiers;
 	private JComboBox<Attribute> attributesc;
 
+	private LogCategoricalPairwiseTestParametersDefault parameters;
+
 	@SuppressWarnings("unchecked")
 	public LogCategoricalPairwiseTestDialog(XLog log) {
-
-		SlickerFactory factory = SlickerFactory.instance();
-
-		layout = new SpringLayout();
-		setLayout(layout);
 
 		//first group
 		{
 			JLabel classifierLabel = factory.createLabel("Event classifier");
 			add(classifierLabel);
-			layout.putConstraint(SpringLayout.NORTH, classifierLabel, 5, SpringLayout.NORTH, this);
+			layout.putConstraint(SpringLayout.VERTICAL_CENTER, classifierLabel, rowHeight, SpringLayout.VERTICAL_CENTER,
+					alpha);
 			layout.putConstraint(SpringLayout.EAST, classifierLabel, leftColumnWidth, SpringLayout.WEST, this);
 
 			classifiers = new ClassifierChooser(log);
@@ -78,24 +68,28 @@ public class LogCategoricalPairwiseTestDialog extends JPanel {
 		}
 
 		//set up the controller
-		parameters = new LogCategoricalPairwiseTestParametersDefault((Attribute) attributesc.getSelectedItem());
+		getParameters().setAttribute((Attribute) attributesc.getSelectedItem());
 		attributesc.addActionListener(new ActionListener() {
+
 			public void actionPerformed(ActionEvent arg0) {
-				parameters.setAttribute((Attribute) attributesc.getSelectedItem());
+				getParameters().setAttribute((Attribute) attributesc.getSelectedItem());
 			}
 		});
 
 		classifiers.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				parameters.setClassifierA(classifiers.getSelectedClassifier());
-				parameters.setClassifierB(classifiers.getSelectedClassifier());
+				getParameters().setClassifierA(classifiers.getSelectedClassifier());
+				getParameters().setClassifierB(classifiers.getSelectedClassifier());
 			}
 		});
-		parameters.setClassifierA(classifiers.getSelectedClassifier());
-		parameters.setClassifierB(classifiers.getSelectedClassifier());
+		getParameters().setClassifierA(classifiers.getSelectedClassifier());
+		getParameters().setClassifierB(classifiers.getSelectedClassifier());
 	}
 
-	public LogCategoricalPairwiseTestParameters getParameters() {
+	public LogCategoricalPairwiseTestParametersDefault getParameters() {
+		if (parameters == null) {
+			parameters = new LogCategoricalPairwiseTestParametersDefault(null);
+		}
 		return parameters;
 	}
 

@@ -15,7 +15,7 @@ import org.processmining.statisticaltests.logcategoricaltest.LogCategoricalPairw
 import org.processmining.statisticaltests.logcategoricaltest.LogCategoricalPairwiseTestParameters;
 
 public class LogCategoricalPairwiseTestPlugin {
-	@Plugin(name = "Log vs. categorical attribute test", level = PluginLevel.Regular, returnLabels = {
+	@Plugin(name = "Log vs. categorical attribute test (pairwise comparison)", level = PluginLevel.Regular, returnLabels = {
 			"Compare sub-logs result" }, returnTypes = { CategoricalComparisonResult.class }, parameterLabels = {
 					"Event log" }, userAccessible = true, categories = { PluginCategory.Analytics,
 							PluginCategory.ConformanceChecking }, help = "Compare processes of a categorical attribute using statistal tests, for all pairs of values of the categorical attribute. Alpha will be adjusted for multiple tests using the Benjamini-Hochberg method.")
