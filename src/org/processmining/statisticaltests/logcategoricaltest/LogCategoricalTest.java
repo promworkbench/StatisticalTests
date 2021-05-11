@@ -39,23 +39,29 @@ public class LogCategoricalTest implements StatisticalTest<XLog, LogCategoricalT
 			return Double.NaN;
 		}
 
+		final DistanceCache distances = new DistanceCache(parameters.getClassifier(), traces.size());
+
 		ConcurrentSamples<Pair<Random, DistanceCache>> cs = new ConcurrentSamples<Pair<Random, DistanceCache>>(
 				parameters.getThreads(), parameters.getNumberOfSamples(), canceller) {
 
 			protected Pair<Random, DistanceCache> createThreadConstants(int threadNumber) {
 				Random random = new Random(parameters.getSeed() + threadNumber);
-				DistanceCache distances = new DistanceCache(parameters.getClassifier());
 
 				return Pair.of(random, distances);
 			}
 
 			protected boolean performSample(Pair<Random, DistanceCache> input, int sampleNumber,
 					ProMCanceller canceller) {
+
+				if (parameters.isDebug()) {
+					System.out.println("sample number " + sampleNumber);
+				}
+
 				Random random = input.getA();
 				DistanceCache distances = input.getB();
 
 				int[] sample = StatisticalTestUtils.getSample(traces,
-						Math.max(parameters.getSampleSize(), traces.size()), random);
+						Math.min(parameters.getSampleSize(), traces.size()), random);
 
 				//initialise result variables
 				int countA = 0;

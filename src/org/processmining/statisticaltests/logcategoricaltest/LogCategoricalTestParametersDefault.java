@@ -7,7 +7,7 @@ import org.processmining.statisticaltests.StatisticalTestParametersDefault;
 
 public class LogCategoricalTestParametersDefault extends LogCategoricalTestParametersAbstract {
 
-	public static final int defaultNumberOfSamples = 10000;
+	public static final int defaultNumberOfSamples = 500;
 	public static final int defaultSampleSize = 500;
 	public static final XEventClassifier defaultClassifier = MiningParameters.defaultClassifier;
 

@@ -11,16 +11,15 @@ import org.processmining.framework.plugin.annotations.PluginLevel;
 import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.framework.util.HTMLToString;
 import org.processmining.plugins.InductiveMiner.plugins.dialogs.IMMiningDialog;
-import org.processmining.statisticaltests.CategoricalComparisonResult;
 import org.processmining.statisticaltests.StatisticalTest;
 import org.processmining.statisticaltests.logcategoricaltest.LogCategoricalTest;
 import org.processmining.statisticaltests.logcategoricaltest.LogCategoricalTestParameters;
 
 public class LogCategoricalTestPlugin {
 	@Plugin(name = "Log vs. categorical attribute test", level = PluginLevel.Regular, returnLabels = {
-			"Compare sub-logs result" }, returnTypes = { CategoricalComparisonResult.class }, parameterLabels = {
+			"Compare sub-logs result" }, returnTypes = { HTMLToString.class }, parameterLabels = {
 					"Event log" }, userAccessible = true, categories = { PluginCategory.Analytics,
-							PluginCategory.ConformanceChecking }, help = "Compare processes of a categorical attribute using statistal tests. Alpha will be adjusted for multiple tests using the Benjamini-Hochberg method.")
+							PluginCategory.ConformanceChecking }, help = "Compare processes defined by a categorical attribute.")
 	@UITopiaVariant(affiliation = IMMiningDialog.affiliation, author = IMMiningDialog.author, email = IMMiningDialog.email)
 	@PluginVariant(variantLabel = "Mine, dialog", requiredParameterLabels = { 0 })
 	public HTMLToString compare(final UIPluginContext context, XLog log) throws InterruptedException {
@@ -55,7 +54,8 @@ public class LogCategoricalTestPlugin {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("<table>");
 		sb.append("<tr><td>Number of samples</td><td>" + parameters.getNumberOfSamples() + "</td></tr>");
-		sb.append("<tr><td>Sample size</td><td>" + parameters.getSampleSize() + "</td></tr>");
+		sb.append("<tr><td>Sample size</td><td>" + parameters.getSampleSize()
+				+ " (maximum with number of traces in log)</td></tr>");
 		sb.append("<tr><td>alpha</td><td>" + parameters.getAlpha() + "</td></tr>");
 		sb.append("<tr><td>p value</td><td>" + p + "</td></tr>");
 		sb.append("<tr><td> </td><td></td></tr>");
