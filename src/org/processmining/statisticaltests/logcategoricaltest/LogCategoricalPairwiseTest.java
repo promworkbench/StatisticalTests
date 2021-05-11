@@ -26,7 +26,7 @@ public class LogCategoricalPairwiseTest {
 
 		if (progress != null) {
 			progress.setMinimum(0);
-			progress.setMaximum(attribute.getStringValues().size() + (attribute.getStringValues().size() - 1) / 2);
+			progress.setMaximum(attribute.getStringValues().size() * (attribute.getStringValues().size() - 1) / 2);
 		}
 
 		List<Triple<Double, String, String>> result = new ArrayList<>();
@@ -55,7 +55,7 @@ public class LogCategoricalPairwiseTest {
 						result.add(Triple.of(Double.NaN, valueA, valueB));
 					} else {
 						double p = new LogLogUnknownProcessTest().test(Pair.of(logA, logB), parameters, canceller,
-								progress);
+								null);
 
 						if (canceller.isCancelled()) {
 							return null;

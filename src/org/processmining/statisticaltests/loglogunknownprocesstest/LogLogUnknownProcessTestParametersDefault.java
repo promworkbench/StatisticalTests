@@ -5,7 +5,7 @@ import org.processmining.statisticaltests.StatisticalTestParametersDefault;
 
 public class LogLogUnknownProcessTestParametersDefault extends LogLogUnknownProcessTestParametersAbstract {
 
-	public static final int defaultNumberOfSamples = 500;
+	public static final int defaultNumberOfSamples = 10000;
 
 	public LogLogUnknownProcessTestParametersDefault() {
 		super(StatisticalTestParametersDefault.defaultDebug, StatisticalTestParametersDefault.defaultThreads,
