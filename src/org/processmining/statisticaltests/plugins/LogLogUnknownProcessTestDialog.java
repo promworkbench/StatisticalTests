@@ -54,17 +54,17 @@ public class LogLogUnknownProcessTestDialog extends StatisticalTestDialog<LogLog
 
 		classifiersA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				parameters.setClassifierA(classifiersA.getSelectedClassifier());
+				getParameters().setClassifierA(classifiersA.getSelectedClassifier());
 			}
 		});
-		parameters.setClassifierA(classifiersA.getSelectedClassifier());
+		getParameters().setClassifierA(classifiersA.getSelectedClassifier());
 
 		classifiersB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				parameters.setClassifierA(classifiersB.getSelectedClassifier());
+				getParameters().setClassifierA(classifiersB.getSelectedClassifier());
 			}
 		});
-		parameters.setClassifierA(classifiersB.getSelectedClassifier());
+		getParameters().setClassifierA(classifiersB.getSelectedClassifier());
 	}
 
 	public LogLogUnknownProcessTestParametersAbstract getParameters() {

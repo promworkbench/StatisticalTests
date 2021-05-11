@@ -144,6 +144,7 @@ public class ModelModelLogTest implements
 				if (canceller.isCancelled()) {
 					return false;
 				}
+
 				if (emscAL <= emscBL) {
 					accepts.incrementAndGet();
 				}
