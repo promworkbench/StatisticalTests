@@ -44,15 +44,16 @@ public class LogCategoricalPairwiseVisualiserPlugin {
 			}
 			if (t.getB()) {
 				//reject hypothesis
-				data[i][2] = "Reject hypothesis that sub-log was derived from the same underlying process as the remainder of the log."
+				data[i][2] = "Reject hypothesis that the sub-logs of these values were derived from the same underlying process."
 						+ //
 						"\n" + //
-						"Traces with " + comparison.getAttribute().getName() + " = `" + t.getC()
-						+ "` are from a statistically significantly different underlying process than the other traces of the log, with α = "
+						"Traces with " + comparison.getAttribute().getName() + " being `" + t.getC()
+						+ "` are from a statistically significantly different underlying process than traces with "
+						+ comparison.getAttribute().getName() + " being `" + t.getD() + "`, with α = "
 						+ comparison.getAlpha() + ".";
 			} else {
 				//do not reject hypothesis
-				data[i][2] = "Not enough evidence to reject hypothesis that sub-log was derived from the same underlying process as the remainder of the log.";
+				data[i][2] = "Not enough evidence to reject hypothesis that the sub-logs of these values were derived from the same underlying process.";
 			}
 
 			i++;
