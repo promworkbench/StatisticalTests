@@ -2,10 +2,13 @@ package org.processmining.statisticaltests.helperclasses;
 
 import java.util.SplittableRandom;
 
+import org.deckfour.xes.extension.std.XConceptExtension;
 import org.deckfour.xes.factory.XFactory;
 import org.deckfour.xes.factory.XFactoryNaiveImpl;
+import org.deckfour.xes.model.XEvent;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
+import org.deckfour.xes.model.impl.XAttributeLiteralImpl;
 import org.processmining.earthmoversstochasticconformancechecking.helperclasses.EfficientStochasticPetriNetSemanticsImpl;
 import org.processmining.earthmoversstochasticconformancechecking.helperclasses.TransitionMap;
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.Activity2IndexKey;
@@ -69,8 +72,27 @@ public class StochasticPetriNetSample {
 			if (sumWeight == 0) {
 				throw new ModelHasZeroWeightsException();
 			}
-			
-			
+
+			double chosenWeight = s.random.nextDouble(sumWeight);
+			int chosenTransition = -1;
+			for (int enabledTransition : enabledTransitions) {
+				if (chosenTransition < 0) {
+					double transitionWeight = s.semantics.getTransitionWeight(enabledTransition);
+					chosenWeight -= transitionWeight;
+					if (chosenWeight <= 0) {
+						chosenTransition = enabledTransition;
+					}
+				}
+			}
+
+			assert chosenTransition >= 0;
+
+			XEvent event = s.factory.createEvent();
+			event.getAttributes().put(XConceptExtension.KEY_NAME,
+					new XAttributeLiteralImpl(XConceptExtension.KEY_NAME, s.semantics.getLabel(chosenTransition)));
+			result.add(event);
+
+			s.semantics.executeTransition(chosenTransition);
 
 			enabledTransitions = s.semantics.getEnabledTransitions();
 		}

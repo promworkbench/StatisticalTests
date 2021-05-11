@@ -19,11 +19,11 @@ import org.processmining.statisticaltests.modelmodellogtest.ModelModelLogTest;
 import org.processmining.statisticaltests.modelmodellogtest.ModelModelLogTestParameters;
 
 @Plugin(name = "Model vs. model - log test", returnLabels = { "Statistical significance" }, returnTypes = {
-		HTMLToString.class }, parameterLabels = { "Log A", "Log B" }, userAccessible = true, categories = {
+		HTMLToString.class }, parameterLabels = { "Model A", "Model B", "Log" }, userAccessible = true, categories = {
 				PluginCategory.Analytics }, help = "Perform a statistical test as to whether the models represent the log equally well.")
 public class ModelModelLogTestPlugin {
 	@UITopiaVariant(affiliation = IMMiningDialog.affiliation, author = IMMiningDialog.author, email = IMMiningDialog.email)
-	@PluginVariant(variantLabel = "test", requiredParameterLabels = { 0, 1 })
+	@PluginVariant(variantLabel = "test", requiredParameterLabels = { 0, 1, 2 })
 	public HTMLToString test(final UIPluginContext context, StochasticNet netA, StochasticNet netB, XLog log)
 			throws Exception {
 

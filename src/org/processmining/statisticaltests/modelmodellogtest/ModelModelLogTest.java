@@ -57,6 +57,11 @@ public class ModelModelLogTest implements
 			}
 
 			protected boolean performSample(SplittableRandom random, int sampleNumber, ProMCanceller canceller) {
+
+				if (parameters.isDebug()) {
+					System.out.println(" sample number " + sampleNumber);
+				}
+
 				//take samples
 				XLog sampleA;
 				try {
@@ -109,7 +114,7 @@ public class ModelModelLogTest implements
 				}
 
 				try {
-					distanceMatrixAL.init(languageA, languageA, canceller);
+					distanceMatrixAL.init(languageA, languageL, canceller);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 					return false;
@@ -120,7 +125,7 @@ public class ModelModelLogTest implements
 				}
 
 				try {
-					distanceMatrixBL.init(languageA, languageB, canceller);
+					distanceMatrixBL.init(languageB, languageL, canceller);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 					return false;
@@ -138,7 +143,7 @@ public class ModelModelLogTest implements
 					return false;
 				}
 
-				double emscBL = StatisticalTestUtils.getSimilarity(languageB, languageL, distanceMatrixAL,
+				double emscBL = StatisticalTestUtils.getSimilarity(languageB, languageL, distanceMatrixBL,
 						emscParameters, canceller);
 
 				if (canceller.isCancelled()) {
