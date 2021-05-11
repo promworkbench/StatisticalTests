@@ -65,15 +65,16 @@ public class ModelModelLogTestPlugin {
 		}
 
 		String outcome = test.rejectHypothesisForSingleTest(parameters, p)
-				? "reject null-hypothesis that the logs were derived from the same process"
-				: "do not reject null-hypothesis that the logs were derived from the same process";
+				? "reject null-hypothesis that the models represent the log equally well"
+				: "do not reject null-hypothesis that the models represent the log equally well";
 
 		final StringBuilder sb = new StringBuilder();
 		sb.append("<table>");
 		sb.append("<tr><td>Number of samples</td><td>" + parameters.getNumberOfSamples() + "</td></tr>");
-		sb.append("<tr><td> </td><td></td></tr>");
+		sb.append("<tr><td>Sample size</td><td>" + parameters.getSampleSize() + "</td></tr>");
 		sb.append("<tr><td>alpha</td><td>" + parameters.getAlpha() + "</td></tr>");
 		sb.append("<tr><td>p value</td><td>" + p + "</td></tr>");
+		sb.append("<tr><td> </td><td></td></tr>");
 		sb.append("<tr><td>result</td><td>" + outcome + "</td></tr>");
 		sb.append("</table>");
 
