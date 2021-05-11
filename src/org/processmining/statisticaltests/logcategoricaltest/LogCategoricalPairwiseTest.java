@@ -26,7 +26,7 @@ public class LogCategoricalPairwiseTest {
 
 		if (progress != null) {
 			progress.setMinimum(0);
-			progress.setMaximum(attribute.getStringValues().size());
+			progress.setMaximum(attribute.getStringValues().size() + (attribute.getStringValues().size() - 1) / 2);
 		}
 
 		List<Triple<Double, String, String>> result = new ArrayList<>();
@@ -34,7 +34,9 @@ public class LogCategoricalPairwiseTest {
 		for (String valueA : attribute.getStringValues()) {
 			for (String valueB : attribute.getStringValues()) {
 				if (valueA.compareTo(valueB) < 0) {
-					System.out.println(valueA + " vs. " + valueB);
+					if (parameters.isDebug()) {
+						System.out.println(valueA + " vs. " + valueB);
+					}
 					//create two logs
 					XLog logA = factory.createLog();
 					XLog logB = factory.createLog();
@@ -52,13 +54,13 @@ public class LogCategoricalPairwiseTest {
 					if (logA.isEmpty() || logB.isEmpty()) {
 						result.add(Triple.of(Double.NaN, valueA, valueB));
 					} else {
-						double p = new LogLogUnknownProcessTest().test(Pair.of(logA, logB), parameters, canceller);
+						double p = new LogLogUnknownProcessTest().test(Pair.of(logA, logB), parameters, canceller,
+								progress);
 
 						if (canceller.isCancelled()) {
 							return null;
 						}
 
-						System.out.println(p);
 						result.add(Triple.of(p, valueA, valueB));
 					}
 
@@ -116,7 +118,7 @@ public class LogCategoricalPairwiseTest {
 			if (logA.isEmpty() || logB.isEmpty()) {
 				result.add(Triple.of(Double.NaN, value, "[others]"));
 			} else {
-				double p = new LogLogUnknownProcessTest().test(Pair.of(logA, logB), parameters, canceller);
+				double p = new LogLogUnknownProcessTest().test(Pair.of(logA, logB), parameters, canceller, progress);
 
 				if (canceller.isCancelled()) {
 					return null;

@@ -13,6 +13,7 @@ import org.processmining.earthmoversstochasticconformancechecking.parameters.EMS
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.Activity2IndexKey;
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.log.StochasticLanguageLog;
 import org.processmining.framework.plugin.ProMCanceller;
+import org.processmining.framework.plugin.Progress;
 import org.processmining.models.graphbased.directed.petrinet.StochasticNet;
 import org.processmining.models.semantics.petrinet.Marking;
 import org.processmining.plugins.InductiveMiner.Quintuple;
@@ -30,7 +31,8 @@ public class ModelModelLogTest implements
 	}
 
 	public double test(Quintuple<StochasticNet, Marking, StochasticNet, Marking, XLog> input,
-			final ModelModelLogTestParameters parameters, ProMCanceller canceller) throws InterruptedException {
+			final ModelModelLogTestParameters parameters, ProMCanceller canceller, Progress progress)
+			throws InterruptedException {
 		final StochasticNet netA = input.getA();
 		final Marking markingA = input.getB();
 		final StochasticNet netB = input.getC();
@@ -51,7 +53,8 @@ public class ModelModelLogTest implements
 		//result variable
 		final AtomicInteger accepts = new AtomicInteger(0);
 
-		new ConcurrentSamples<SplittableRandom>(parameters.getThreads(), parameters.getNumberOfSamples(), canceller) {
+		new ConcurrentSamples<SplittableRandom>(parameters.getThreads(), parameters.getNumberOfSamples(), canceller,
+				progress) {
 			protected SplittableRandom createThreadConstants(int threadNumber) {
 				return new SplittableRandom(parameters.getSeed() + threadNumber);
 			}

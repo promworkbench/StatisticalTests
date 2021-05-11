@@ -11,6 +11,7 @@ import org.processmining.earthmoversstochasticconformancechecking.parameters.EMS
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.Activity2IndexKey;
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.log.StochasticLanguageLog;
 import org.processmining.framework.plugin.ProMCanceller;
+import org.processmining.framework.plugin.Progress;
 import org.processmining.plugins.InductiveMiner.Pair;
 import org.processmining.statisticaltests.StatisticalTest;
 import org.processmining.statisticaltests.helperclasses.AliasMethod;
@@ -25,8 +26,8 @@ public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog
 		return p >= 1 - parameters.getAlpha();
 	}
 
-	public double test(Pair<XLog, XLog> input, LogLogUnknownProcessTestParameters parameters, ProMCanceller canceller)
-			throws InterruptedException {
+	public double test(Pair<XLog, XLog> input, LogLogUnknownProcessTestParameters parameters, ProMCanceller canceller,
+			Progress progress) throws InterruptedException {
 		XLog logA = input.getA();
 		XLog logB = input.getB();
 
@@ -57,12 +58,12 @@ public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog
 			return Double.NaN;
 		}
 
-		return p(parameters, canceller, sampleDistances, distanceAB, languageA, languageB, sampleSize);
+		return p(parameters, canceller, sampleDistances, distanceAB, languageA, languageB, sampleSize, progress);
 	}
 
 	public static double p(LogLogUnknownProcessTestParameters parameters, ProMCanceller canceller,
 			double[] sampleDistances, AtomicDouble distanceAB, StochasticLanguageLog languageA,
-			StochasticLanguageLog languageB, int sampleSize) throws InterruptedException {
+			StochasticLanguageLog languageB, int sampleSize, Progress progress) throws InterruptedException {
 		if (parameters.isDebug()) {
 			System.out.println("create distance matrices");
 		}
@@ -83,7 +84,7 @@ public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog
 		}
 
 		ConcurrentSamples<AliasMethod> cs = new ConcurrentSamples<AliasMethod>(parameters.getThreads(),
-				parameters.getNumberOfSamples(), -1, canceller) {
+				parameters.getNumberOfSamples(), -1, canceller, progress) {
 
 			protected AliasMethod createThreadConstants(int threadNumber) {
 				SplittableRandom random = new SplittableRandom(parameters.getSeed() + threadNumber);

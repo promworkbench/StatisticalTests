@@ -5,6 +5,7 @@ import org.deckfour.xes.model.XLog;
 import org.processmining.contexts.uitopia.UIPluginContext;
 import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
 import org.processmining.framework.plugin.ProMCanceller;
+import org.processmining.framework.plugin.Progress;
 import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.framework.plugin.annotations.PluginCategory;
 import org.processmining.framework.plugin.annotations.PluginVariant;
@@ -20,7 +21,7 @@ import org.processmining.statisticaltests.loglogunknownprocesstest.LogLogUnknown
 public class LogLogUnknownProcessTestPlugin {
 	@UITopiaVariant(affiliation = IMMiningDialog.affiliation, author = IMMiningDialog.author, email = IMMiningDialog.email)
 	@PluginVariant(variantLabel = "test", requiredParameterLabels = { 0, 1 })
-	public HTMLToString test(final UIPluginContext context, XLog logA, XLog logB) throws Exception {
+	public HTMLToString test(final UIPluginContext context, XLog logA, XLog logB, Progress progress) throws Exception {
 
 		ProMCanceller canceller = new ProMCanceller() {
 			public boolean isCancelled() {
@@ -38,7 +39,7 @@ public class LogLogUnknownProcessTestPlugin {
 
 		LogLogUnknownProcessTestParameters parameters = dialog.getParameters();
 
-		double p = new LogLogUnknownProcessTest().test(Pair.of(logA, logB), parameters, canceller);
+		double p = new LogLogUnknownProcessTest().test(Pair.of(logA, logB), parameters, canceller, progress);
 
 		if (canceller.isCancelled()) {
 			context.getFutureResult(0).cancel(false);

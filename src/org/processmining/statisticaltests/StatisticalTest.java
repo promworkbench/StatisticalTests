@@ -1,6 +1,7 @@
 package org.processmining.statisticaltests;
 
 import org.processmining.framework.plugin.ProMCanceller;
+import org.processmining.framework.plugin.Progress;
 
 public interface StatisticalTest<I, P extends StatisticalTestParameters> {
 	/**
@@ -19,10 +20,13 @@ public interface StatisticalTest<I, P extends StatisticalTestParameters> {
 	 * @param input
 	 * @param parameters
 	 * @param canceller
+	 *            may not be null
+	 * @param progress
+	 *            may be null
 	 * @return the p-value of the test (confirm with
 	 *         rejectHypothesisForSingleTest whether hypothesis is rejected),
 	 *         Double.NaN if the test failed.
 	 * @throws InterruptedException
 	 */
-	public double test(I input, P parameters, ProMCanceller canceller) throws InterruptedException;
+	public double test(I input, P parameters, ProMCanceller canceller, Progress progress) throws InterruptedException;
 }

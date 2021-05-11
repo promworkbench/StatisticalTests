@@ -6,6 +6,7 @@ import org.processmining.contexts.uitopia.UIPluginContext;
 import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
 import org.processmining.earthmoversstochasticconformancechecking.plugins.EarthMoversStochasticConformancePlugin;
 import org.processmining.framework.plugin.ProMCanceller;
+import org.processmining.framework.plugin.Progress;
 import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.framework.plugin.annotations.PluginCategory;
 import org.processmining.framework.plugin.annotations.PluginVariant;
@@ -44,7 +45,8 @@ public class ModelModelLogTestPlugin {
 		Marking markingA = EarthMoversStochasticConformancePlugin.getInitialMarking(netA);
 		Marking markingB = EarthMoversStochasticConformancePlugin.getInitialMarking(netB);
 
-		HTMLToString hresult = test(dialog.getParameters(), netA, markingA, netB, markingB, log, canceller);
+		HTMLToString hresult = test(dialog.getParameters(), netA, markingA, netB, markingB, log, canceller,
+				context.getProgress());
 
 		if (hresult == null) {
 			context.getFutureResult(0).cancel(false);
@@ -55,10 +57,11 @@ public class ModelModelLogTestPlugin {
 	}
 
 	public static HTMLToString test(ModelModelLogTestParameters parameters, StochasticNet netA, Marking markingA,
-			StochasticNet netB, Marking markingB, XLog log, ProMCanceller canceller) throws InterruptedException {
+			StochasticNet netB, Marking markingB, XLog log, ProMCanceller canceller, Progress progress)
+			throws InterruptedException {
 		StatisticalTest<Quintuple<StochasticNet, Marking, StochasticNet, Marking, XLog>, ModelModelLogTestParameters> test = new ModelModelLogTest();
 
-		double p = test.test(Quintuple.of(netA, markingA, netB, markingB, log), parameters, canceller);
+		double p = test.test(Quintuple.of(netA, markingA, netB, markingB, log), parameters, canceller, progress);
 
 		if (canceller.isCancelled()) {
 			return null;

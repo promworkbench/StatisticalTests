@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
 import org.processmining.framework.plugin.ProMCanceller;
+import org.processmining.framework.plugin.Progress;
 import org.processmining.plugins.InductiveMiner.Pair;
 import org.processmining.plugins.inductiveminer2.attributes.AttributeUtils;
 import org.processmining.statisticaltests.StatisticalTest;
@@ -28,8 +29,8 @@ public class LogCategoricalTest implements StatisticalTest<XLog, LogCategoricalT
 		return p < parameters.getAlpha();
 	}
 
-	public double test(XLog log, final LogCategoricalTestParameters parameters, final ProMCanceller canceller)
-			throws InterruptedException {
+	public double test(XLog log, final LogCategoricalTestParameters parameters, final ProMCanceller canceller,
+			Progress progress) throws InterruptedException {
 		AtomicInteger e = new AtomicInteger(0);
 		AtomicInteger n = new AtomicInteger(0);
 
@@ -42,7 +43,7 @@ public class LogCategoricalTest implements StatisticalTest<XLog, LogCategoricalT
 		final DistanceCache distances = new DistanceCache(parameters.getClassifier(), traces.size());
 
 		ConcurrentSamples<Pair<Random, DistanceCache>> cs = new ConcurrentSamples<Pair<Random, DistanceCache>>(
-				parameters.getThreads(), parameters.getNumberOfSamples(), canceller) {
+				parameters.getThreads(), parameters.getNumberOfSamples(), canceller, progress) {
 
 			protected Pair<Random, DistanceCache> createThreadConstants(int threadNumber) {
 				Random random = new Random(parameters.getSeed() + threadNumber);
@@ -52,10 +53,6 @@ public class LogCategoricalTest implements StatisticalTest<XLog, LogCategoricalT
 
 			protected boolean performSample(Pair<Random, DistanceCache> input, int sampleNumber,
 					ProMCanceller canceller) {
-
-				if (parameters.isDebug()) {
-					System.out.println("sample number " + sampleNumber);
-				}
 
 				Random random = input.getA();
 				DistanceCache distances = input.getB();

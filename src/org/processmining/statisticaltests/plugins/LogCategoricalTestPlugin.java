@@ -40,7 +40,7 @@ public class LogCategoricalTestPlugin {
 
 		StatisticalTest<XLog, LogCategoricalTestParameters> test = new LogCategoricalTest();
 
-		double p = test.test(log, parameters, canceller);
+		double p = test.test(log, parameters, canceller, context.getProgress());
 
 		if (canceller.isCancelled()) {
 			context.getFutureResult(0).cancel(false);
@@ -54,8 +54,8 @@ public class LogCategoricalTestPlugin {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("<table>");
 		sb.append("<tr><td>Number of samples</td><td>" + parameters.getNumberOfSamples() + "</td></tr>");
-		sb.append("<tr><td>Sample size</td><td>" + parameters.getSampleSize()
-				+ " (maximum with number of traces in log)</td></tr>");
+		sb.append("<tr><td>Sample size</td><td>min(" + parameters.getSampleSize()
+				+ ", number of traces in log)</td></tr>");
 		sb.append("<tr><td>alpha</td><td>" + parameters.getAlpha() + "</td></tr>");
 		sb.append("<tr><td>p value</td><td>" + p + "</td></tr>");
 		sb.append("<tr><td> </td><td></td></tr>");

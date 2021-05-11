@@ -36,8 +36,8 @@ public class LogCategoricalPairwiseVisualiserPlugin {
 		int i = 0;
 		for (Quadruple<Double, Boolean, String, String> t : comparison.get()) {
 
-			data[i][0] = t.getC();
-			if (t.getA() != -Double.MAX_VALUE) {
+			data[i][0] = t.getC() + " vs. " + t.getD();
+			if (!Double.isNaN(t.getA())) {
 				data[i][1] = t.getA();
 			} else {
 				data[i][1] = "n/a";
