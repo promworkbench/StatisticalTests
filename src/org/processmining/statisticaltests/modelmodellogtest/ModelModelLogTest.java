@@ -11,7 +11,8 @@ import org.processmining.earthmoversstochasticconformancechecking.parameters.EMS
 import org.processmining.earthmoversstochasticconformancechecking.parameters.EMSCParametersLogLogAbstract;
 import org.processmining.earthmoversstochasticconformancechecking.parameters.EMSCParametersLogLogDefault;
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.Activity2IndexKey;
-import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.log.StochasticLanguageLog;
+import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.StochasticLanguage;
+import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.TotalOrder;
 import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.framework.plugin.Progress;
 import org.processmining.models.graphbased.directed.petrinet.StochasticNet;
@@ -44,7 +45,7 @@ public class ModelModelLogTest implements
 		StochasticPetriNetSample.feed(activityKey, netA);
 		StochasticPetriNetSample.feed(activityKey, netB);
 
-		final StochasticLanguageLog languageL = XLog2StochasticLanguage.convert(log, parameters.getClassifier(),
+		final StochasticLanguage<TotalOrder> languageL = XLog2StochasticLanguage.convert(log, parameters.getClassifier(),
 				activityKey, canceller);
 
 		final EMSCParametersLogLogAbstract emscParameters = new EMSCParametersLogLogDefault();
@@ -93,23 +94,23 @@ public class ModelModelLogTest implements
 				}
 
 				//transform samples
-				StochasticLanguageLog languageA = XLog2StochasticLanguage.convert(sampleA, new XEventNameClassifier(),
-						activityKey, canceller);
+				StochasticLanguage<TotalOrder> languageA = XLog2StochasticLanguage.convert(sampleA,
+						new XEventNameClassifier(), activityKey, canceller);
 
 				if (canceller.isCancelled()) {
 					return false;
 				}
 
-				StochasticLanguageLog languageB = XLog2StochasticLanguage.convert(sampleB, new XEventNameClassifier(),
-						activityKey, canceller);
+				StochasticLanguage<TotalOrder> languageB = XLog2StochasticLanguage.convert(sampleB,
+						new XEventNameClassifier(), activityKey, canceller);
 
 				if (canceller.isCancelled()) {
 					return false;
 				}
 
-				final DistanceMatrix<int[], int[]> distanceMatrixAL = EMSCParametersDefault.defaultDistanceMatrix
+				final DistanceMatrix<TotalOrder, TotalOrder> distanceMatrixAL = EMSCParametersDefault.defaultDistanceMatrix
 						.clone();
-				final DistanceMatrix<int[], int[]> distanceMatrixBL = EMSCParametersDefault.defaultDistanceMatrix
+				final DistanceMatrix<TotalOrder, TotalOrder> distanceMatrixBL = EMSCParametersDefault.defaultDistanceMatrix
 						.clone();
 
 				if (canceller.isCancelled()) {

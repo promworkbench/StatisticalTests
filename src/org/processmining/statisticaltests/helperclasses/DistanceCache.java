@@ -2,7 +2,7 @@ package org.processmining.statisticaltests.helperclasses;
 
 import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.model.XTrace;
-import org.processmining.earthmoversstochasticconformancechecking.distancematrix.Levenshtein;
+import org.processmining.earthmoversstochasticconformancechecking.helperclasses.Levenshtein;
 
 public class DistanceCache {
 

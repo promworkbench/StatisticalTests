@@ -1,16 +1,16 @@
 package org.processmining.statisticaltests;
 
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.Activity2IndexKey;
+import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.StochasticLanguage;
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.StochasticTraceIterator;
-import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.log.StochasticLanguageLog;
+import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.TotalOrder;
 
-public class StochasticLanguageWrapper extends StochasticLanguageLog {
+public class StochasticLanguageWrapper implements StochasticLanguage<TotalOrder> {
 
-	private final StochasticLanguageLog superLanguage;
+	private final StochasticLanguage<TotalOrder> superLanguage;
 	private double[] newProbabilities;
 
-	public StochasticLanguageWrapper(StochasticLanguageLog superLanguage, double[] newProbabilities) {
-		super(superLanguage.getActivityKey());
+	public StochasticLanguageWrapper(StochasticLanguage<TotalOrder> superLanguage, double[] newProbabilities) {
 		this.superLanguage = superLanguage;
 		this.newProbabilities = newProbabilities;
 	}
@@ -27,9 +27,9 @@ public class StochasticLanguageWrapper extends StochasticLanguageLog {
 		return superLanguage.getTrace(traceIndex);
 	}
 
-	public StochasticTraceIterator<int[]> iterator() {
-		final StochasticTraceIterator<int[]> superIterator = superLanguage.iterator();
-		return new StochasticTraceIterator<int[]>() {
+	public StochasticTraceIterator<TotalOrder> iterator() {
+		final StochasticTraceIterator<TotalOrder> superIterator = superLanguage.iterator();
+		return new StochasticTraceIterator<TotalOrder>() {
 			int i = -1;
 
 			@Override

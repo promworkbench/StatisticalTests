@@ -9,7 +9,8 @@ import org.processmining.earthmoversstochasticconformancechecking.parameters.EMS
 import org.processmining.earthmoversstochasticconformancechecking.parameters.EMSCParametersLogLogAbstract;
 import org.processmining.earthmoversstochasticconformancechecking.parameters.EMSCParametersLogLogDefault;
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.Activity2IndexKey;
-import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.log.StochasticLanguageLog;
+import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.StochasticLanguage;
+import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.TotalOrder;
 import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.framework.plugin.Progress;
 import org.processmining.plugins.InductiveMiner.Pair;
@@ -49,9 +50,9 @@ public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog
 		}
 
 		//set up objects for Earth Movers' conformance
-		StochasticLanguageLog languageA = XLog2StochasticLanguage.convert(logA, parameters.getClassifierA(),
+		StochasticLanguage<TotalOrder> languageA = XLog2StochasticLanguage.convert(logA, parameters.getClassifierA(),
 				activityKey, canceller);
-		StochasticLanguageLog languageB = XLog2StochasticLanguage.convert(logB, parameters.getClassifierB(),
+		StochasticLanguage<TotalOrder> languageB = XLog2StochasticLanguage.convert(logB, parameters.getClassifierB(),
 				activityKey, canceller);
 
 		if (canceller.isCancelled()) {
@@ -62,16 +63,18 @@ public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog
 	}
 
 	public static double p(LogLogUnknownProcessTestParameters parameters, ProMCanceller canceller,
-			double[] sampleDistances, AtomicDouble distanceAB, StochasticLanguageLog languageA,
-			StochasticLanguageLog languageB, int sampleSize, Progress progress) throws InterruptedException {
+			double[] sampleDistances, AtomicDouble distanceAB, StochasticLanguage<TotalOrder> languageA,
+			StochasticLanguage<TotalOrder> languageB, int sampleSize, Progress progress) throws InterruptedException {
 		if (parameters.isDebug()) {
 			System.out.println("create distance matrices");
 		}
 
 		final EMSCParametersLogLogAbstract emscParameters = new EMSCParametersLogLogDefault();
 		emscParameters.setComputeStochasticTraceAlignments(false);
-		final DistanceMatrix<int[], int[]> distanceMatrixAA = EMSCParametersDefault.defaultDistanceMatrix.clone();
-		final DistanceMatrix<int[], int[]> distanceMatrixAB = EMSCParametersDefault.defaultDistanceMatrix.clone();
+		final DistanceMatrix<TotalOrder, TotalOrder> distanceMatrixAA = EMSCParametersDefault.defaultDistanceMatrix
+				.clone();
+		final DistanceMatrix<TotalOrder, TotalOrder> distanceMatrixAB = EMSCParametersDefault.defaultDistanceMatrix
+				.clone();
 		distanceMatrixAA.init(languageA, languageA, canceller);
 		distanceMatrixAB.init(languageA, languageB, canceller);
 
@@ -113,7 +116,7 @@ public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog
 
 					//sample
 					double[] sampleA = StatisticalTestUtils.sample(aliasMethodA, sampleSize);
-					StochasticLanguageLog languageX = StatisticalTestUtils.applySample(languageA, sampleA);
+					StochasticLanguage<TotalOrder> languageX = StatisticalTestUtils.applySample(languageA, sampleA);
 					double emsc = StatisticalTestUtils.getSimilarity(languageA, languageX, distanceMatrixAA,
 							emscParameters, canceller);
 

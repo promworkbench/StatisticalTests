@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
-import org.processmining.earthmoversstochasticconformancechecking.distancematrix.Levenshtein;
+import org.processmining.earthmoversstochasticconformancechecking.helperclasses.Levenshtein;
 import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.plugins.InductiveMiner.Pair;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;

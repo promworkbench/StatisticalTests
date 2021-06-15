@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
-import org.processmining.earthmoversstochasticconformancechecking.distancematrix.Levenshtein;
+import org.processmining.earthmoversstochasticconformancechecking.helperclasses.Levenshtein;
 import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.plugins.inductiveminer2.attributes.AttributeUtils;
 import org.processmining.statisticaltests.helperclasses.StatisticalTestUtils;
@@ -98,8 +98,10 @@ public class AssociationProcessNumerical {
 
 					double valueDelta = Math.abs(valueA - valueB);
 
-					String[] traceA = StatisticalTestUtils.getTraceString(traces.get(sampleA), parameters.getClassifier());
-					String[] traceB = StatisticalTestUtils.getTraceString(traces.get(sampleB), parameters.getClassifier());
+					String[] traceA = StatisticalTestUtils.getTraceString(traces.get(sampleA),
+							parameters.getClassifier());
+					String[] traceB = StatisticalTestUtils.getTraceString(traces.get(sampleB),
+							parameters.getClassifier());
 
 					double processDelta = Levenshtein.getNormalisedDistance(traceA, traceB);
 
@@ -117,5 +119,4 @@ public class AssociationProcessNumerical {
 		return result;
 	}
 
-	
 }

@@ -10,8 +10,9 @@ import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
 import org.processmining.earthmoversstochasticconformancechecking.algorithms.XLog2StochasticLanguage;
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.Activity2IndexKey;
+import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.StochasticLanguage;
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.StochasticTraceIterator;
-import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.log.StochasticLanguageLog;
+import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.TotalOrder;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.statisticaltests.helperclasses.StatisticalTestUtils;
@@ -132,7 +133,8 @@ public class TestTest {
 		};
 		Activity2IndexKey activityKey = new Activity2IndexKey();
 		XEventClassifier classifier = new XEventNameClassifier();
-		StochasticLanguageLog language = XLog2StochasticLanguage.convert(log, classifier, activityKey, canceller);
+		StochasticLanguage<TotalOrder> language = XLog2StochasticLanguage.convert(log, classifier, activityKey,
+				canceller);
 
 		//LL copy
 		File LL = new File(folder, logName + "-LL.xes.gz");
@@ -151,9 +153,8 @@ public class TestTest {
 			//find least-occurring trace
 			double probMinTrace = Double.MAX_VALUE;
 			String[] traceMinTrace = null;
-			for (StochasticTraceIterator it = language.iterator(); it.hasNext();) {
-				it.next();
-				String[] trace = language.getStringTrace(it.getTraceIndex());
+			for (StochasticTraceIterator<TotalOrder> it = language.iterator(); it.hasNext();) {
+				String[] trace = language.getActivityKey().toTraceString(it.next());
 				if (it.getProbability() < probMinTrace) {
 					probMinTrace = it.getProbability();
 					traceMinTrace = trace;
@@ -165,9 +166,8 @@ public class TestTest {
 
 			double probSMinTrace = Double.MAX_VALUE;
 			String[] traceSMinTrace = null;
-			for (StochasticTraceIterator it = language.iterator(); it.hasNext();) {
-				it.next();
-				String[] trace = language.getStringTrace(it.getTraceIndex());
+			for (StochasticTraceIterator<TotalOrder> it = language.iterator(); it.hasNext();) {
+				String[] trace = language.getActivityKey().toTraceString(it.next());
 				if (it.getProbability() < probSMinTrace && it.getProbability() > probMinTrace) {
 					probSMinTrace = it.getProbability();
 					traceSMinTrace = trace;
@@ -213,9 +213,8 @@ public class TestTest {
 			//find least-occurring trace
 			double probMinTrace = Double.MAX_VALUE;
 			String[] traceMinTrace = null;
-			for (StochasticTraceIterator it = language.iterator(); it.hasNext();) {
-				it.next();
-				String[] trace = language.getStringTrace(it.getTraceIndex());
+			for (StochasticTraceIterator<TotalOrder> it = language.iterator(); it.hasNext();) {
+				String[] trace = language.getActivityKey().toTraceString(it.next());
 				if (it.getProbability() < probMinTrace) {
 					probMinTrace = it.getProbability();
 					traceMinTrace = trace;
@@ -227,9 +226,8 @@ public class TestTest {
 
 			double probSMinTrace = Double.MAX_VALUE;
 			String[] traceSMinTrace = null;
-			for (StochasticTraceIterator it = language.iterator(); it.hasNext();) {
-				it.next();
-				String[] trace = language.getStringTrace(it.getTraceIndex());
+			for (StochasticTraceIterator<TotalOrder> it = language.iterator(); it.hasNext();) {
+				String[] trace = language.getActivityKey().toTraceString(it.next());
 				if (it.getProbability() < probSMinTrace && it.getProbability() > probMinTrace) {
 					probSMinTrace = it.getProbability();
 					traceSMinTrace = trace;
@@ -272,9 +270,8 @@ public class TestTest {
 		File LE = new File(folder, logName + "-LE.xes.gz");
 		if (!LE.exists()) {
 			XLogWriterIncremental writer = new XLogWriterIncremental(LE);
-			for (StochasticTraceIterator it = language.iterator(); it.hasNext();) {
-				it.next();
-				String[] trace = language.getStringTrace(it.getTraceIndex());
+			for (StochasticTraceIterator<TotalOrder> it = language.iterator(); it.hasNext();) {
+				String[] trace = language.getActivityKey().toTraceString(it.next());
 				writer.startTrace();
 				for (String activity : trace) {
 					writer.writeEvent(activity, "complete");
@@ -291,9 +288,8 @@ public class TestTest {
 			//find most-occurring trace
 			double probMaxTrace = -Double.MAX_VALUE;
 			String[] traceMaxTrace = null;
-			for (StochasticTraceIterator it = language.iterator(); it.hasNext();) {
-				it.next();
-				String[] trace = language.getStringTrace(it.getTraceIndex());
+			for (StochasticTraceIterator<TotalOrder> it = language.iterator(); it.hasNext();) {
+				String[] trace = language.getActivityKey().toTraceString(it.next());
 				if (it.getProbability() > probMaxTrace) {
 					probMaxTrace = it.getProbability();
 					traceMaxTrace = trace;
@@ -305,9 +301,8 @@ public class TestTest {
 
 			double probSMaxTrace = -Double.MAX_VALUE;
 			String[] traceSMaxTrace = null;
-			for (StochasticTraceIterator it = language.iterator(); it.hasNext();) {
-				it.next();
-				String[] trace = language.getStringTrace(it.getTraceIndex());
+			for (StochasticTraceIterator<TotalOrder> it = language.iterator(); it.hasNext();) {
+				String[] trace = language.getActivityKey().toTraceString(it.next());
 				if (it.getProbability() > probSMaxTrace && it.getProbability() < probMaxTrace) {
 					probSMaxTrace = it.getProbability();
 					traceSMaxTrace = trace;
