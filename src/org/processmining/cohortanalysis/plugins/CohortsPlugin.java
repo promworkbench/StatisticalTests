@@ -34,6 +34,6 @@ public class CohortsPlugin {
 	@UITopiaVariant(affiliation = IMMiningDialog.affiliation, author = IMMiningDialog.author, email = IMMiningDialog.email)
 	@PluginVariant(variantLabel = "Cohort analysis visualisation", requiredParameterLabels = { 0, 1 })
 	public JComponent fancy(PluginContext context, CohortsLauncher launcher, ProMCanceller canceller) {
-		return CohortsController.controller(context, launcher.getLog(), canceller);
+		return new CohortsController(context, launcher.getLog(), canceller).getPanel();
 	}
 }

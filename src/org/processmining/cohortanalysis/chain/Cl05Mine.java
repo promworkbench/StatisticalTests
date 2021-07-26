@@ -1,60 +1,51 @@
 package org.processmining.cohortanalysis.chain;
 
-import org.deckfour.xes.model.XLog;
-import org.processmining.cohortanalysis.visualisation.CohortsState;
-import org.processmining.plugins.InductiveMiner.Triple;
-import org.processmining.plugins.InductiveMiner.efficienttree.UnknownTreeNodeException;
 import org.processmining.plugins.InductiveMiner.mining.IMLogInfo;
 import org.processmining.plugins.InductiveMiner.mining.logs.IMLog;
-import org.processmining.plugins.InductiveMiner.mining.logs.IMLogImpl;
+import org.processmining.plugins.inductiveVisualMiner.chain.DataChainLinkComputationAbstract;
 import org.processmining.plugins.inductiveVisualMiner.chain.IvMCanceller;
+import org.processmining.plugins.inductiveVisualMiner.chain.IvMObject;
+import org.processmining.plugins.inductiveVisualMiner.chain.IvMObjectValues;
 import org.processmining.plugins.inductiveVisualMiner.helperClasses.IvMModel;
-import org.processmining.plugins.inductiveVisualMiner.performance.XEventPerformanceClassifier;
 import org.processmining.plugins.inductiveVisualMiner.visualMinerWrapper.VisualMinerParameters;
 import org.processmining.plugins.inductiveVisualMiner.visualMinerWrapper.VisualMinerWrapper;
-import org.processmining.plugins.inductiveVisualMiner.visualMinerWrapper.miners.DfgMiner;
 
-public class Cl05Mine
-		extends CohortsChainLink<Triple<XLog, XEventPerformanceClassifier, VisualMinerParameters>, IvMModel> {
+public class Cl05Mine extends DataChainLinkComputationAbstract<Object> {
 
-	protected Triple<XLog, XEventPerformanceClassifier, VisualMinerParameters> generateInput(CohortsState state) {
-		VisualMinerParameters minerParameters = new VisualMinerParameters(state.getPaths());
-		return Triple.of(state.getLog(), state.getPerformanceClassifier(), minerParameters);
-	}
-
-	protected IvMModel executeLink(Triple<XLog, XEventPerformanceClassifier, VisualMinerParameters> input,
-			IvMCanceller canceller) throws UnknownTreeNodeException {
-		XLog xLog = input.getA();
-		XEventPerformanceClassifier classifier = input.getB();
-		VisualMinerParameters parameters = input.getC();
-
-		VisualMinerWrapper miner = new DfgMiner();
-
-		IMLog iLog = new IMLogImpl(xLog, classifier.getActivityClassifier(), miner.getLifeCycleClassifier());
-		IMLogInfo iLogInfo = miner.getLog2logInfo().createLogInfo(iLog);
-		IvMModel model = miner.mine(iLog, iLogInfo, parameters, canceller);
-
-		if (model != null) {
-			return model;
-		} else {
-			assert (canceller.isCancelled());
-			return null;
-		}
-	}
-
-	protected void processResult(IvMModel result, CohortsState state) {
-		state.setModel(result);
-	}
-
-	protected void invalidateResult(CohortsState state) {
-		state.setModel(null);
-	}
-
+	@Override
 	public String getName() {
 		return "mine";
 	}
 
+	@Override
 	public String getStatusBusyMessage() {
 		return "Mining..";
+	}
+
+	@Override
+	public IvMObject<?>[] createInputObjects() {
+		return new IvMObject<?>[] { IvMObject.imlog, IvMObject.imlog_info, IvMObject.selected_noise_threshold,
+				IvMObject.selected_miner };
+	}
+
+	@Override
+	public IvMObject<?>[] createOutputObjects() {
+		return new IvMObject<?>[] { IvMObject.model };
+	}
+
+	@Override
+	public IvMObjectValues execute(Object configuration, IvMObjectValues inputs, IvMCanceller canceller)
+			throws Exception {
+		IMLog log = inputs.get(IvMObject.imlog);
+		IMLogInfo logInfo = inputs.get(IvMObject.imlog_info);
+		double noise_threshold = inputs.get(IvMObject.selected_noise_threshold);
+		VisualMinerWrapper miner = inputs.get(IvMObject.selected_miner);
+
+		VisualMinerParameters minerParameters = new VisualMinerParameters(noise_threshold);
+
+		IvMModel model = miner.mine(log, logInfo, minerParameters, canceller);
+
+		return new IvMObjectValues().//
+				s(IvMObject.model, model);
 	}
 }

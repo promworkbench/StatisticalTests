@@ -23,7 +23,9 @@ import org.processmining.plugins.InductiveMiner.Pair;
 import org.processmining.plugins.graphviz.dot.Dot;
 import org.processmining.plugins.graphviz.visualisation.DotPanel;
 import org.processmining.plugins.graphviz.visualisation.listeners.ImageTransformationChangedListener;
+import org.processmining.plugins.inductiveVisualMiner.chain.DataState;
 import org.processmining.plugins.inductiveVisualMiner.dataanalysis.OnOffPanel;
+import org.processmining.plugins.inductiveVisualMiner.helperClasses.ControllerView;
 import org.processmining.plugins.inductiveVisualMiner.helperClasses.decoration.IvMDecorator;
 import org.processmining.plugins.inductiveVisualMiner.helperClasses.decoration.IvMDecoratorDefault;
 import org.processmining.plugins.inductiveVisualMiner.helperClasses.decoration.IvMDecoratorI;
@@ -42,6 +44,8 @@ public class CohortsPanel extends JPanel {
 	private ProcessDifferencesParetoPanel processDifferencesParetoPanel;
 	private OnOffPanel<ResizableSplitPane> processDifferencesPanelOnOff;
 	private JLabel cohortLabel;
+
+	private final ControllerView<DataState> controllerView;
 
 	private final static IvMDecoratorI decorator = new IvMDecoratorDefault();
 
@@ -154,6 +158,18 @@ public class CohortsPanel extends JPanel {
 			flattenJSplitPane(splitPane2);
 			add(splitPane2, BorderLayout.CENTER);
 		}
+
+		//controller view
+		{
+			controllerView = new ControllerView<>(this);
+			cohortGraph.getHelperControlsShortcuts().add("ctrl c");
+			antiCohortGraph.getHelperControlsExplanations().add("show controller");
+		}
+	}
+
+	public void removeNotify() {
+		super.removeNotify();
+		controllerView.setVisible(false);
 	}
 
 	public CohortsListPanel getCohortsList() {
@@ -322,5 +338,9 @@ public class CohortsPanel extends JPanel {
 		};
 		splitPane.setUI(flatDividerSplitPaneUI);
 		splitPane.setBorder(null);
+	}
+
+	public ControllerView<DataState> getControllerView() {
+		return controllerView;
 	}
 }
