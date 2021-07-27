@@ -19,7 +19,6 @@ import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import org.processmining.cohortanalysis.cohort.Cohorts;
-import org.processmining.plugins.InductiveMiner.Pair;
 import org.processmining.plugins.graphviz.dot.Dot;
 import org.processmining.plugins.graphviz.visualisation.DotPanel;
 import org.processmining.plugins.graphviz.visualisation.listeners.ImageTransformationChangedListener;
@@ -181,12 +180,12 @@ public class CohortsPanel extends JPanel {
 		cohortsListOnOff.set(cohorts != null);
 	}
 
-	public void setProcessDifferences(Pair<ProcessDifferences, ProcessDifferencesPareto> pair) {
-		if (pair != null) {
-			processDifferencesPanel.setData(pair.getA());
-			processDifferencesParetoPanel.setData(pair.getB());
+	public void setProcessDifferences(ProcessDifferences differences, ProcessDifferencesPareto differences_pareto) {
+		if (differences != null && differences_pareto != null) {
+			processDifferencesPanel.setData(differences);
+			processDifferencesParetoPanel.setData(differences_pareto);
 		}
-		processDifferencesPanelOnOff.set(pair != null);
+		processDifferencesPanelOnOff.set(differences != null && differences_pareto != null);
 	}
 
 	public ProcessDifferencesPanel getProcessDifferences() {

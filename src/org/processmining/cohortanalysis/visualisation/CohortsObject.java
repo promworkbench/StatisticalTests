@@ -32,4 +32,9 @@ public class CohortsObject {
 			SVGDiagram.class);
 	public static final IvMObject<ProcessTreeVisualisationInfo> graph_visualisation_info_aligned_anti = IvMObject
 			.c("graph visualisation info aligned anti cohort", ProcessTreeVisualisationInfo.class);
+
+	public static final IvMObject<ProcessDifferences> differences = IvMObject.c("differences",
+			ProcessDifferences.class);
+	public static final IvMObject<ProcessDifferencesPareto> differences_pareto = IvMObject.c("differences pareto",
+			ProcessDifferencesPareto.class);
 }

@@ -18,6 +18,7 @@ import org.processmining.cohortanalysis.chain.Cl07Align;
 import org.processmining.cohortanalysis.chain.Cl08LayoutAlignment;
 import org.processmining.cohortanalysis.chain.Cl08LayoutAlignmentAnti;
 import org.processmining.cohortanalysis.chain.Cl18ApplyCohort;
+import org.processmining.cohortanalysis.chain.Cl19ProcessDifferences;
 import org.processmining.cohortanalysis.chain.CohortsConfiguration;
 import org.processmining.cohortanalysis.cohort.Cohort;
 import org.processmining.cohortanalysis.cohort.Cohorts;
@@ -28,6 +29,8 @@ import org.processmining.plugins.InductiveMiner.Function;
 import org.processmining.plugins.graphviz.dot.Dot;
 import org.processmining.plugins.graphviz.dot.Dot.GraphDirection;
 import org.processmining.plugins.graphviz.visualisation.listeners.GraphChangedListener;
+import org.processmining.plugins.inductiveVisualMiner.InductiveVisualMinerSelectionColourer;
+import org.processmining.plugins.inductiveVisualMiner.alignedLogVisualisation.data.AlignedLogVisualisationData;
 import org.processmining.plugins.inductiveVisualMiner.chain.Cl02SortEvents;
 import org.processmining.plugins.inductiveVisualMiner.chain.Cl03MakeLog;
 import org.processmining.plugins.inductiveVisualMiner.chain.Cl18DataAnalysisCohort;
@@ -37,7 +40,6 @@ import org.processmining.plugins.inductiveVisualMiner.chain.DataState;
 import org.processmining.plugins.inductiveVisualMiner.chain.IvMObject;
 import org.processmining.plugins.inductiveVisualMiner.chain.IvMObjectValues;
 import org.processmining.plugins.inductiveVisualMiner.helperClasses.IvMModel;
-import org.processmining.plugins.inductiveVisualMiner.ivmlog.IvMLogFilteredImpl;
 import org.processmining.plugins.inductiveVisualMiner.ivmlog.IvMLogInfo;
 import org.processmining.plugins.inductiveVisualMiner.mode.ModeRelativePaths;
 import org.processmining.plugins.inductiveVisualMiner.visualMinerWrapper.miners.DfgMiner;
@@ -111,52 +113,7 @@ public class CohortsController {
 		chain.register(new Cl08LayoutAlignmentAnti());
 		chain.register(new Cl18DataAnalysisCohort<CohortsConfiguration>());
 		chain.register(new Cl18ApplyCohort());
-
-		//
-		//			Cl18ApplyCohort applyCohort = new Cl18ApplyCohort();
-		//			{
-		//				applyCohort.setOnComplete(new Runnable() {
-		//					public void run() {
-		//						
-		//					}
-		//				});
-		//			}
-		//
-		//			Cl19ProcessDifferences differences = new Cl19ProcessDifferences();
-		//			{
-		//				differences.setOnComplete(new Runnable() {
-		//					public void run() {
-		//						panel.setProcessDifferences(state.getProcessDifferences());
-		//						panel.getProcessDifferencesPareto().repaint();
-		//					}
-		//				});
-		//				differences.setOnInvalidate(new Runnable() {
-		//					public void run() {
-		//						panel.setProcessDifferences(null);
-		//						panel.getProcessDifferencesPareto().repaint();
-		//					}
-		//				});
-		//				chain.addConnection(applyCohort, differences);
-		//			}
-		//		}
-		//
-
-		//
-		//		//respond to difference selection
-		//		panel.getProcessDifferences().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-		//			public void valueChanged(ListSelectionEvent e) {
-		//				if (!e.getValueIsAdjusting()) {
-		//					int internalIndex = panel.getProcessDifferences().getSelectionModel().getAnchorSelectionIndex();
-		//					if (internalIndex >= 0) {
-		//						int selectedIndex = state.getProcessDifferences().getA().row2index(internalIndex);
-		//						panel.getProcessDifferencesPareto().setSelectedIndex(selectedIndex);
-		//					}
-		//					panel.repaint();
-		//				}
-		//			}
-		//		});
-		//
-		//		return panel;
+		chain.register(new Cl19ProcessDifferences());
 
 		//start the chain
 		chain.setFixedObject(IvMObject.input_log, log);
@@ -169,6 +126,7 @@ public class CohortsController {
 	protected void initGui(final ProMCanceller canceller, CohortsConfiguration configuration) {
 		initGuiGraph();
 		initGuiCohorts();
+		initGuiDifferences();
 
 		//listen to ctrl c to show the controller view
 		{
@@ -258,8 +216,10 @@ public class CohortsController {
 			}
 
 			public IvMObject<?>[] createInputObjects() {
-				return new IvMObject<?>[] { IvMObject.model, CohortsObject.aligned_log_filtered,
-						CohortsObject.aligned_log_info_filtered, CohortsObject.graph_visualisation_info_aligned };
+				return new IvMObject<?>[] { IvMObject.model, CohortsObject.graph_svg_aligned,
+						CohortsObject.aligned_log_info_filtered, CohortsObject.graph_visualisation_info_aligned,
+						CohortsObject.graph_svg_aligned_anti, CohortsObject.aligned_log_info_filtered_anti,
+						CohortsObject.graph_visualisation_info_aligned_anti };
 			}
 
 			public void updateGui(CohortsPanel panel, IvMObjectValues inputs) throws Exception {
@@ -268,27 +228,46 @@ public class CohortsController {
 				ProcessTreeVisualisationParameters visualisationParameters = new ModeRelativePaths()
 						.getVisualisationParametersWithAlignments(null);
 				{
-					IvMLogFilteredImpl logCohort = inputs.get(CohortsObject.aligned_log_filtered);
 					IvMLogInfo logInfoCohort = inputs.get(CohortsObject.aligned_log_info_filtered);
 					ProcessTreeVisualisationInfo visualisationInfoCohort = inputs
 							.get(CohortsObject.graph_visualisation_info_aligned);
+					SVGDiagram svg = inputs.get(CohortsObject.graph_svg_aligned);
 
-//					AlignedLogVisualisationData cohortVisualisationData = new ModeRelativePaths()
-//							.getVisualisationData(model, logCohort, logInfoCohort, null, null);
-//					InductiveVisualMinerSelectionColourer.colourHighlighting(panel.getCohortGraph().getSVG(),
-//							visualisationInfoCohort, model, cohortVisualisationData, visualisationParameters, null);
+					AlignedLogVisualisationData cohortVisualisationData;
+					{
+						IvMObjectValues repack = new IvMObjectValues().//
+						s(IvMObject.model, model).//
+						s(IvMObject.aligned_log_info_filtered, logInfoCohort);
+						cohortVisualisationData = new ModeRelativePaths().getVisualisationData(repack);
+					}
+					InductiveVisualMinerSelectionColourer.colourHighlighting(svg, visualisationInfoCohort, model,
+							cohortVisualisationData, visualisationParameters, null);
+
 					panel.getCohortGraph().repaint();
 				}
 
-				//				{
-				//					AlignedLogVisualisationData antiCohortVisualisationData = new ModeRelativePaths()
-				//							.getVisualisationData(state.getModel(), state.getAntiCohortLog(),
-				//									state.getAntiCohortLogInfo(), null, null);
-				//					InductiveVisualMinerSelectionColourer.colourHighlighting(panel.getAntiCohortGraph().getSVG(),
-				//							state.getVisualisationInfoAntiCohort(), state.getModel(), antiCohortVisualisationData,
-				//							visualisationParameters);
-				//					panel.getAntiCohortGraph().repaint();
-				//				}
+				{
+					IvMLogInfo logInfoCohort = inputs.get(CohortsObject.aligned_log_info_filtered_anti);
+					ProcessTreeVisualisationInfo visualisationInfoCohort = inputs
+							.get(CohortsObject.graph_visualisation_info_aligned_anti);
+					SVGDiagram svg = inputs.get(CohortsObject.graph_svg_aligned_anti);
+
+					AlignedLogVisualisationData cohortVisualisationData;
+					{
+						IvMObjectValues repack = new IvMObjectValues().//
+						s(IvMObject.model, model).//
+						s(IvMObject.aligned_log_info_filtered, logInfoCohort);
+						cohortVisualisationData = new ModeRelativePaths().getVisualisationData(repack);
+					}
+					InductiveVisualMinerSelectionColourer.colourHighlighting(svg, visualisationInfoCohort, model,
+							cohortVisualisationData, visualisationParameters, null);
+
+					panel.getAntiCohortGraph().repaint();
+				}
+			}
+
+			public void invalidate(CohortsPanel panel) {
+
 			}
 		});
 	}
@@ -333,6 +312,50 @@ public class CohortsController {
 
 			public void invalidate(CohortsPanel panel) {
 				//here, we could put the graph on blank, but that is annoying
+			}
+		});
+	}
+
+	protected void initGuiDifferences() {
+		chain.register(new DataChainLinkGuiAbstract<CohortsConfiguration, CohortsPanel>() {
+			public String getName() {
+				return "diff to gui";
+			}
+
+			public IvMObject<?>[] createInputObjects() {
+				return new IvMObject<?>[] { CohortsObject.differences, CohortsObject.differences_pareto };
+			}
+
+			public void updateGui(CohortsPanel panel, IvMObjectValues inputs) throws Exception {
+				ProcessDifferences differences = inputs.get(CohortsObject.differences);
+				ProcessDifferencesPareto differences_pareto = inputs.get(CohortsObject.differences_pareto);
+				panel.setProcessDifferences(differences, differences_pareto);
+				panel.getProcessDifferencesPareto().repaint();
+			}
+
+			public void invalidate(CohortsPanel panel) {
+				panel.setProcessDifferences(null, null);
+				panel.getProcessDifferencesPareto().repaint();
+			}
+		});
+
+		//respond to difference selection
+		panel.getProcessDifferences().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				if (!e.getValueIsAdjusting()) {
+					int internalIndex = panel.getProcessDifferences().getSelectionModel().getAnchorSelectionIndex();
+					if (internalIndex >= 0) {
+						try {
+							ProcessDifferences differences = chain.getObjectValues(CohortsObject.differences).get()
+									.get(CohortsObject.differences);
+							int selectedIndex = differences.row2index(internalIndex);
+							panel.getProcessDifferencesPareto().setSelectedIndex(selectedIndex);
+						} catch (InterruptedException e1) {
+							e1.printStackTrace();
+						}
+					}
+					panel.repaint();
+				}
 			}
 		});
 	}
