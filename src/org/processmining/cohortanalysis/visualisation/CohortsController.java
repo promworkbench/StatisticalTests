@@ -8,20 +8,37 @@ import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.deckfour.xes.model.XLog;
 import org.processmining.cohortanalysis.chain.Cl01GatherAttributes;
 import org.processmining.cohortanalysis.chain.Cl05Mine;
+import org.processmining.cohortanalysis.chain.Cl07Align;
+import org.processmining.cohortanalysis.chain.Cl08LayoutAlignment;
+import org.processmining.cohortanalysis.chain.Cl08LayoutAlignmentAnti;
 import org.processmining.cohortanalysis.chain.CohortsConfiguration;
+import org.processmining.cohortanalysis.cohort.Cohort;
+import org.processmining.cohortanalysis.cohort.Cohorts;
+import org.processmining.cohortanalysis.feature.Features2String;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.plugins.InductiveMiner.Function;
+import org.processmining.plugins.graphviz.dot.Dot;
+import org.processmining.plugins.graphviz.dot.Dot.GraphDirection;
+import org.processmining.plugins.graphviz.visualisation.listeners.GraphChangedListener;
 import org.processmining.plugins.inductiveVisualMiner.chain.Cl02SortEvents;
 import org.processmining.plugins.inductiveVisualMiner.chain.Cl03MakeLog;
+import org.processmining.plugins.inductiveVisualMiner.chain.Cl18DataAnalysisCohort;
 import org.processmining.plugins.inductiveVisualMiner.chain.DataChainImplNonBlocking;
+import org.processmining.plugins.inductiveVisualMiner.chain.DataChainLinkGuiAbstract;
 import org.processmining.plugins.inductiveVisualMiner.chain.DataState;
 import org.processmining.plugins.inductiveVisualMiner.chain.IvMObject;
+import org.processmining.plugins.inductiveVisualMiner.chain.IvMObjectValues;
+import org.processmining.plugins.inductiveVisualMiner.mode.ModeRelativePaths;
 import org.processmining.plugins.inductiveVisualMiner.visualMinerWrapper.miners.DfgMiner;
+
+import com.kitfox.svg.SVGDiagram;
 
 /**
  * Constructs and visualises a directly follows graph.
@@ -33,7 +50,7 @@ public class CohortsController {
 
 	private final CohortsPanel panel;
 	private final DataChainImplNonBlocking<CohortsConfiguration, CohortsPanel> chain;
-	private final Cl02SortEvents sortEvents;
+	private final Cl02SortEvents<CohortsConfiguration> sortEvents;
 
 	public CohortsController(PluginContext context, XLog log, ProMCanceller canceller) {
 		DataState state = new DataState();
@@ -60,7 +77,7 @@ public class CohortsController {
 		chain.register(new Cl01GatherAttributes());
 
 		{
-			sortEvents = new Cl02SortEvents();
+			sortEvents = new Cl02SortEvents<>();
 			chain.register(sortEvents);
 			sortEvents.setOnIllogicalTimeStamps(new Function<Object, Boolean>() {
 				public Boolean call(Object input) throws Exception {
@@ -81,51 +98,13 @@ public class CohortsController {
 			});
 		}
 
-		chain.register(new Cl03MakeLog());
-		chain.register(new Cl05Mine());
+		chain.register(new Cl03MakeLog<>());
+		chain.register(new Cl05Mine<>());
+		chain.register(new Cl07Align());
+		chain.register(new Cl08LayoutAlignment());
+		chain.register(new Cl08LayoutAlignmentAnti());
+		chain.register(new Cl18DataAnalysisCohort<CohortsConfiguration>());
 
-		//		chain.register(new Cl07Align());
-		//
-		//		Cl08LayoutAlignment layoutAlignment = new Cl08LayoutAlignment();
-		//		{
-		//			layoutAlignment.setOnComplete(new Runnable() {
-		//				public void run() {
-		//					panel.getCohortGraph().changeDot(state.getDotCohort(), state.getSVGDiagramCohort(), true);
-		//				}
-		//			});
-		//			chain.addConnection(alignment, layoutAlignment);
-		//		}
-
-		//			Cl08LayoutAlignmentAnti layoutAlignmentAnti = new Cl08LayoutAlignmentAnti();
-		//			{
-		//				layoutAlignmentAnti.setOnComplete(new Runnable() {
-		//					public void run() {
-		//						panel.getAntiCohortGraph().changeDot(state.getDotAntiCohort(), state.getSVGDiagramAntiCohort(),
-		//								true);
-		//					}
-		//				});
-		//				chain.addConnection(alignment, layoutAlignmentAnti);
-		//			}
-		//
-		//			Cl17DataAnalysisCohort cohortAnalysis = new Cl17DataAnalysisCohort();
-		//			{
-		//				cohortAnalysis.setOnComplete(new Runnable() {
-		//					public void run() {
-		//						panel.setCohorts(state.getCohorts());
-		//						panel.getCohortsList().getSelectionModel().setSelectionInterval(0, 0);
-		//						state.setSelectedCohort(state.getCohorts()
-		//								.get(panel.getCohortsList().getSelectionModel().getAnchorSelectionIndex()));
-		//						panel.getCohortsList().repaint();
-		//					}
-		//				});
-		//				cohortAnalysis.setOnInvalidate(new Runnable() {
-		//					public void run() {
-		//						panel.setCohorts(null);
-		//						panel.getCohortsList().repaint();
-		//					}
-		//				});
-		//				chain.addConnection(gatherAttributes, cohortAnalysis);
-		//			}
 		//
 		//			Cl18ApplyCohort applyCohort = new Cl18ApplyCohort();
 		//			{
@@ -177,20 +156,7 @@ public class CohortsController {
 		//			}
 		//		}
 		//
-		//		//respond to cohort selection
-		//		panel.getCohortsList().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-		//			public void valueChanged(ListSelectionEvent e) {
-		//				if (!e.getValueIsAdjusting()) {
-		//					//update selection
-		//					state.setSelectedCohort(state.getCohorts()
-		//							.get(panel.getCohortsList().getSelectionModel().getAnchorSelectionIndex()));
-		//					panel.getCohortLabel().setText("<html>Cohort ("
-		//							+ Features2String.toString(state.getSelectedCohort().getFeatures()) + ")</html>");
-		//					chain.execute(Cl18ApplyCohort.class);
-		//					panel.repaint();
-		//				}
-		//			}
-		//		});
+
 		//
 		//		//respond to difference selection
 		//		panel.getProcessDifferences().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -209,12 +175,17 @@ public class CohortsController {
 		//		return panel;
 
 		//start the chain
+		chain.setFixedObject(IvMObject.input_log, log);
 		chain.setFixedObject(IvMObject.selected_noise_threshold, 0.8);
 		chain.setFixedObject(IvMObject.selected_miner, new DfgMiner());
-		chain.setFixedObject(IvMObject.input_log, log);
+		chain.setFixedObject(IvMObject.selected_visualisation_mode, new ModeRelativePaths());
+		chain.setFixedObject(IvMObject.selected_cohort_analysis_enabled, true);
 	}
 
 	protected void initGui(final ProMCanceller canceller, CohortsConfiguration configuration) {
+		initGuiGraph();
+		initGuiCohorts();
+
 		//listen to ctrl c to show the controller view
 		{
 			panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
@@ -229,6 +200,114 @@ public class CohortsController {
 
 			});
 		}
+
+		//graph direction changed
+		panel.getCohortGraph().addGraphChangedListener(new GraphChangedListener() {
+			public void graphChanged(GraphChangedReason reason, Object newState) {
+				chain.setObject(IvMObject.selected_graph_user_settings, panel.getCohortGraph().getUserSettings());
+			}
+		});
+		panel.getAntiCohortGraph().addGraphChangedListener(new GraphChangedListener() {
+			public void graphChanged(GraphChangedReason reason, Object newState) {
+				chain.setObject(IvMObject.selected_graph_user_settings, panel.getAntiCohortGraph().getUserSettings());
+			}
+		});
+		panel.getCohortGraph().getUserSettings().setDirection(GraphDirection.leftRight);
+		chain.setObject(IvMObject.selected_graph_user_settings, panel.getCohortGraph().getUserSettings());
+	}
+
+	protected void initGuiCohorts() {
+		//cohorts to gui
+		chain.register(new DataChainLinkGuiAbstract<CohortsConfiguration, CohortsPanel>() {
+
+			public IvMObject<?>[] createInputObjects() {
+				return new IvMObject<?>[] { IvMObject.data_analysis_cohort };
+			}
+
+			public void updateGui(CohortsPanel panel, IvMObjectValues inputs) throws Exception {
+				Cohorts cohorts = inputs.get(IvMObject.data_analysis_cohort);
+				panel.setCohorts(cohorts);
+				panel.getCohortsList().getSelectionModel().setSelectionInterval(0, 0);
+
+				//state.setSelectedCohort(state.getCohorts().get(panel.getCohortsList().getSelectionModel().getAnchorSelectionIndex()));
+				panel.getCohortsList().repaint();
+			}
+
+			public void invalidate(CohortsPanel panel) {
+				panel.setCohorts(null);
+				panel.getCohortsList().repaint();
+			}
+
+			public String getName() {
+				return "cohorts";
+			}
+
+		});
+
+		//respond to cohort selection
+		panel.getCohortsList().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				if (!e.getValueIsAdjusting()) {
+					//update selection
+					try {
+						Cohorts cohorts = chain.getObjectValues(IvMObject.data_analysis_cohort).get()
+								.get(IvMObject.data_analysis_cohort);
+						Cohort cohort = cohorts
+								.get(panel.getCohortsList().getSelectionModel().getAnchorSelectionIndex());
+						panel.getCohortLabel().setText(
+								"<html>Cohort (" + Features2String.toString(cohort.getFeatures()) + ")</html>");
+						chain.setObject(CohortsObject.selected_cohort, cohort);
+						panel.repaint();
+					} catch (InterruptedException e1) {
+					}
+
+				}
+			}
+		});
+	}
+
+	protected void initGuiGraph() {
+		//update layout
+		chain.register(new DataChainLinkGuiAbstract<CohortsConfiguration, CohortsPanel>() {
+			public String getName() {
+				return "model dot";
+			}
+
+			public IvMObject<?>[] createInputObjects() {
+				return new IvMObject<?>[] { CohortsObject.graph_dot_aligned, CohortsObject.graph_svg_aligned };
+			}
+
+			public void updateGui(CohortsPanel panel, IvMObjectValues inputs) throws Exception {
+				Dot dot = inputs.get(CohortsObject.graph_dot_aligned);
+				SVGDiagram svg = inputs.get(CohortsObject.graph_svg_aligned);
+				panel.getCohortGraph().changeDot(dot, svg, true);
+			}
+
+			public void invalidate(CohortsPanel panel) {
+				//here, we could put the graph on blank, but that is annoying
+			}
+		});
+
+		chain.register(new DataChainLinkGuiAbstract<CohortsConfiguration, CohortsPanel>() {
+			public String getName() {
+				return "model dot anti";
+			}
+
+			public IvMObject<?>[] createInputObjects() {
+				return new IvMObject<?>[] { CohortsObject.graph_dot_aligned_anti,
+						CohortsObject.graph_svg_aligned_anti };
+			}
+
+			public void updateGui(CohortsPanel panel, IvMObjectValues inputs) throws Exception {
+				Dot dot = inputs.get(CohortsObject.graph_dot_aligned_anti);
+				SVGDiagram svg = inputs.get(CohortsObject.graph_svg_aligned_anti);
+				panel.getAntiCohortGraph().changeDot(dot, svg, true);
+			}
+
+			public void invalidate(CohortsPanel panel) {
+				//here, we could put the graph on blank, but that is annoying
+			}
+		});
 	}
 
 	public CohortsPanel getPanel() {

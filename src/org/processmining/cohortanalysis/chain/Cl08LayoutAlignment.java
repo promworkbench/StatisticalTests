@@ -1,22 +1,19 @@
 package org.processmining.cohortanalysis.chain;
 
-import org.deckfour.xes.classification.XEventClass;
-import org.processmining.cohortanalysis.visualisation.CohortsState;
-import org.processmining.plugins.InductiveMiner.MultiSet;
-import org.processmining.plugins.InductiveMiner.Pair;
-import org.processmining.plugins.InductiveMiner.Quadruple;
+import org.processmining.cohortanalysis.visualisation.CohortsObject;
 import org.processmining.plugins.InductiveMiner.Triple;
-import org.processmining.plugins.InductiveMiner.efficienttree.UnknownTreeNodeException;
 import org.processmining.plugins.graphviz.dot.Dot;
 import org.processmining.plugins.graphviz.visualisation.DotPanel;
 import org.processmining.plugins.graphviz.visualisation.DotPanelUserSettings;
 import org.processmining.plugins.inductiveVisualMiner.alignedLogVisualisation.data.AlignedLogVisualisationData;
-import org.processmining.plugins.inductiveVisualMiner.alignedLogVisualisation.data.AlignedLogVisualisationDataImplEmpty;
-import org.processmining.plugins.inductiveVisualMiner.alignment.LogMovePosition;
+import org.processmining.plugins.inductiveVisualMiner.alignedLogVisualisation.data.AlignedLogVisualisationDataImplFrequencies;
+import org.processmining.plugins.inductiveVisualMiner.chain.DataChainLinkComputationAbstract;
 import org.processmining.plugins.inductiveVisualMiner.chain.IvMCanceller;
+import org.processmining.plugins.inductiveVisualMiner.chain.IvMObject;
+import org.processmining.plugins.inductiveVisualMiner.chain.IvMObjectValues;
 import org.processmining.plugins.inductiveVisualMiner.helperClasses.IvMModel;
 import org.processmining.plugins.inductiveVisualMiner.ivmlog.IvMLogInfo;
-import org.processmining.plugins.inductiveVisualMiner.mode.ModeRelativePaths;
+import org.processmining.plugins.inductiveVisualMiner.mode.Mode;
 import org.processmining.plugins.inductiveVisualMiner.traceview.TraceViewEventColourMap;
 import org.processmining.plugins.inductiveVisualMiner.visualisation.DfmVisualisation;
 import org.processmining.plugins.inductiveVisualMiner.visualisation.ProcessTreeVisualisation;
@@ -25,92 +22,62 @@ import org.processmining.plugins.inductiveVisualMiner.visualisation.ProcessTreeV
 
 import com.kitfox.svg.SVGDiagram;
 
-public class Cl08LayoutAlignment extends
-		CohortsChainLink<Quadruple<IvMModel, IvMLogInfo, ProcessTreeVisualisationParameters, DotPanelUserSettings>, Triple<Dot, SVGDiagram, ProcessTreeVisualisationInfo>> {
+public class Cl08LayoutAlignment extends DataChainLinkComputationAbstract<CohortsConfiguration> {
 
-	protected Quadruple<IvMModel, IvMLogInfo, ProcessTreeVisualisationParameters, DotPanelUserSettings> generateInput(
-			CohortsState state) {
-		ProcessTreeVisualisationParameters visualisationParameters = new ModeRelativePaths()
-				.getVisualisationParametersWithAlignments(null);
-		return Quadruple.of(state.getModel(), state.getCohortLogInfo(), visualisationParameters,
-				state.getGraphUserSettings());
-	}
-
-	protected Triple<Dot, SVGDiagram, ProcessTreeVisualisationInfo> executeLink(
-			Quadruple<IvMModel, IvMLogInfo, ProcessTreeVisualisationParameters, DotPanelUserSettings> input,
-			IvMCanceller canceller) throws UnknownTreeNodeException {
-		IvMModel model = input.getA();
-
-		//compute dot
-		AlignedLogVisualisationData data = new AlignedLogVisualisationDataImplDummy();
-		Triple<Dot, ProcessTreeVisualisationInfo, TraceViewEventColourMap> p;
-		if (model.isTree()) {
-			ProcessTreeVisualisation visualiser = new ProcessTreeVisualisation();
-			p = visualiser.fancy(model, data, input.getC());
-		} else {
-			DfmVisualisation visualiser = new DfmVisualisation();
-			p = visualiser.fancy(model, data, input.getC());
-		}
-
-		//keep the user settings of the dot panel
-		input.getD().applyToDot(p.getA());
-
-		//compute svg from dot
-		SVGDiagram diagramCohort = DotPanel.dot2svg(p.getA());
-
-		return Triple.of(p.getA(), diagramCohort, p.getB());
-	}
-
-	protected void processResult(Triple<Dot, SVGDiagram, ProcessTreeVisualisationInfo> result, CohortsState state) {
-		state.setLayoutCohort(result.getA(), result.getB(), result.getC());
-	}
-
-	protected void invalidateResult(CohortsState state) {
-		state.setLayoutCohort(null, null, null);
-	}
-
+	@Override
 	public String getName() {
 		return "layout alignment";
 	}
 
+	@Override
 	public String getStatusBusyMessage() {
 		return "Layouting aligned model..";
 	}
 
-	public static class AlignedLogVisualisationDataImplDummy implements AlignedLogVisualisationData {
+	@Override
+	public IvMObject<?>[] createInputObjects() {
+		return new IvMObject<?>[] { IvMObject.model, IvMObject.aligned_log_info, IvMObject.selected_visualisation_mode,
+				IvMObject.selected_graph_user_settings };
+	}
 
-		public Pair<Long, Long> getExtremeCardinalities() {
-			return Pair.of(0l, 0l);
+	@Override
+	public IvMObject<?>[] createOutputObjects() {
+		return new IvMObject<?>[] { CohortsObject.graph_dot_aligned, CohortsObject.graph_svg_aligned,
+				CohortsObject.graph_visualisation_info_aligned };
+	}
+
+	@Override
+	public IvMObjectValues execute(CohortsConfiguration configuration, IvMObjectValues inputs, IvMCanceller canceller)
+			throws Exception {
+		IvMModel model = inputs.get(IvMObject.model);
+		IvMLogInfo logInfo = inputs.get(IvMObject.aligned_log_info);
+		Mode mode = inputs.get(IvMObject.selected_visualisation_mode);
+		DotPanelUserSettings settings = inputs.get(IvMObject.selected_graph_user_settings);
+
+		IvMObjectValues modeInputs = inputs.getIfPresent(mode.getOptionalObjects());
+		ProcessTreeVisualisationParameters visualisationParameters = mode
+				.getVisualisationParametersWithAlignments(modeInputs);
+
+		//compute dot
+		AlignedLogVisualisationData data = new AlignedLogVisualisationDataImplFrequencies(model, logInfo);
+		Triple<Dot, ProcessTreeVisualisationInfo, TraceViewEventColourMap> p;
+		if (model.isTree()) {
+			ProcessTreeVisualisation visualiser = new ProcessTreeVisualisation();
+			p = visualiser.fancy(model, data, visualisationParameters);
+		} else {
+			DfmVisualisation visualiser = new DfmVisualisation();
+			p = visualiser.fancy(model, data, visualisationParameters);
 		}
 
-		public Triple<String, Long, Long> getNodeLabel(int unode, boolean includeModelMoves) {
-			return Triple.of("-.---", 0l, 0l);
-		}
+		//keep the user settings of the dot panel
+		settings.applyToDot(p.getA());
 
-		public Pair<String, Long> getModelMoveEdgeLabel(int unode) {
-			return Pair.of("-.---", 0l);
-		}
+		//compute svg from dot
+		SVGDiagram diagram = DotPanel.dot2svg(p.getA());
 
-		public Pair<String, MultiSet<XEventClass>> getLogMoveEdgeLabel(LogMovePosition logMovePosition) {
-			return Pair.of("-.---", new MultiSet<XEventClass>());
-		}
-
-		public Pair<String, Long> getEdgeLabel(int unode, boolean includeModelMoves) {
-			return Pair.of("-.---", 0l);
-		}
-
-		public Pair<String, Long> getEdgeLabel(int from, int to, boolean includeModelMoves) {
-			return Pair.of("-.---", 0l);
-		}
-
-		public void setTime(long time) {
-
-		}
-
-		public AlignedLogVisualisationDataImplEmpty clone() throws CloneNotSupportedException {
-			AlignedLogVisualisationDataImplEmpty c = (AlignedLogVisualisationDataImplEmpty) super.clone();
-
-			return c;
-		}
+		return new IvMObjectValues().//
+				s(CohortsObject.graph_dot_aligned, p.getA()).//
+				s(CohortsObject.graph_svg_aligned, diagram).//
+				s(CohortsObject.graph_visualisation_info_aligned, p.getB());
 	}
 }

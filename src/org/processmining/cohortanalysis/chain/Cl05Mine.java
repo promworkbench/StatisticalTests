@@ -10,7 +10,7 @@ import org.processmining.plugins.inductiveVisualMiner.helperClasses.IvMModel;
 import org.processmining.plugins.inductiveVisualMiner.visualMinerWrapper.VisualMinerParameters;
 import org.processmining.plugins.inductiveVisualMiner.visualMinerWrapper.VisualMinerWrapper;
 
-public class Cl05Mine extends DataChainLinkComputationAbstract<Object> {
+public class Cl05Mine<C> extends DataChainLinkComputationAbstract<C> {
 
 	@Override
 	public String getName() {
@@ -34,7 +34,7 @@ public class Cl05Mine extends DataChainLinkComputationAbstract<Object> {
 	}
 
 	@Override
-	public IvMObjectValues execute(Object configuration, IvMObjectValues inputs, IvMCanceller canceller)
+	public IvMObjectValues execute(C configuration, IvMObjectValues inputs, IvMCanceller canceller)
 			throws Exception {
 		IMLog log = inputs.get(IvMObject.imlog);
 		IMLogInfo logInfo = inputs.get(IvMObject.imlog_info);

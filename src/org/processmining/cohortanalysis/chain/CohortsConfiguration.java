@@ -3,6 +3,8 @@ package org.processmining.cohortanalysis.chain;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.processmining.plugins.inductiveVisualMiner.alignment.AlignmentComputer;
+import org.processmining.plugins.inductiveVisualMiner.alignment.AlignmentComputerImpl;
 import org.processmining.plugins.inductiveVisualMiner.attributes.IvMVirtualAttributeFactory;
 import org.processmining.plugins.inductiveVisualMiner.attributes.VirtualAttributeTraceDuration;
 import org.processmining.plugins.inductiveVisualMiner.attributes.VirtualAttributeTraceFitness;
@@ -16,6 +18,8 @@ import org.processmining.plugins.inductiveminer2.attributes.AttributeVirtual;
 import gnu.trove.map.hash.THashMap;
 
 public class CohortsConfiguration {
+
+	private final AlignmentComputer alignmentComputer = new AlignmentComputerImpl();
 
 	public IvMVirtualAttributeFactory getVirtualAttributes() {
 		return new IvMVirtualAttributeFactory() {
@@ -57,4 +61,7 @@ public class CohortsConfiguration {
 		};
 	}
 
+	protected AlignmentComputer getAlignmentComputer() {
+		return alignmentComputer;
+	}
 }
