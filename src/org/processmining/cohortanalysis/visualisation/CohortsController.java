@@ -17,6 +17,7 @@ import org.processmining.cohortanalysis.chain.Cl05Mine;
 import org.processmining.cohortanalysis.chain.Cl07Align;
 import org.processmining.cohortanalysis.chain.Cl08LayoutAlignment;
 import org.processmining.cohortanalysis.chain.Cl08LayoutAlignmentAnti;
+import org.processmining.cohortanalysis.chain.Cl18ApplyCohort;
 import org.processmining.cohortanalysis.chain.CohortsConfiguration;
 import org.processmining.cohortanalysis.cohort.Cohort;
 import org.processmining.cohortanalysis.cohort.Cohorts;
@@ -35,8 +36,13 @@ import org.processmining.plugins.inductiveVisualMiner.chain.DataChainLinkGuiAbst
 import org.processmining.plugins.inductiveVisualMiner.chain.DataState;
 import org.processmining.plugins.inductiveVisualMiner.chain.IvMObject;
 import org.processmining.plugins.inductiveVisualMiner.chain.IvMObjectValues;
+import org.processmining.plugins.inductiveVisualMiner.helperClasses.IvMModel;
+import org.processmining.plugins.inductiveVisualMiner.ivmlog.IvMLogFilteredImpl;
+import org.processmining.plugins.inductiveVisualMiner.ivmlog.IvMLogInfo;
 import org.processmining.plugins.inductiveVisualMiner.mode.ModeRelativePaths;
 import org.processmining.plugins.inductiveVisualMiner.visualMinerWrapper.miners.DfgMiner;
+import org.processmining.plugins.inductiveVisualMiner.visualisation.ProcessTreeVisualisationInfo;
+import org.processmining.plugins.inductiveVisualMiner.visualisation.ProcessTreeVisualisationParameters;
 
 import com.kitfox.svg.SVGDiagram;
 
@@ -104,38 +110,16 @@ public class CohortsController {
 		chain.register(new Cl08LayoutAlignment());
 		chain.register(new Cl08LayoutAlignmentAnti());
 		chain.register(new Cl18DataAnalysisCohort<CohortsConfiguration>());
+		chain.register(new Cl18ApplyCohort());
 
 		//
 		//			Cl18ApplyCohort applyCohort = new Cl18ApplyCohort();
 		//			{
 		//				applyCohort.setOnComplete(new Runnable() {
 		//					public void run() {
-		//						ProcessTreeVisualisationParameters visualisationParameters = new ModeRelativePaths()
-		//								.getVisualisationParametersWithAlignments(null);
-		//						{
-		//							AlignedLogVisualisationData cohortVisualisationData = new ModeRelativePaths()
-		//									.getVisualisationData(state.getModel(), state.getCohortLog(),
-		//											state.getCohortLogInfo(), null, null);
-		//							InductiveVisualMinerSelectionColourer.colourHighlighting(panel.getCohortGraph().getSVG(),
-		//									state.getVisualisationInfoCohort(), state.getModel(), cohortVisualisationData,
-		//									visualisationParameters);
-		//							panel.getCohortGraph().repaint();
-		//						}
-		//
-		//						{
-		//							AlignedLogVisualisationData antiCohortVisualisationData = new ModeRelativePaths()
-		//									.getVisualisationData(state.getModel(), state.getAntiCohortLog(),
-		//											state.getAntiCohortLogInfo(), null, null);
-		//							InductiveVisualMinerSelectionColourer.colourHighlighting(
-		//									panel.getAntiCohortGraph().getSVG(), state.getVisualisationInfoAntiCohort(),
-		//									state.getModel(), antiCohortVisualisationData, visualisationParameters);
-		//							panel.getAntiCohortGraph().repaint();
-		//						}
+		//						
 		//					}
 		//				});
-		//				chain.addConnection(layoutAlignment, applyCohort);
-		//				chain.addConnection(layoutAlignmentAnti, applyCohort);
-		//				chain.addConnection(cohortAnalysis, applyCohort);
 		//			}
 		//
 		//			Cl19ProcessDifferences differences = new Cl19ProcessDifferences();
@@ -203,6 +187,7 @@ public class CohortsController {
 
 		//graph direction changed
 		panel.getCohortGraph().addGraphChangedListener(new GraphChangedListener() {
+
 			public void graphChanged(GraphChangedReason reason, Object newState) {
 				chain.setObject(IvMObject.selected_graph_user_settings, panel.getCohortGraph().getUserSettings());
 			}
@@ -262,6 +247,48 @@ public class CohortsController {
 					}
 
 				}
+			}
+		});
+
+		//cohorts applied to graphs
+		chain.register(new DataChainLinkGuiAbstract<CohortsConfiguration, CohortsPanel>() {
+
+			public String getName() {
+				return "cohorts to graphs";
+			}
+
+			public IvMObject<?>[] createInputObjects() {
+				return new IvMObject<?>[] { IvMObject.model, CohortsObject.aligned_log_filtered,
+						CohortsObject.aligned_log_info_filtered, CohortsObject.graph_visualisation_info_aligned };
+			}
+
+			public void updateGui(CohortsPanel panel, IvMObjectValues inputs) throws Exception {
+				IvMModel model = inputs.get(IvMObject.model);
+
+				ProcessTreeVisualisationParameters visualisationParameters = new ModeRelativePaths()
+						.getVisualisationParametersWithAlignments(null);
+				{
+					IvMLogFilteredImpl logCohort = inputs.get(CohortsObject.aligned_log_filtered);
+					IvMLogInfo logInfoCohort = inputs.get(CohortsObject.aligned_log_info_filtered);
+					ProcessTreeVisualisationInfo visualisationInfoCohort = inputs
+							.get(CohortsObject.graph_visualisation_info_aligned);
+
+//					AlignedLogVisualisationData cohortVisualisationData = new ModeRelativePaths()
+//							.getVisualisationData(model, logCohort, logInfoCohort, null, null);
+//					InductiveVisualMinerSelectionColourer.colourHighlighting(panel.getCohortGraph().getSVG(),
+//							visualisationInfoCohort, model, cohortVisualisationData, visualisationParameters, null);
+					panel.getCohortGraph().repaint();
+				}
+
+				//				{
+				//					AlignedLogVisualisationData antiCohortVisualisationData = new ModeRelativePaths()
+				//							.getVisualisationData(state.getModel(), state.getAntiCohortLog(),
+				//									state.getAntiCohortLogInfo(), null, null);
+				//					InductiveVisualMinerSelectionColourer.colourHighlighting(panel.getAntiCohortGraph().getSVG(),
+				//							state.getVisualisationInfoAntiCohort(), state.getModel(), antiCohortVisualisationData,
+				//							visualisationParameters);
+				//					panel.getAntiCohortGraph().repaint();
+				//				}
 			}
 		});
 	}
