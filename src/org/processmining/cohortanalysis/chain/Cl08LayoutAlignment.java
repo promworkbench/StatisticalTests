@@ -37,7 +37,7 @@ public class Cl08LayoutAlignment extends DataChainLinkComputationAbstract<Cohort
 
 	@Override
 	public IvMObject<?>[] createInputObjects() {
-		return new IvMObject<?>[] { IvMObject.model, IvMObject.aligned_log_info, 
+		return new IvMObject<?>[] { IvMObject.model, IvMObject.aligned_log_info,
 				IvMObject.selected_graph_user_settings };
 	}
 
@@ -53,7 +53,7 @@ public class Cl08LayoutAlignment extends DataChainLinkComputationAbstract<Cohort
 		IvMModel model = inputs.get(IvMObject.model);
 		IvMLogInfo logInfo = inputs.get(IvMObject.aligned_log_info);
 		DotPanelUserSettings settings = inputs.get(IvMObject.selected_graph_user_settings);
-		Mode mode = new ModePaths();
+		Mode mode = new DummyMode();
 
 		IvMObjectValues modeInputs = inputs.getIfPresent(mode.getOptionalObjects());
 		ProcessTreeVisualisationParameters visualisationParameters = mode
@@ -80,5 +80,12 @@ public class Cl08LayoutAlignment extends DataChainLinkComputationAbstract<Cohort
 				s(CohortsObject.graph_dot_aligned, p.getA()).//
 				s(CohortsObject.graph_svg_aligned, diagram).//
 				s(CohortsObject.graph_visualisation_info_aligned, p.getB());
+	}
+
+	public static class DummyMode extends ModePaths {
+		public DummyMode() {
+			visualisationParameters.setColourNodes(null);
+			visualisationParameters.setColourModelEdges(null);
+		}
 	}
 }

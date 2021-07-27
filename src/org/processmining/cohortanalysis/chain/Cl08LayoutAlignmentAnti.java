@@ -14,7 +14,6 @@ import org.processmining.plugins.inductiveVisualMiner.chain.IvMObjectValues;
 import org.processmining.plugins.inductiveVisualMiner.helperClasses.IvMModel;
 import org.processmining.plugins.inductiveVisualMiner.ivmlog.IvMLogInfo;
 import org.processmining.plugins.inductiveVisualMiner.mode.Mode;
-import org.processmining.plugins.inductiveVisualMiner.mode.ModePaths;
 import org.processmining.plugins.inductiveVisualMiner.traceview.TraceViewEventColourMap;
 import org.processmining.plugins.inductiveVisualMiner.visualisation.DfmVisualisation;
 import org.processmining.plugins.inductiveVisualMiner.visualisation.ProcessTreeVisualisation;
@@ -54,7 +53,7 @@ public class Cl08LayoutAlignmentAnti extends DataChainLinkComputationAbstract<Co
 		IvMLogInfo logInfo = inputs.get(IvMObject.aligned_log_info);
 		DotPanelUserSettings settings = inputs.get(IvMObject.selected_graph_user_settings);
 
-		Mode mode = new ModePaths();
+		Mode mode = new Cl08LayoutAlignment.DummyMode();
 
 		IvMObjectValues modeInputs = inputs.getIfPresent(mode.getOptionalObjects());
 		ProcessTreeVisualisationParameters visualisationParameters = mode
