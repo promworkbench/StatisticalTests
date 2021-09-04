@@ -7,6 +7,7 @@ import javax.swing.table.AbstractTableModel;
 import org.processmining.cohortanalysis.cohort.Cohort;
 import org.processmining.cohortanalysis.cohort.Cohorts;
 import org.processmining.plugins.inductiveVisualMiner.dataanalysis.DataAnalysisTableCellRenderer;
+import org.processmining.plugins.inductiveVisualMiner.dataanalysis.DataTable;
 import org.processmining.plugins.inductiveVisualMiner.dataanalysis.DisplayType;
 
 public class CohortsListPanel extends JTable {
@@ -19,9 +20,9 @@ public class CohortsListPanel extends JTable {
 	public CohortsListPanel() {
 		setOpaque(false);
 		setShowGrid(false);
-//		setRowMargin(DataTable.rowMargin);
-//		setRowHeight(DataTable.rowHeight);
-//		getColumnModel().setColumnMargin(DataTable.columnMargin);
+		setRowMargin(DataTable.rowMargin);
+		setRowHeight(DataTable.rowHeight);
+		getColumnModel().setColumnMargin(DataTable.columnMargin);
 		setDefaultRenderer(Object.class, new DataAnalysisTableCellRenderer());
 
 		model = new AbstractTableModel() {
