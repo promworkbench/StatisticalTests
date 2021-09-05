@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 
 import org.processmining.plugins.graphviz.colourMaps.ColourMap;
 import org.processmining.plugins.graphviz.colourMaps.ColourMapViridis;
-import org.processmining.plugins.inductiveVisualMiner.helperClasses.decoration.IvMDecorator;
+import org.processmining.statisticaltests.helperclasses.IvMDecoratorCopy;
 
 public class CorrelationPlotLegend {
 
@@ -38,7 +38,7 @@ public class CorrelationPlotLegend {
 			}
 		}
 
-		g.setColor(IvMDecorator.textColour);
+		g.setColor(IvMDecoratorCopy.textColour);
 
 		//draw min text
 		{
@@ -47,7 +47,7 @@ public class CorrelationPlotLegend {
 
 		//draw max text
 		{
-			Font font = IvMDecorator.font;
+			Font font = IvMDecoratorCopy.font;
 			g.setFont(font);
 			FontMetrics metrics = g.getFontMetrics(font);
 			int width = metrics.stringWidth(max);
@@ -57,7 +57,7 @@ public class CorrelationPlotLegend {
 
 		//draw name text
 		{
-			Font font = IvMDecorator.font;
+			Font font = IvMDecoratorCopy.font;
 			g.setFont(font);
 			FontMetrics metrics = g.getFontMetrics(font);
 			int width = metrics.stringWidth(name);

@@ -9,13 +9,14 @@ import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
 import org.processmining.earthmoversstochasticconformancechecking.helperclasses.Levenshtein;
 import org.processmining.framework.plugin.ProMCanceller;
+import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 import org.processmining.plugins.inductiveminer2.attributes.AttributeUtils;
 import org.processmining.statisticaltests.helperclasses.StatisticalTestUtils;
 
 public class AssociationProcessNumerical {
 
-	public static double[][] compute(AssociationParameters parameters, XLog log, ProMCanceller canceller)
-			throws InterruptedException {
+	public static double[][] compute(Attribute attribute, AssociationsParameters parameters, XLog log,
+			ProMCanceller canceller) throws InterruptedException {
 		//select traces that have the attribute
 		if (parameters.isDebug()) {
 			System.out.println(" select traces");
@@ -27,8 +28,8 @@ public class AssociationProcessNumerical {
 			double max = -Double.MAX_VALUE;
 			double min = Double.MAX_VALUE;
 			for (XTrace trace : log) {
-				double value = AttributeUtils.valueDouble(parameters.getAttribute(), trace);
-				if (value != -Double.MAX_VALUE && !(parameters.getAttribute().isTime() && value < 0)) {
+				double value = AttributeUtils.valueDouble(attribute, trace);
+				if (value != -Double.MAX_VALUE && !(attribute.isTime() && value < 0)) {
 					max = Math.max(max, value);
 					min = Math.min(min, value);
 					traces.add(trace);
@@ -69,8 +70,8 @@ public class AssociationProcessNumerical {
 						int sampleA = random.nextInt(traces.size());
 						int sampleB = random.nextInt(traces.size());
 
-						double[] result2 = performSampleMeasure(parameters, canceller, traces, sampleA, sampleB,
-								minAttributeValue, maxAttributeValue);
+						double[] result2 = performSampleMeasure(attribute, parameters, canceller, traces, sampleA,
+								sampleB, minAttributeValue, maxAttributeValue);
 
 						if (canceller.isCancelled()) {
 							return;
@@ -88,13 +89,13 @@ public class AssociationProcessNumerical {
 					}
 				}
 
-				private double[] performSampleMeasure(AssociationParameters parameters, ProMCanceller canceller,
-						List<XTrace> traces, int sampleA, int sampleB, double minAttributeValue,
-						double maxAttributeValue) {
-					double valueA = (AttributeUtils.valueDouble(parameters.getAttribute(), traces.get(sampleA))
-							- minAttributeValue) / (maxAttributeValue - minAttributeValue);
-					double valueB = (AttributeUtils.valueDouble(parameters.getAttribute(), traces.get(sampleB))
-							- minAttributeValue) / (maxAttributeValue - minAttributeValue);
+				private double[] performSampleMeasure(Attribute attribute, AssociationsParameters parameters,
+						ProMCanceller canceller, List<XTrace> traces, int sampleA, int sampleB,
+						double minAttributeValue, double maxAttributeValue) {
+					double valueA = (AttributeUtils.valueDouble(attribute, traces.get(sampleA)) - minAttributeValue)
+							/ (maxAttributeValue - minAttributeValue);
+					double valueB = (AttributeUtils.valueDouble(attribute, traces.get(sampleB)) - minAttributeValue)
+							/ (maxAttributeValue - minAttributeValue);
 
 					double valueDelta = Math.abs(valueA - valueB);
 

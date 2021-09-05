@@ -26,14 +26,13 @@ public class AssociationProcessCategorical {
 	 * @return the sample data, or null if it does not exist
 	 * @throws InterruptedException
 	 */
-	public static double[][] compute(AssociationParametersCategorical parameters, XLog log, ProMCanceller canceller)
-			throws InterruptedException {
+	public static double[][] compute(Attribute attribute, AssociationsParameters parameters, XLog log,
+			ProMCanceller canceller) throws InterruptedException {
 		//select traces that have the attribute
 		if (parameters.isDebug()) {
-			System.out.println(" select traces for attribute " + parameters.getAttribute());
+			System.out.println(" select traces for attribute " + attribute);
 		}
-		final List<XTrace> traces = StatisticalTestUtils.filterTracesCategorical(parameters.getAttribute(), log,
-				parameters.isDebug());
+		final List<XTrace> traces = StatisticalTestUtils.filterTracesCategorical(attribute, log, parameters.isDebug());
 		if (traces == null) {
 			return null;
 		}
@@ -64,7 +63,7 @@ public class AssociationProcessCategorical {
 								Math.max(parameters.getSampleSize(), traces.size()), random);
 
 						Pair<BigDecimal, BigDecimal> result = processSample(traces, sample, parameters.getClassifier(),
-								parameters.getAttribute());
+								attribute);
 						if (result == null) {
 							as[sampleNumber] = Double.NaN;
 							rs[sampleNumber] = Double.NaN;

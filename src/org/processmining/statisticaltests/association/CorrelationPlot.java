@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 import org.math.plot.utils.Array;
 import org.processmining.plugins.graphviz.colourMaps.ColourMap;
 import org.processmining.plugins.graphviz.colourMaps.ColourMapViridis;
-import org.processmining.plugins.inductiveVisualMiner.helperClasses.decoration.IvMDecorator;
+import org.processmining.statisticaltests.helperclasses.IvMDecoratorCopy;
 
 public class CorrelationPlot {
 
@@ -57,7 +57,7 @@ public class CorrelationPlot {
 	public void drawTextHorizontal(BufferedImage image, String name, int offsetX, int offsetY, int sizeX, int sizeY) {
 		Graphics2D g = (Graphics2D) image.getGraphics();
 
-		Font font = IvMDecorator.font;
+		Font font = IvMDecoratorCopy.font;
 		g.setFont(font);
 		FontMetrics metrics = g.getFontMetrics(font);
 
@@ -69,7 +69,7 @@ public class CorrelationPlot {
 		offsetY += (sizeY / 2) + (height / 2);
 		offsetY += 2; //manual adjustment
 
-		g.setColor(IvMDecorator.textColour);
+		g.setColor(IvMDecoratorCopy.textColour);
 
 		g.drawString(name, offsetXp, offsetY);
 
@@ -83,7 +83,7 @@ public class CorrelationPlot {
 	public void drawTextVertical(BufferedImage image, String name, int offsetX, int offsetY, int sizeX, int sizeY) {
 		Graphics2D g = (Graphics2D) image.getGraphics();
 
-		Font font = IvMDecorator.font;
+		Font font = IvMDecoratorCopy.font;
 		g.setFont(font);
 		FontMetrics metrics = g.getFontMetrics(font);
 
@@ -92,7 +92,7 @@ public class CorrelationPlot {
 
 		g.rotate(-Math.PI / 2, originX, originY);
 
-		g.setColor(IvMDecorator.textColour);
+		g.setColor(IvMDecoratorCopy.textColour);
 		{
 			int width = metrics.stringWidth(name);
 			int height = ((metrics.getAscent() + metrics.getDescent()) / 2) + 2;
@@ -132,7 +132,7 @@ public class CorrelationPlot {
 							sizeX / 2);
 		}
 
-		g.setColor(IvMDecorator.textColour);
+		g.setColor(IvMDecoratorCopy.textColour);
 	}
 
 	public void fillImage1DPlotHorizontal(BufferedImage image, double[] valuesX, double minX, double maxX, int offsetX,

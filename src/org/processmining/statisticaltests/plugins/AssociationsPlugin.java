@@ -16,18 +16,14 @@ import org.processmining.framework.plugin.annotations.PluginLevel;
 import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.plugins.InductiveMiner.Pair;
 import org.processmining.plugins.InductiveMiner.plugins.dialogs.IMMiningDialog;
-import org.processmining.plugins.inductiveVisualMiner.dataanalysis.traceattributes.Correlation;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 import org.processmining.plugins.inductiveminer2.attributes.AttributesInfoImpl;
-import org.processmining.statisticaltests.association.AssociationParametersAbstract;
-import org.processmining.statisticaltests.association.AssociationParametersCategoricalAbstract;
-import org.processmining.statisticaltests.association.AssociationParametersCategoricalDefault;
-import org.processmining.statisticaltests.association.AssociationParametersDefault;
 import org.processmining.statisticaltests.association.AssociationProcessCategorical;
 import org.processmining.statisticaltests.association.AssociationProcessNumerical;
 import org.processmining.statisticaltests.association.Associations;
 import org.processmining.statisticaltests.association.AssociationsParameters;
 import org.processmining.statisticaltests.association.CorrelationPlot;
+import org.processmining.statisticaltests.helperclasses.Correlation;
 
 public class AssociationsPlugin {
 	@Plugin(name = "Compute association/correlation between the process and trace attributes", level = PluginLevel.Regular, returnLabels = {
@@ -118,8 +114,7 @@ public class AssociationsPlugin {
 	public static Pair<Double, BufferedImage> computeNumericCorrelation(XLog log, Attribute attribute,
 			AssociationsParameters parameters, CorrelationPlot plot, ProMCanceller canceller)
 			throws InterruptedException {
-		AssociationParametersAbstract parametersc = new AssociationParametersDefault(attribute);
-		double[][] result = AssociationProcessNumerical.compute(parametersc, log, canceller);
+		double[][] result = AssociationProcessNumerical.compute(attribute, parameters, log, canceller);
 
 		if (result == null) {
 			return null;
@@ -155,10 +150,7 @@ public class AssociationsPlugin {
 	 */
 	public static double computeCategoricalCorrelation(XLog log, Attribute attribute, AssociationsParameters parameters,
 			ProMCanceller canceller) throws InterruptedException {
-		AssociationParametersCategoricalAbstract parametersc = new AssociationParametersCategoricalDefault(attribute);
-		parametersc.setDebug(true);
-
-		double[][] result = AssociationProcessCategorical.compute(parametersc, log, canceller);
+		double[][] result = AssociationProcessCategorical.compute(attribute, parameters, log, canceller);
 
 		if (result == null) {
 			return Double.NaN;
@@ -168,7 +160,7 @@ public class AssociationsPlugin {
 		double[] y = result[1];
 		BigDecimal meanY = Correlation.mean(y);
 		if (meanY == null) {
-			if (parametersc.isDebug()) {
+			if (parameters.isDebug()) {
 				System.out.println("  attribute rejected as there is no mean");
 			}
 			return Double.NaN;
@@ -176,7 +168,7 @@ public class AssociationsPlugin {
 
 		double standardDeviationYd = Correlation.standardDeviation(y, meanY);
 		if (!Correlation.isValid(standardDeviationYd)) {
-			if (parametersc.isDebug()) {
+			if (parameters.isDebug()) {
 				System.out.println("  attribute rejected as standard deviation is invalid");
 			}
 			return Double.NaN;
@@ -184,7 +176,7 @@ public class AssociationsPlugin {
 
 		double correlation = 1 - Correlation.correlation(x, y, meanY, standardDeviationYd).doubleValue();
 
-		if (parametersc.isDebug()) {
+		if (parameters.isDebug()) {
 			System.out.println("  correlation: " + correlation);
 		}
 
