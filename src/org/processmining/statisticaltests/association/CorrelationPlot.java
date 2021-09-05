@@ -19,12 +19,12 @@ public class CorrelationPlot {
 
 	private int sizeY1DPlot = 10;
 	private int marginY = 13;
-	private int sizeY2DPlot = 250;
+	private int sizeY2DPlot = 150;
 
 	private int alias = 5;
 	private ColourMap colourMap = new ColourMapViridis();
-	private Color backgroundFigure = Color.white;
-	private Color backgroundPlot = Color.white;
+	private Color backgroundFigure = Color.gray;
+	private Color backgroundPlot = Color.black;
 
 	public BufferedImage create(String nameX, double[] valuesX, String nameY, double[] valuesY) {
 
@@ -36,7 +36,7 @@ public class CorrelationPlot {
 		BufferedImage image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
 
 		//set background
-		{
+		if (backgroundFigure != null){
 			Graphics2D ig2 = image.createGraphics();
 			ig2.setBackground(backgroundFigure);
 			ig2.clearRect(0, 0, getWidth(), getHeight());

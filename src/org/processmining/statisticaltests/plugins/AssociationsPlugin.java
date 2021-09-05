@@ -64,8 +64,7 @@ public class AssociationsPlugin {
 			Progress progress) throws InterruptedException {
 		//gather attributes
 		Collection<Attribute> attributes = new AttributesInfoImpl(log).getTraceAttributes();
-		CorrelationPlot plot = new CorrelationPlot();
-		plot.setSizeY2DPlot(150);
+		CorrelationPlot plot = parameters.getCorrelationPlot();
 		Associations result = new Associations(attributes);
 
 		if (progress != null) {

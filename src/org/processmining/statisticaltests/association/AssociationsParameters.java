@@ -15,5 +15,7 @@ public interface AssociationsParameters {
 	public int getSampleSize();
 
 	public long getSeed();
+	
+	public CorrelationPlot getCorrelationPlot();
 
 }

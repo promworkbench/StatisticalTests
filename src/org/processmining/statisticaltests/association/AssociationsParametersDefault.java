@@ -13,7 +13,7 @@ public class AssociationsParametersDefault extends AssociationsParametersAbstrac
 
 	public AssociationsParametersDefault() {
 		super(defaultClassifier, defaultNumberOfSamples, defaultSampleSize, defaultDebug, System.currentTimeMillis(),
-				defaultThreads);
+				defaultThreads, new CorrelationPlot());
 	}
 
 }

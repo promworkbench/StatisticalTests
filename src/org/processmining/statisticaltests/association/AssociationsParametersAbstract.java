@@ -10,10 +10,12 @@ public class AssociationsParametersAbstract implements AssociationsParameters {
 	private int threads;
 	private int numberOfSamples;
 	private int sampleSize;
+	private CorrelationPlot correlationPlot;
 
 	public AssociationsParametersAbstract(XEventClassifier classifier, int numberOfSamples, int sampleSize,
-			boolean debug, long seed, int threads) {
+			boolean debug, long seed, int threads, CorrelationPlot correlationPlot) {
 		this.classifier = classifier;
+		this.setCorrelationPlot(correlationPlot);
 		this.setSampleSize(sampleSize);
 		this.setNumberOfSamples(numberOfSamples);
 		this.setThreads(threads);
@@ -73,6 +75,15 @@ public class AssociationsParametersAbstract implements AssociationsParameters {
 
 	public void setSampleSize(int sampleSize) {
 		this.sampleSize = sampleSize;
+	}
+
+	@Override
+	public CorrelationPlot getCorrelationPlot() {
+		return correlationPlot;
+	}
+
+	public void setCorrelationPlot(CorrelationPlot correlationPlot) {
+		this.correlationPlot = correlationPlot;
 	}
 
 }
