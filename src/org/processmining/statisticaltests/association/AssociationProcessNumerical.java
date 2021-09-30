@@ -105,6 +105,9 @@ public class AssociationProcessNumerical {
 							parameters.getClassifier());
 
 					double processDelta = Levenshtein.getNormalisedDistance(traceA, traceB);
+					
+					assert !Double.isNaN(valueDelta);
+					assert !Double.isNaN(processDelta);
 
 					return new double[] { valueDelta, processDelta };
 				}
