@@ -23,6 +23,8 @@ import com.google.common.util.concurrent.AtomicDouble;
 
 public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog>, LogLogUnknownProcessTestParameters> {
 
+	public int sampleSize;
+
 	public boolean rejectHypothesisForSingleTest(LogLogUnknownProcessTestParameters parameters, double p) {
 		return p >= 1 - parameters.getAlpha();
 	}
@@ -32,7 +34,8 @@ public class LogLogUnknownProcessTest implements StatisticalTest<Pair<XLog, XLog
 		XLog logA = input.getA();
 		XLog logB = input.getB();
 
-		int sampleSize = logA.size();
+		System.out.println("IMPORTANT TODO: re-disable sampling size");
+		//int sampleSize = logA.size();
 
 		double[] sampleDistances = new double[parameters.getNumberOfSamples()];
 		AtomicDouble distanceAB = new AtomicDouble();

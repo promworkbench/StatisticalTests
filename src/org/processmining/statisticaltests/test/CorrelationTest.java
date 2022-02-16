@@ -15,7 +15,6 @@ import org.deckfour.xes.classification.XEventNameClassifier;
 import org.deckfour.xes.model.XLog;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.framework.plugin.ProMCanceller;
-import org.processmining.plugins.inductiveVisualMiner.dataanalysis.traceattributes.Correlation;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 import org.processmining.plugins.inductiveminer2.attributes.AttributeImpl;
 import org.processmining.plugins.inductiveminer2.attributes.AttributeImpl.Type;
@@ -24,6 +23,7 @@ import org.processmining.statisticaltests.association.AssociationParametersDefau
 import org.processmining.statisticaltests.association.AssociationProcessNumerical;
 import org.processmining.statisticaltests.association.CorrelationPlot;
 import org.processmining.statisticaltests.association.CorrelationPlotLegend;
+import org.processmining.statisticaltests.helperclasses.Correlation;
 import org.processmining.xeslite.plugin.OpenLogFileLiteImplPlugin;
 
 import gnu.trove.list.TDoubleList;
@@ -37,8 +37,8 @@ public class CorrelationTest {
 		//bpic15mergedStartDatePlot();
 		//bpic15mergedStartDate();
 
-		bpic15EndDateSingle(1);
-		bpic15EndDatePlot(1);
+		//bpic15EndDateSingle(1);
+		//bpic15EndDatePlot(1);
 
 		//		testLogSingle(1);
 		//		testLogPlot();
@@ -47,7 +47,7 @@ public class CorrelationTest {
 		//		roadFinesAmountRequestedPlot();
 		//roadFinesAmountRequested();
 		//bpic11Age();
-		//bpic17AmountRequested();
+		bpic17AmountRequested();
 		//bpic12aAmountRequested();
 	}
 
