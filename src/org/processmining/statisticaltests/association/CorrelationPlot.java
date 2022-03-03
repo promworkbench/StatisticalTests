@@ -36,7 +36,7 @@ public class CorrelationPlot {
 		BufferedImage image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
 
 		//set background
-		if (backgroundFigure != null){
+		if (backgroundFigure != null) {
 			Graphics2D ig2 = image.createGraphics();
 			ig2.setBackground(backgroundFigure);
 			ig2.clearRect(0, 0, getWidth(), getHeight());
@@ -45,12 +45,17 @@ public class CorrelationPlot {
 		fillImage2DPlot(image, valuesX, minX, maxX, valuesY, minY, maxY, sizeX1DPlot + marginX, 0, sizeX2DPlot,
 				sizeY2DPlot);
 
-		fillImage1DPlotHorizontal(image, valuesX, minX, maxX, sizeX1DPlot + marginX, sizeY2DPlot + marginY, sizeX2DPlot,
-				sizeY1DPlot);
-		drawTextHorizontal(image, nameX, sizeX1DPlot + marginX, sizeY2DPlot, sizeX2DPlot, marginY);
+		if (marginX > 0) {
+			fillImage1DPlotHorizontal(image, valuesX, minX, maxX, sizeX1DPlot + marginX, sizeY2DPlot + marginY,
+					sizeX2DPlot, sizeY1DPlot);
+			drawTextHorizontal(image, nameX, sizeX1DPlot + marginX, sizeY2DPlot, sizeX2DPlot, marginY);
+		}
 
-		fillImage1DPlotVertical(image, valuesY, minY, maxY, 0, 0, sizeX1DPlot, sizeY2DPlot);
-		drawTextVertical(image, nameY, sizeX1DPlot, 0, marginX, sizeY2DPlot);
+		if (marginY > 0) {
+			fillImage1DPlotVertical(image, valuesY, minY, maxY, 0, 0, sizeX1DPlot, sizeY2DPlot);
+			drawTextVertical(image, nameY, sizeX1DPlot, 0, marginX, sizeY2DPlot);
+		}
+
 		return image;
 	}
 
@@ -264,7 +269,10 @@ public class CorrelationPlot {
 				if (counts[x][y] > 0) {
 					colour = colourMap.colour(counts[x][y], 0, max);
 				}
-				image.setRGB(x + offsetX, (sizeY - y) + offsetY, colour.getRGB());
+				int yp = (sizeY - y) + offsetY;
+				if (yp < sizeY) {
+					image.setRGB(x + offsetX, yp, colour.getRGB());
+				}
 			}
 		}
 	}

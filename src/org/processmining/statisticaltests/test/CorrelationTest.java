@@ -1,5 +1,6 @@
 package org.processmining.statisticaltests.test;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -11,16 +12,15 @@ import java.math.BigDecimal;
 
 import javax.imageio.ImageIO;
 
-import org.deckfour.xes.classification.XEventNameClassifier;
 import org.deckfour.xes.model.XLog;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 import org.processmining.plugins.inductiveminer2.attributes.AttributeImpl;
 import org.processmining.plugins.inductiveminer2.attributes.AttributeImpl.Type;
-import org.processmining.statisticaltests.association.AssociationParametersAbstract;
-import org.processmining.statisticaltests.association.AssociationParametersDefault;
 import org.processmining.statisticaltests.association.AssociationProcessNumerical;
+import org.processmining.statisticaltests.association.AssociationsParametersAbstract;
+import org.processmining.statisticaltests.association.AssociationsParametersDefault;
 import org.processmining.statisticaltests.association.CorrelationPlot;
 import org.processmining.statisticaltests.association.CorrelationPlotLegend;
 import org.processmining.statisticaltests.helperclasses.Correlation;
@@ -37,18 +37,26 @@ public class CorrelationTest {
 		//bpic15mergedStartDatePlot();
 		//bpic15mergedStartDate();
 
+		//bpic19cumulativeSingle();
+		//bpic19cumulativePlot();
+		bpic20amountSingle();
+		bpic20amountPlot();
+
 		//bpic15EndDateSingle(1);
 		//bpic15EndDatePlot(1);
 
 		//		testLogSingle(1);
 		//		testLogPlot();
 		//		bpic11AgePlot();
-		//		bpic12aAmountRequestedPlot();
-		//		roadFinesAmountRequestedPlot();
+		//bpic12AmountRequestedPlot();
+		//roadFinesAmountRequestedPlot();
 		//roadFinesAmountRequested();
 		//bpic11Age();
-		bpic17AmountRequested();
+		//bpic17AmountRequestedPlot();
 		//bpic12aAmountRequested();
+		bpic20amount();
+		//bpic19cumulative();
+		//bpic15d1endDate();
 	}
 
 	public static void legend() throws IOException {
@@ -166,6 +174,42 @@ public class CorrelationTest {
 		createCorrelationPlot(outputCsv, outputImageFile);
 	}
 
+	public static void bpic19cumulativeSingle() throws Exception {
+		File inputLog = new File(folder, "BPI_Challenge_2019-amount lifted.xes.gz");
+		Attribute attribute = new AttributeImpl("Cumulative net worth (EUR)", Type.numeric);
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/04 - correlation/BPI_Challenge_2019-amount lifted.csv");
+
+		correlation(inputLog, outputCsv, attribute, 1000000, true);
+	}
+
+	public static void bpic19cumulativePlot() throws Exception {
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/04 - correlation/BPI_Challenge_2019-amount lifted.csv");
+		File outputImageFile = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/04 - correlation/BPI_Challenge_2019-amount lifted.png");
+
+		createCorrelationPlot(outputCsv, outputImageFile);
+	}
+	
+	public static void bpic20amountSingle() throws Exception {
+		File inputLog = new File(folder, "bpic20-DomesticDeclarations.xes.gz");
+		Attribute attribute = new AttributeImpl("Amount", Type.numeric);
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/04 - correlation/bpic20-DomesticDeclarations.csv");
+
+		correlation(inputLog, outputCsv, attribute, 1000000, true);
+	}
+	
+	public static void bpic20amountPlot() throws Exception {
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/04 - correlation/bpic20-DomesticDeclarations.csv");
+		File outputImageFile = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/04 - correlation/bpic20-DomesticDeclarations.png");
+
+		createCorrelationPlot(outputCsv, outputImageFile);
+	}
+
 	public static void bpic15SumLeges(int municipality) throws Exception {
 		File inputLog = new File(folder, "BPIC15_" + municipality + ".xes");
 		Attribute attribute = new AttributeImpl("SUMleges", Type.numeric);
@@ -229,6 +273,33 @@ public class CorrelationTest {
 		Attribute attribute = new AttributeImpl("AMOUNT_REQ", Type.numeric);
 		File outputCsv = new File(
 				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/05 - correlation sampleSize sensitivity/bpic12a-AMOUNT_REQ-samsen.csv");
+
+		multipleCorrelation(inputLog, outputCsv, 10000, 2000000, attribute);
+	}
+
+	public static void bpic20amount() throws Exception {
+		File inputLog = new File(folder, "bpic20-DomesticDeclarations.xes.gz");
+		Attribute attribute = new AttributeImpl("Amount", Type.numeric);
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/05 - correlation sampleSize sensitivity/bpic20-Amount-samsen.csv");
+
+		multipleCorrelation(inputLog, outputCsv, 10000, 2000000, attribute);
+	}
+
+	public static void bpic19cumulative() throws Exception {
+		File inputLog = new File(folder, "BPI_Challenge_2019-amount lifted.xes.gz");
+		Attribute attribute = new AttributeImpl("Cumulative net worth (EUR)", Type.numeric);
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/05 - correlation sampleSize sensitivity/bpic19-cumulative-samsen.csv");
+
+		multipleCorrelation(inputLog, outputCsv, 10000, 2000000, attribute);
+	}
+
+	public static void bpic15d1endDate() throws Exception {
+		File inputLog = new File(folder, "BPIC15_1.xes");
+		Attribute attribute = new AttributeImpl("endDate", Type.time);
+		File outputCsv = new File(
+				"/home/sander/Documents/svn/41 - stochastic statistics/experiments/05 - correlation sampleSize sensitivity/BPIC15_1-endDate-samsen.csv");
 
 		multipleCorrelation(inputLog, outputCsv, 10000, 2000000, attribute);
 	}
@@ -325,6 +396,14 @@ public class CorrelationTest {
 
 	public static void createCorrelationPlot(File fileCsv, File outputImageFile) throws IOException {
 		CorrelationPlot plot = new CorrelationPlot();
+		plot.setBackgroundPlot(Color.white);
+		plot.setBackgroundFigure(Color.white);
+		plot.setSizeX2DPlot(200);
+		plot.setSizeY2DPlot(200);
+		plot.setSizeX1DPlot(0);
+		plot.setSizeY1DPlot(0);
+		plot.setMarginX(0);
+		plot.setMarginY(0);
 
 		//read the correlation sample file
 		TDoubleList deltaValues = new TDoubleArrayList();
@@ -344,7 +423,7 @@ public class CorrelationTest {
 		System.out.println("number of samples " + deltaValues.size());
 
 		outputImageFile.mkdirs();
-		
+
 		BufferedImage image = plot.create("Δ value", deltaValues.toArray(), "Δ trace", deltaTraces.toArray());
 		ImageIO.write(image, "png", outputImageFile);
 	}
@@ -370,11 +449,11 @@ public class CorrelationTest {
 			}
 		};
 
-		AssociationParametersAbstract parameters = new AssociationParametersDefault(attribute);
+		AssociationsParametersDefault parameters = new AssociationsParametersDefault();
 		parameters.setNumberOfSamples(numberOfSamples);
 		parameters.setDebug(true);
 
-		double[][] result = AssociationProcessNumerical.compute(parameters, log, canceller);
+		double[][] result = AssociationProcessNumerical.compute(attribute, parameters, log, canceller);
 
 		for (int i = 0; i < result[0].length; i++) {
 			output.write(result[0][i] + "," + result[1][i] + "\n");
@@ -423,15 +502,13 @@ public class CorrelationTest {
 			}
 		};
 
-		AssociationParametersAbstract parameters = new AssociationParametersAbstract(0, new XEventNameClassifier(),
-				attribute, System.currentTimeMillis(), true, 7) {
-		};
+		AssociationsParametersAbstract parameters = new AssociationsParametersDefault();
 
 		for (int numberOfSamples = startNumberOfSamples; numberOfSamples <= maxNumberOfSamples; numberOfSamples += step) {
 			parameters.setNumberOfSamples(numberOfSamples);
 
 			long startTime = System.currentTimeMillis();
-			double[][] result = AssociationProcessNumerical.compute(parameters, log, canceller);
+			double[][] result = AssociationProcessNumerical.compute(attribute, parameters, log, canceller);
 			long time = System.currentTimeMillis() - startTime;
 
 			double[] x = result[0];

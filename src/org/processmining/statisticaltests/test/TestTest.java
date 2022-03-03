@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.Arrays;
 
-import org.apache.commons.lang.SystemUtils;
 import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.classification.XEventNameClassifier;
 import org.deckfour.xes.model.XLog;
@@ -27,15 +26,16 @@ import org.processmining.statisticaltests.loglogunknownprocesstest.LogLogUnknown
 import org.processmining.xeslite.plugin.OpenLogFileLiteImplPlugin;
 
 public class TestTest {
-	public static File folder = SystemUtils.IS_OS_LINUX
-			? new File("/home/sander/Documents/svn/41 - stochastic statistics/experiments/")
-			: new File("C:\\Users\\leemans2\\Documents\\svn\\41 - stochastic statistics\\experiments\\");
+	//	public static File folder = SystemUtils.IS_OS_LINUX
+	//			? new File("/home/sander/Documents/svn/41 - stochastic statistics/experiments/")
+	//			: new File("C:\\Users\\leemans2\\Documents\\svn\\41 - stochastic statistics\\experiments\\");
+	public static File folder = null;
 
 	public static void main(String[] args) throws Exception {
 		//		testBPIC15();
 		//		multipleTests("Road fines with trace attributes.xes.gz");
-		//		multipleTests("bpic12-a.xes");
-		multipleTests("BPI Challenge 2017.xes.gz");
+		//multipleTests("bpic12-a.xes");
+		multipleTests("BPIC15_merged.xes.gz");
 	}
 
 	public static enum Type {
@@ -68,22 +68,36 @@ public class TestTest {
 	//	}
 
 	public static void multipleTests(String logName) throws Exception {
-		File inputLogA = new File(new File(folder, "logs"), logName);
+		File inputLogA;
+		if (folder != null) {
+			inputLogA = new File(new File(folder, "logs"), logName);
+		} else {
+			inputLogA = new File(logName);
+		}
 
 		String[] logsB = new String[] { "TE", "MS", "TS", "LE", "LL" };
 
 		for (String logB : logsB) {
 			System.out.println(logB);
-			File outputCsv = new File(new File(folder, "06 - log log test"), logName + "-" + logB + "-samsen.csv");
+			File outputCsv;
+			if (folder != null) {
+				outputCsv = new File(new File(folder, "06 - log log test"), logName + "-" + logB + "-samsen.csv");
+				multipleTests(inputLogA, new File(new File(folder, "logs"), logName + "-" + logB + ".xes.gz"),
+						outputCsv, 10, 1000000000, Type.exponential);
+			} else {
+				outputCsv = new File(logName + "-" + logB + "-samsen.csv");
+				multipleTests(inputLogA, new File(logName + "-" + logB + ".xes.gz"), outputCsv, 10, 1000000000,
+						Type.exponential);
+			}
 
-			multipleTests(inputLogA, new File(new File(folder, "logs"), logName + "-" + logB + ".xes.gz"), outputCsv,
-					10, 1000000000, Type.exponential);
 		}
 	}
 
 	private static void multipleTests(File inputLogA, File inputLogB, File outputCsv, int step, int maxSampleSize,
 			Type type) throws Exception {
-		outputCsv.getParentFile().mkdirs();
+		if (folder != null) {
+			outputCsv.getParentFile().mkdirs();
+		}
 		int startSampleSize = step;
 		BufferedWriter output;
 		if (!outputCsv.exists()) {
@@ -91,6 +105,9 @@ public class TestTest {
 			startSampleSize = step;
 			output = new BufferedWriter(new FileWriter(outputCsv, false));
 			output.write("sampleSize,numberOfSamples,p,time\n");
+
+			System.out.println("====== header");
+			System.out.println("sampleSize,numberOfSamples,p,time");
 		} else {
 			//count the number of lines in the file
 			BufferedReader reader = new BufferedReader(new FileReader(outputCsv));
@@ -125,6 +142,9 @@ public class TestTest {
 			long startTime = System.currentTimeMillis();
 			double p = test.test(Pair.of(logA, logB), parameters, canceller, null);
 			long time = System.currentTimeMillis() - startTime;
+
+			System.out.println("===== answer");
+			System.out.println(sampleSize + "," + parameters.getNumberOfSamples() + "," + p + "," + time);
 
 			output.write(sampleSize + "," + parameters.getNumberOfSamples() + "," + p + "," + time + "\n");
 			output.flush();

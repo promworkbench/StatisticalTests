@@ -26,6 +26,8 @@ import org.processmining.plugins.inductiveminer2.attributes.Attribute;
 import org.processmining.plugins.inductiveminer2.attributes.AttributeUtils;
 import org.processmining.statisticaltests.StochasticLanguageWrapper;
 
+import gnu.trove.set.TDoubleSet;
+import gnu.trove.set.hash.TDoubleHashSet;
 import gnu.trove.set.hash.THashSet;
 
 public class StatisticalTestUtils {
@@ -48,6 +50,47 @@ public class StatisticalTestUtils {
 			for (XTrace trace : log) {
 				String value = AttributeUtils.valueString(attribute, trace);
 				if (value != null) {
+					values.add(value);
+					traces.add(trace);
+				}
+			}
+
+			if (values.size() < 2) {
+				if (debug) {
+					System.out.println("  attribute rejected as it does not have 2 values");
+				}
+				return null;
+			}
+
+			if (values.size() == traces.size()) {
+				if (debug) {
+					System.out.println("  attribute rejected as each value of the attribute is unique");
+				}
+				return null;
+			}
+
+		}
+		return traces;
+	}
+
+	/**
+	 * 
+	 * @param attribute
+	 * @param log
+	 * @param debug
+	 * @return a list of traces that have the attribute, or null if (1) all
+	 *         values are the same, or (2) all values are unique
+	 */
+	public static List<XTrace> filterTracesNumerical(Attribute attribute, XLog log, boolean debug) {
+		assert attribute.isNumeric();
+
+		final List<XTrace> traces = new ArrayList<>();
+		{
+			TDoubleSet values = new TDoubleHashSet(10, 0.5f, -Double.MAX_VALUE);
+
+			for (XTrace trace : log) {
+				double value = AttributeUtils.valueDouble(attribute, trace);
+				if (value != -Double.MAX_VALUE) {
 					values.add(value);
 					traces.add(trace);
 				}
