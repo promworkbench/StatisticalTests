@@ -60,7 +60,7 @@ public class AssociationProcessCategorical {
 						}
 
 						int[] sample = StatisticalTestUtils.getSample(traces,
-								Math.max(parameters.getSampleSize(), traces.size()), random);
+								Math.min(parameters.getSampleSize(), traces.size()), random);
 
 						Pair<BigDecimal, BigDecimal> result = processSample(traces, sample, parameters.getClassifier(),
 								attribute);
