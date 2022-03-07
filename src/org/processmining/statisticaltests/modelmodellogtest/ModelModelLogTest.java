@@ -22,6 +22,7 @@ import org.processmining.statisticaltests.StatisticalTest;
 import org.processmining.statisticaltests.helperclasses.ConcurrentSamples;
 import org.processmining.statisticaltests.helperclasses.ModelHasZeroWeightsException;
 import org.processmining.statisticaltests.helperclasses.StatisticalTestUtils;
+import org.processmining.statisticaltests.helperclasses.StochasticLabelledPetriNetSample;
 import org.processmining.statisticaltests.helperclasses.StochasticPetriNetSample;
 
 public class ModelModelLogTest implements
@@ -45,8 +46,8 @@ public class ModelModelLogTest implements
 		StochasticPetriNetSample.feed(activityKey, netA);
 		StochasticPetriNetSample.feed(activityKey, netB);
 
-		final StochasticLanguage<TotalOrder> languageL = XLog2StochasticLanguage.convert(log, parameters.getClassifier(),
-				activityKey, canceller);
+		final StochasticLanguage<TotalOrder> languageL = XLog2StochasticLanguage.convert(log,
+				parameters.getClassifier(), activityKey, canceller);
 
 		final EMSCParametersLogLogAbstract emscParameters = new EMSCParametersLogLogDefault();
 		emscParameters.setComputeStochasticTraceAlignments(false);
@@ -69,7 +70,7 @@ public class ModelModelLogTest implements
 				//take samples
 				XLog sampleA;
 				try {
-					sampleA = StochasticPetriNetSample.sample(netA, markingA, activityKey, parameters.getSampleSize(),
+					sampleA = StochasticLabelledPetriNetSample.sample(netA, markingA, parameters.getSampleSize(),
 							random, canceller);
 				} catch (ModelHasZeroWeightsException e1) {
 					e1.printStackTrace();
@@ -82,7 +83,7 @@ public class ModelModelLogTest implements
 
 				XLog sampleB;
 				try {
-					sampleB = StochasticPetriNetSample.sample(netB, markingB, activityKey, parameters.getSampleSize(),
+					sampleB = StochasticLabelledPetriNetSample.sample(netB, markingB, parameters.getSampleSize(),
 							random, canceller);
 				} catch (ModelHasZeroWeightsException e1) {
 					e1.printStackTrace();
