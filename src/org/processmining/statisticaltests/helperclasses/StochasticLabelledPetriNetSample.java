@@ -32,6 +32,9 @@ public class StochasticLabelledPetriNetSample {
 
 	public static XLog sample(StochasticLabelledPetriNet net, int numberOfTraces, SplittableRandom random,
 			ProMCanceller canceller) throws ModelHasZeroWeightsException {
+		//		System.out.println(StochasticLabelledPetriNet2Dot.toDot(net));
+		//		System.out.println();
+
 		Scratch s = new Scratch();
 		s.factory = new XFactoryNaiveImpl();
 		s.random = random;
@@ -55,6 +58,8 @@ public class StochasticLabelledPetriNetSample {
 	public static XTrace sampleTrace(Scratch s, ProMCanceller canceller) throws ModelHasZeroWeightsException {
 		XTrace result = s.factory.createTrace();
 
+		int transitions = 0;
+
 		while (!s.semantics.isFinalState()) {
 
 			int chosenTransition = chooseTransition(s);
@@ -73,13 +78,21 @@ public class StochasticLabelledPetriNetSample {
 			if (canceller.isCancelled()) {
 				return null;
 			}
+
+			transitions++;
+
+			if (transitions % 10000 == 0) {
+//				System.out.println("  " + transitions + " transitions taken");
+			}
 		}
 
+		if (transitions > 0) {
+//			System.out.println(" " + transitions + " transitions taken to reach the end state");
+		}
 		return result;
 	}
 
 	public static int chooseTransition(Scratch s) throws ModelHasZeroWeightsException {
-
 		BitSet enabledTransitions = s.semantics.getEnabledTransitions();
 		double sumWeight = s.semantics.getTotalWeightOfEnabledTransitions();
 

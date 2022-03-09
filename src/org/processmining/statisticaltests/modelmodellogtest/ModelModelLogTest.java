@@ -65,6 +65,7 @@ public class ModelModelLogTest implements
 
 				if (parameters.isDebug()) {
 					System.out.println(" sample number " + sampleNumber);
+					System.out.println("  sample model A");
 				}
 
 				//take samples
@@ -81,6 +82,10 @@ public class ModelModelLogTest implements
 					return false;
 				}
 
+				if (parameters.isDebug()) {
+					System.out.println("  sample model B");
+				}
+
 				XLog sampleB;
 				try {
 					sampleB = StochasticLabelledPetriNetSample.sample(netB, markingB, parameters.getSampleSize(),
@@ -92,6 +97,10 @@ public class ModelModelLogTest implements
 
 				if (canceller.isCancelled()) {
 					return false;
+				}
+
+				if (parameters.isDebug()) {
+					System.out.println("  transform samples to stochastic languages");
 				}
 
 				//transform samples
@@ -118,6 +127,10 @@ public class ModelModelLogTest implements
 					return false;
 				}
 
+				if (parameters.isDebug()) {
+					System.out.println("  compute distance matrix A-L");
+				}
+
 				try {
 					distanceMatrixAL.init(languageA, languageL, canceller);
 				} catch (InterruptedException e) {
@@ -127,6 +140,10 @@ public class ModelModelLogTest implements
 
 				if (canceller.isCancelled()) {
 					return false;
+				}
+
+				if (parameters.isDebug()) {
+					System.out.println("  compute distance matrix B-L");
 				}
 
 				try {
@@ -140,12 +157,20 @@ public class ModelModelLogTest implements
 					return false;
 				}
 
+				if (parameters.isDebug()) {
+					System.out.println("  compute distance A-L");
+				}
+
 				//compute distances
 				double emscAL = StatisticalTestUtils.getSimilarity(languageA, languageL, distanceMatrixAL,
 						emscParameters, canceller);
 
 				if (canceller.isCancelled()) {
 					return false;
+				}
+				
+				if (parameters.isDebug()) {
+					System.out.println("  compute distance B-L");
 				}
 
 				double emscBL = StatisticalTestUtils.getSimilarity(languageB, languageL, distanceMatrixBL,
