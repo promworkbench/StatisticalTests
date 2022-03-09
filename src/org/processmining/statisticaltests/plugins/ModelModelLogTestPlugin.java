@@ -4,20 +4,18 @@ import org.deckfour.uitopia.api.event.TaskListener.InteractionResult;
 import org.deckfour.xes.model.XLog;
 import org.processmining.contexts.uitopia.UIPluginContext;
 import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
-import org.processmining.earthmoversstochasticconformancechecking.plugins.EarthMoversStochasticConformancePlugin;
 import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.framework.plugin.Progress;
 import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.framework.plugin.annotations.PluginCategory;
 import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.framework.util.HTMLToString;
-import org.processmining.models.graphbased.directed.petrinet.StochasticNet;
-import org.processmining.models.semantics.petrinet.Marking;
-import org.processmining.plugins.InductiveMiner.Quintuple;
+import org.processmining.plugins.InductiveMiner.Triple;
 import org.processmining.plugins.InductiveMiner.plugins.dialogs.IMMiningDialog;
 import org.processmining.statisticaltests.StatisticalTest;
 import org.processmining.statisticaltests.modelmodellogtest.ModelModelLogTest;
 import org.processmining.statisticaltests.modelmodellogtest.ModelModelLogTestParameters;
+import org.processmining.stochasticlabelledpetrinets.StochasticLabelledPetriNet;
 
 @Plugin(name = "Model vs. model - log test", returnLabels = { "Statistical significance" }, returnTypes = {
 		HTMLToString.class }, parameterLabels = { "Model A", "Model B", "Log" }, userAccessible = true, categories = {
@@ -25,8 +23,8 @@ import org.processmining.statisticaltests.modelmodellogtest.ModelModelLogTestPar
 public class ModelModelLogTestPlugin {
 	@UITopiaVariant(affiliation = IMMiningDialog.affiliation, author = IMMiningDialog.author, email = IMMiningDialog.email)
 	@PluginVariant(variantLabel = "test", requiredParameterLabels = { 0, 1, 2 })
-	public HTMLToString test(final UIPluginContext context, StochasticNet netA, StochasticNet netB, XLog log)
-			throws Exception {
+	public HTMLToString test(final UIPluginContext context, StochasticLabelledPetriNet netA,
+			StochasticLabelledPetriNet netB, XLog log) throws Exception {
 
 		ProMCanceller canceller = new ProMCanceller() {
 			public boolean isCancelled() {
@@ -42,11 +40,7 @@ public class ModelModelLogTestPlugin {
 			return null;
 		}
 
-		Marking markingA = EarthMoversStochasticConformancePlugin.getInitialMarking(netA);
-		Marking markingB = EarthMoversStochasticConformancePlugin.getInitialMarking(netB);
-
-		HTMLToString hresult = test(dialog.getParameters(), netA, markingA, netB, markingB, log, canceller,
-				context.getProgress());
+		HTMLToString hresult = test(dialog.getParameters(), netA, netB, log, canceller, context.getProgress());
 
 		if (hresult == null) {
 			context.getFutureResult(0).cancel(false);
@@ -56,12 +50,12 @@ public class ModelModelLogTestPlugin {
 		return hresult;
 	}
 
-	public static HTMLToString test(ModelModelLogTestParameters parameters, StochasticNet netA, Marking markingA,
-			StochasticNet netB, Marking markingB, XLog log, ProMCanceller canceller, Progress progress)
+	public static HTMLToString test(ModelModelLogTestParameters parameters, StochasticLabelledPetriNet netA,
+			StochasticLabelledPetriNet netB, XLog log, ProMCanceller canceller, Progress progress)
 			throws InterruptedException {
-		StatisticalTest<Quintuple<StochasticNet, Marking, StochasticNet, Marking, XLog>, ModelModelLogTestParameters> test = new ModelModelLogTest();
+		StatisticalTest<Triple<StochasticLabelledPetriNet, StochasticLabelledPetriNet, XLog>, ModelModelLogTestParameters> test = new ModelModelLogTest();
 
-		double p = test.test(Quintuple.of(netA, markingA, netB, markingB, log), parameters, canceller, progress);
+		double p = test.test(Triple.of(netA, netB, log), parameters, canceller, progress);
 
 		if (canceller.isCancelled()) {
 			return null;
