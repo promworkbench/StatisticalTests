@@ -281,7 +281,8 @@ public class ModelModelLogTest implements
 				}
 
 				//compute distances
-				double emscAL = UnitEarthMoversStochasticConformancePlugin.measureLogLog();
+				double emscAL = UnitEarthMoversStochasticConformancePlugin.measureLogLog(languageA, languageL, true,
+						canceller);
 
 				if (canceller.isCancelled()) {
 					return false;
@@ -291,8 +292,8 @@ public class ModelModelLogTest implements
 					System.out.println("  compute distance B-L");
 				}
 
-				double emscBL = StatisticalTestUtils.getSimilarity(languageB, languageL, distanceMatrixBL,
-						emscParameters, canceller);
+				double emscBL = UnitEarthMoversStochasticConformancePlugin.measureLogLog(languageB, languageL, true,
+						canceller);
 
 				if (canceller.isCancelled()) {
 					return false;

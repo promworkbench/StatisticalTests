@@ -9,10 +9,4 @@ public interface ModelModelLogTestParameters extends StatisticalTestParameters {
 	public int getSampleSize();
 
 	public XEventClassifier getClassifier();
-
-	public static enum StochasticLanguageDistanceMeasure {
-		EMSC, uEMSC
-	}
-
-	public StochasticLanguageDistanceMeasure getLanguageDistance();
 }

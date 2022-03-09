@@ -77,7 +77,7 @@ public class TestTest {
 		}
 
 		//String[] logsB = new String[] { "TE", "MS", "TS", "LE", "LL" };
-		String[] logsB = new String[] { "LL" };
+		String[] logsB = new String[] { "LE" };
 
 		for (String logB : logsB) {
 			System.out.println(logB);
