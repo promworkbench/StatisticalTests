@@ -75,7 +75,8 @@ public class TestTest {
 			inputLogA = new File(logName);
 		}
 
-		String[] logsB = new String[] { "TE", "MS", "TS", "LE", "LL" };
+		//String[] logsB = new String[] { "TE", "MS", "TS", "LE", "LL" };
+		String[] logsB = new String[] { "LL" };
 
 		for (String logB : logsB) {
 			System.out.println(logB);

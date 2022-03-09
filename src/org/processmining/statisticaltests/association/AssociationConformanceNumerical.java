@@ -58,7 +58,7 @@ public class AssociationConformanceNumerical {
 		if (minAttributeValue == maxAttributeValue) {
 			return null;
 		}
-		
+
 		if (traces.size() == 0) {
 			return null;
 		}
@@ -79,7 +79,7 @@ public class AssociationConformanceNumerical {
 
 		AtomicInteger nextSampleNumber = new AtomicInteger(0);
 
-		Thread[] threads = new Thread[7];
+		Thread[] threads = new Thread[parameters.getThreads()];
 
 		for (int thread = 0; thread < threads.length; thread++) {
 			final int thread2 = thread;

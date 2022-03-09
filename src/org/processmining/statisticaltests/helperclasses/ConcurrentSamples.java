@@ -59,6 +59,7 @@ public abstract class ConcurrentSamples<I> {
 							return;
 						}
 
+						System.out.println("  start sample " + sampleNumber + " of " + numberOfSamples);
 						if (!performSample(input, sampleNumber, innerCanceller)) {
 							error.set(true);
 							return;
