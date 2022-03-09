@@ -17,6 +17,7 @@ import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.models.graphbased.directed.petrinet.StochasticNet;
 import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
 import org.processmining.models.semantics.petrinet.Marking;
+import org.processmining.stochasticlabelledpetrinets.StochasticLabelledPetriNet;
 
 /**
  * This class assumes that there is no livelock in the model.
@@ -104,6 +105,14 @@ public class StochasticPetriNetSample {
 		for (Transition transition : net.getTransitions()) {
 			if (!transition.isInvisible()) {
 				activityKey.feed(transition);
+			}
+		}
+	}
+
+	public static void feed(Activity2IndexKey activityKey, StochasticLabelledPetriNet net) {
+		for (int transition = 0; transition < net.getNumberOfTransitions(); transition++) {
+			if (!net.isTransitionSilent(transition)) {
+				activityKey.feed(net.getTransitionLabel(transition));
 			}
 		}
 	}

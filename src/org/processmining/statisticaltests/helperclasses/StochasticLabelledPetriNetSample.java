@@ -82,12 +82,12 @@ public class StochasticLabelledPetriNetSample {
 			transitions++;
 
 			if (transitions % 10000 == 0) {
-//				System.out.println("  " + transitions + " transitions taken");
+				//				System.out.println("  " + transitions + " transitions taken");
 			}
 		}
 
 		if (transitions > 0) {
-//			System.out.println(" " + transitions + " transitions taken to reach the end state");
+			//			System.out.println(" " + transitions + " transitions taken to reach the end state");
 		}
 		return result;
 	}
@@ -113,4 +113,5 @@ public class StochasticLabelledPetriNetSample {
 		}
 		return chosenTransition;
 	}
+
 }

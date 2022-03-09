@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.Arrays;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.classification.XEventNameClassifier;
 import org.deckfour.xes.model.XLog;
@@ -26,10 +27,10 @@ import org.processmining.statisticaltests.loglogunknownprocesstest.LogLogUnknown
 import org.processmining.xeslite.plugin.OpenLogFileLiteImplPlugin;
 
 public class TestTest {
-	//	public static File folder = SystemUtils.IS_OS_LINUX
-	//			? new File("/home/sander/Documents/svn/41 - stochastic statistics/experiments/")
-	//			: new File("C:\\Users\\leemans2\\Documents\\svn\\41 - stochastic statistics\\experiments\\");
-	public static File folder = null;
+	public static File folder = SystemUtils.IS_OS_LINUX
+			? new File("/home/sander/Documents/svn/41 - stochastic statistics/experiments/")
+			: new File("C:\\Users\\leemans2\\Documents\\svn\\41 - stochastic statistics\\experiments\\");
+	//	public static File folder = null;
 
 	public static void main(String[] args) throws Exception {
 		//		testBPIC15();
