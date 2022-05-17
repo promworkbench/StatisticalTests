@@ -15,7 +15,6 @@ import org.processmining.models.graphbased.directed.petrinet.StochasticNet;
 import org.processmining.models.semantics.petrinet.Marking;
 import org.processmining.stochasticlabelledpetrinets.StochasticLabelledPetriNet;
 import org.processmining.stochasticlabelledpetrinets.StochasticLabelledPetriNetSemantics;
-import org.processmining.stochasticlabelledpetrinets.StochasticLabelledPetriNetSemanticsImpl;
 
 public class StochasticLabelledPetriNetSample {
 	private static class Scratch {
@@ -39,7 +38,7 @@ public class StochasticLabelledPetriNetSample {
 		s.factory = new XFactoryNaiveImpl();
 		s.random = random;
 
-		s.semantics = new StochasticLabelledPetriNetSemanticsImpl(net);
+		s.semantics = net.getDefaultSemantics();
 		byte[] markingB = s.semantics.getState();
 
 		XLog log = s.factory.createLog();
