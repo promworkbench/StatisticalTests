@@ -7,8 +7,7 @@ import org.processmining.models.graphbased.directed.petrinet.elements.Place;
 import org.processmining.models.graphbased.directed.petrinet.elements.TimedTransition;
 import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
 import org.processmining.models.semantics.petrinet.Marking;
-import org.processmining.stochasticlabelledpetrinets.StochasticLabelledPetriNet;
-import org.processmining.stochasticlabelledpetrinets.StochasticLabelledPetriNetEditable;
+import org.processmining.stochasticlabelledpetrinets.StochasticLabelledPetriNetSimpleWeightsEditable;
 import org.processmining.stochasticlabelledpetrinets.StochasticLabelledPetriNetSimpleWeightsImpl;
 
 import gnu.trove.map.TObjectIntMap;
@@ -24,8 +23,8 @@ import gnu.trove.map.hash.TObjectIntHashMap;
  */
 public class StochasticNet2StochasticLabelledPetriNet {
 
-	public static StochasticLabelledPetriNet convert(StochasticNet net, Marking initialMarking) {
-		StochasticLabelledPetriNetEditable result = new StochasticLabelledPetriNetSimpleWeightsImpl();
+	public static StochasticLabelledPetriNetSimpleWeightsEditable convert(StochasticNet net, Marking initialMarking) {
+		StochasticLabelledPetriNetSimpleWeightsEditable result = new StochasticLabelledPetriNetSimpleWeightsImpl();
 
 		TObjectIntMap<Transition> transition2index = new TObjectIntHashMap<>(10, 0.5f, -1);
 		TObjectIntMap<Place> place2index = new TObjectIntHashMap<>(10, 0.5f, -1);
