@@ -10,9 +10,7 @@ import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
 import org.deckfour.xes.model.impl.XAttributeLiteralImpl;
 import org.processmining.earthmoversstochasticconformancechecking.helperclasses.EfficientStochasticPetriNetSemanticsImpl;
-import org.processmining.earthmoversstochasticconformancechecking.helperclasses.TransitionMap;
 import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.Activity2IndexKey;
-import org.processmining.earthmoversstochasticconformancechecking.stochasticlanguage.model.StochasticTransition2IndexKey;
 import org.processmining.framework.plugin.ProMCanceller;
 import org.processmining.models.graphbased.directed.petrinet.StochasticNet;
 import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
@@ -28,11 +26,7 @@ import org.processmining.stochasticlabelledpetrinets.StochasticLabelledPetriNet;
 public class StochasticPetriNetSample {
 
 	private static class Scratch {
-		StochasticNet net;
-		Marking initialMarking;
 		EfficientStochasticPetriNetSemanticsImpl semantics;
-		TransitionMap transitionMap;
-		StochasticTransition2IndexKey transitionKey;
 		SplittableRandom random;
 		XFactory factory;
 	}
@@ -41,14 +35,10 @@ public class StochasticPetriNetSample {
 			int numberOfTraces, SplittableRandom random, ProMCanceller canceller) throws ModelHasZeroWeightsException {
 		Scratch s = new Scratch();
 		s.factory = new XFactoryNaiveImpl();
-		s.net = net;
-		s.initialMarking = initialMarking;
 		s.random = random;
 
 		s.semantics = new EfficientStochasticPetriNetSemanticsImpl(net, initialMarking);
 		byte[] markingB = s.semantics.convert(initialMarking);
-		s.transitionMap = new TransitionMap(net, s.semantics);
-		s.transitionKey = new StochasticTransition2IndexKey(s.semantics, activityKey);
 
 		XLog log = s.factory.createLog();
 		for (int i = 0; i < numberOfTraces; i++) {
